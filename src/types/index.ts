@@ -112,3 +112,28 @@ export interface CreativeTask {
   videoLength?: string; // e.g., "2:30" — for video type
   videoType?: 'Reels' | 'LongForm' | 'LivestreamReplay'; // for video type
 }
+
+// ─── Knowledge Base Types ───────────────────────────────────────────────────
+export interface Document {
+  id: string;
+  emoji: string;
+  title: string;
+  type: string;
+  typeColor: string;
+  category: string;
+  author: string;
+  authorInitials: string;
+  authorGradient: string;
+  updated: string;
+  views: number;
+}
+
+export interface ActivityItem {
+  id: string;
+  user: string;
+  action: string;
+  target: string;
+  time: string;
+  userInitials: string;
+  userGradient: string;
+}

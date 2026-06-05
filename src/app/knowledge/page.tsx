@@ -1,8 +1,13 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { getInitials } from '@/lib/utils';
+import { useAppState } from '@/context/app-state-context';
+import { useToast } from '@/components/ui/toast';
+import { useRole } from '@/context/role-context';
+import CreateDocumentModal from '@/components/modals/create-document-modal';
+import { ConfirmDeleteModal } from '@/components/modals/modal-wrapper';
 import {
   BookOpen,
   Search,
@@ -18,200 +23,38 @@ import {
   ChevronRight,
   Star,
   Filter,
+  Trash2,
 } from 'lucide-react';
-
-/* ─── Types ───────────────────────────────────────────────── */
-
-interface Document {
-  id: string;
-  emoji: string;
-  title: string;
-  type: string;
-  typeColor: string;
-  category: string;
-  author: string;
-  authorInitials: string;
-  authorGradient: string;
-  updated: string;
-  views: number;
-}
-
-interface ActivityItem {
-  id: string;
-  user: string;
-  action: string;
-  target: string;
-  time: string;
-  userInitials: string;
-  userGradient: string;
-}
 
 /* ─── Static Data ─────────────────────────────────────────── */
 
 const categories = ['All', 'Engineering', 'Design', 'Marketing', 'Company', 'Onboarding'];
 
-const documents: Document[] = [
-  {
-    id: 'd1',
-    emoji: '📘',
-    title: 'Engineering Onboarding Guide',
-    type: 'Guide',
-    typeColor: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300',
-    category: 'Engineering',
-    author: 'Marcus Rodriguez',
-    authorInitials: 'MR',
-    authorGradient: 'from-emerald-500 to-teal-500',
-    updated: 'Updated 2 days ago',
-    views: 12,
-  },
-  {
-    id: 'd2',
-    emoji: '🎨',
-    title: 'Brand Guidelines v3.0',
-    type: 'Reference',
-    typeColor: 'bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300',
-    category: 'Design',
-    author: 'Aisha Patel',
-    authorInitials: 'AP',
-    authorGradient: 'from-rose-500 to-pink-500',
-    updated: 'Updated 1 week ago',
-    views: 45,
-  },
-  {
-    id: 'd3',
-    emoji: '📊',
-    title: 'Q3 Marketing Strategy',
-    type: 'Strategy',
-    typeColor: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300',
-    category: 'Marketing',
-    author: 'Elena Vasquez',
-    authorInitials: 'EV',
-    authorGradient: 'from-amber-500 to-orange-500',
-    updated: 'Updated 3 days ago',
-    views: 28,
-  },
-  {
-    id: 'd4',
-    emoji: '💻',
-    title: 'API Documentation',
-    type: 'Technical',
-    typeColor: 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
-    category: 'Engineering',
-    author: 'David Kim',
-    authorInitials: 'DK',
-    authorGradient: 'from-sky-500 to-blue-500',
-    updated: 'Updated today',
-    views: 67,
-  },
-  {
-    id: 'd5',
-    emoji: '📝',
-    title: 'Meeting Notes Template',
-    type: 'Template',
-    typeColor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300',
-    category: 'Company',
-    author: 'Sarah Chen',
-    authorInitials: 'SC',
-    authorGradient: 'from-indigo-500 to-violet-500',
-    updated: 'Updated 5 days ago',
-    views: 15,
-  },
-  {
-    id: 'd6',
-    emoji: '🔄',
-    title: 'Sprint Retrospective Q2',
-    type: 'Report',
-    typeColor: 'bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-500/15 dark:text-fuchsia-300',
-    category: 'Engineering',
-    author: 'Marcus Rodriguez',
-    authorInitials: 'MR',
-    authorGradient: 'from-emerald-500 to-teal-500',
-    updated: 'Updated 1 week ago',
-    views: 22,
-  },
-  {
-    id: 'd7',
-    emoji: '🎯',
-    title: 'Design System Components',
-    type: 'Reference',
-    typeColor: 'bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300',
-    category: 'Design',
-    author: 'Priya Sharma',
-    authorInitials: 'PS',
-    authorGradient: 'from-fuchsia-500 to-purple-500',
-    updated: 'Updated 4 days ago',
-    views: 38,
-  },
-  {
-    id: 'd8',
-    emoji: '💼',
-    title: 'Sales Playbook 2026',
-    type: 'Playbook',
-    typeColor: 'bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300',
-    category: 'Marketing',
-    author: 'Alex Thompson',
-    authorInitials: 'AT',
-    authorGradient: 'from-cyan-500 to-teal-500',
-    updated: 'Updated 2 weeks ago',
-    views: 9,
-  },
-];
-
-const recentActivity: ActivityItem[] = [
-  {
-    id: 'a1',
-    user: 'David Kim',
-    action: 'updated',
-    target: 'API Documentation',
-    time: '2 hours ago',
-    userInitials: 'DK',
-    userGradient: 'from-sky-500 to-blue-500',
-  },
-  {
-    id: 'a2',
-    user: 'Elena Vasquez',
-    action: 'created',
-    target: 'Q3 Marketing Strategy',
-    time: '3 days ago',
-    userInitials: 'EV',
-    userGradient: 'from-amber-500 to-orange-500',
-  },
-  {
-    id: 'a3',
-    user: 'Priya Sharma',
-    action: 'updated',
-    target: 'Design System Components',
-    time: '4 days ago',
-    userInitials: 'PS',
-    userGradient: 'from-fuchsia-500 to-purple-500',
-  },
-  {
-    id: 'a4',
-    user: 'Marcus Rodriguez',
-    action: 'updated',
-    target: 'Engineering Onboarding Guide',
-    time: '2 days ago',
-    userInitials: 'MR',
-    userGradient: 'from-emerald-500 to-teal-500',
-  },
-  {
-    id: 'a5',
-    user: 'Sarah Chen',
-    action: 'updated',
-    target: 'Meeting Notes Template',
-    time: '5 days ago',
-    userInitials: 'SC',
-    userGradient: 'from-indigo-500 to-violet-500',
-  },
-];
-
 /* ─── Main Component ──────────────────────────────────────── */
 
 export default function KnowledgePage() {
+  const { documents, activities, deleteDocument } = useAppState();
+  const { currentRole } = useRole();
+  const { addToast } = useToast();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [bookmarked, setBookmarked] = useState<Set<string>>(new Set(['d4', 'd2']));
+  
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [docToDelete, setDocToDelete] = useState<string | null>(null);
+  const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
+
+  const handleDelete = (id: string) => {
+    deleteDocument(id);
+    setDocToDelete(null);
+    addToast({
+      title: 'Document Deleted',
+      message: 'The document has been removed from the knowledge base.',
+      type: 'success'
+    });
+  };
 
   const toggleBookmark = (id: string) => {
     setBookmarked((prev) => {
@@ -297,7 +140,10 @@ export default function KnowledgePage() {
           </div>
 
           {/* New Document button */}
-          <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all">
+          <button 
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all"
+          >
             <Plus className="w-4 h-4" />
             New Document
           </button>
@@ -345,7 +191,7 @@ export default function KnowledgePage() {
               {/* Top row: emoji + actions */}
               <div className="flex items-start justify-between mb-3">
                 <span className="text-3xl leading-none">{doc.emoji}</span>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity relative">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -360,11 +206,25 @@ export default function KnowledgePage() {
                     )}
                   </button>
                   <button
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(e) => { e.stopPropagation(); setMenuOpenId(menuOpenId === doc.id ? null : doc.id); }}
                     className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
                   >
                     <MoreHorizontal className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                   </button>
+                  {menuOpenId === doc.id && currentRole === 'Manager' && (
+                    <>
+                      <div className="fixed inset-0 z-10" onClick={(e) => { e.stopPropagation(); setMenuOpenId(null); }} />
+                      <div className="absolute right-0 top-full mt-1 w-32 rounded-lg border border-gray-100 dark:border-white/10 bg-white dark:bg-[#1a1a28] shadow-lg z-20 py-1">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); setMenuOpenId(null); setDocToDelete(doc.id); }}
+                          className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          Delete
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -497,7 +357,7 @@ export default function KnowledgePage() {
                 <span className="text-xs text-gray-400 dark:text-gray-500">{doc.views}</span>
               </div>
               {/* Actions */}
-              <div className="flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity relative">
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -511,6 +371,26 @@ export default function KnowledgePage() {
                     <Bookmark className="w-3.5 h-3.5 text-gray-400" />
                   )}
                 </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setMenuOpenId(menuOpenId === doc.id ? null : doc.id); }}
+                  className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                >
+                  <MoreHorizontal className="w-3.5 h-3.5 text-gray-400" />
+                </button>
+                {menuOpenId === doc.id && currentRole === 'Manager' && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={(e) => { e.stopPropagation(); setMenuOpenId(null); }} />
+                    <div className="absolute right-0 top-full mt-1 w-32 rounded-lg border border-gray-100 dark:border-white/10 bg-white dark:bg-[#1a1a28] shadow-lg z-20 py-1">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setMenuOpenId(null); setDocToDelete(doc.id); }}
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        Delete
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           ))}
@@ -543,7 +423,7 @@ export default function KnowledgePage() {
           <div className="absolute left-[15px] top-3 bottom-3 w-px bg-gray-100 dark:bg-white/5" />
 
           <div className="space-y-0">
-            {recentActivity.map((activity, idx) => (
+            {activities.map((activity, idx) => (
               <div
                 key={activity.id}
                 className={cn(
@@ -591,6 +471,18 @@ export default function KnowledgePage() {
           </div>
         </div>
       </div>
+      <CreateDocumentModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={!!docToDelete}
+        onClose={() => setDocToDelete(null)}
+        onConfirm={() => docToDelete && handleDelete(docToDelete)}
+        title="Delete Document"
+        message="Are you sure you want to delete this document? This action cannot be undone."
+      />
     </div>
   );
 }

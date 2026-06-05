@@ -1,4 +1,4 @@
-import { User, Project, Task, AIInsight, TeamMetrics, ContentItem, WorkTrip, CreativeTask } from '@/types';
+import { User, Project, Task, AIInsight, TeamMetrics, ContentItem, WorkTrip, CreativeTask, Document, ActivityItem } from '@/types';
 
 // ─── Team Members ───────────────────────────────────────────────────────────
 export const mockUsers: User[] = [
@@ -116,4 +116,24 @@ export const mockCreativeTasks: CreativeTask[] = [
   { id: 'ct13', title: 'Global Pass App Guide', type: 'VideoEdit', assignee: mockUsers[8], requestedBy: mockUsers[0], projectId: 'p1', projectName: 'Global Pass', receivedDate: '2026-06-06', dueDate: '2026-06-15', revisions: 0, status: 'Pending', videoLength: '5:00', videoType: 'LongForm' },
   { id: 'ct14', title: 'Brand Reveal Video', type: 'VideoEdit', assignee: mockUsers[8], requestedBy: mockUsers[2], projectId: 'p5', projectName: 'Brand Refresh Q3', receivedDate: '2026-05-22', dueDate: '2026-05-28', deliveredDate: '2026-05-27', revisions: 2, qualityScore: 4, turnaroundDays: 5, status: 'Completed', videoLength: '1:30', videoType: 'Reels' },
   { id: 'ct15', title: 'Ep.13 Promo Clip', type: 'VideoEdit', assignee: mockUsers[8], requestedBy: mockUsers[4], projectId: 'p2', projectName: 'Livestream', receivedDate: '2026-06-05', dueDate: '2026-06-07', revisions: 0, status: 'Pending', videoLength: '0:15', videoType: 'Reels' },
+];
+
+// ─── Knowledge Base ─────────────────────────────────────────────────────────
+export const mockDocuments: Document[] = [
+  { id: 'd1', emoji: '📘', title: 'Engineering Onboarding Guide', type: 'Guide', typeColor: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300', category: 'Engineering', author: 'Marcus Rodriguez', authorInitials: 'MR', authorGradient: 'from-emerald-500 to-teal-500', updated: 'Updated 2 days ago', views: 12 },
+  { id: 'd2', emoji: '🎨', title: 'Brand Guidelines v3.0', type: 'Reference', typeColor: 'bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300', category: 'Design', author: 'Aisha Patel', authorInitials: 'AP', authorGradient: 'from-rose-500 to-pink-500', updated: 'Updated 1 week ago', views: 45 },
+  { id: 'd3', emoji: '📊', title: 'Q3 Marketing Strategy', type: 'Strategy', typeColor: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300', category: 'Marketing', author: 'Elena Vasquez', authorInitials: 'EV', authorGradient: 'from-amber-500 to-orange-500', updated: 'Updated 3 days ago', views: 28 },
+  { id: 'd4', emoji: '💻', title: 'API Documentation', type: 'Technical', typeColor: 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300', category: 'Engineering', author: 'David Kim', authorInitials: 'DK', authorGradient: 'from-sky-500 to-blue-500', updated: 'Updated today', views: 67 },
+  { id: 'd5', emoji: '📝', title: 'Meeting Notes Template', type: 'Template', typeColor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300', category: 'Company', author: 'Sarah Chen', authorInitials: 'SC', authorGradient: 'from-indigo-500 to-violet-500', updated: 'Updated 5 days ago', views: 15 },
+  { id: 'd6', emoji: '🔄', title: 'Sprint Retrospective Q2', type: 'Report', typeColor: 'bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-500/15 dark:text-fuchsia-300', category: 'Engineering', author: 'Marcus Rodriguez', authorInitials: 'MR', authorGradient: 'from-emerald-500 to-teal-500', updated: 'Updated 1 week ago', views: 22 },
+  { id: 'd7', emoji: '🎯', title: 'Design System Components', type: 'Reference', typeColor: 'bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300', category: 'Design', author: 'Priya Sharma', authorInitials: 'PS', authorGradient: 'from-fuchsia-500 to-purple-500', updated: 'Updated 4 days ago', views: 38 },
+  { id: 'd8', emoji: '💼', title: 'Sales Playbook 2026', type: 'Playbook', typeColor: 'bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300', category: 'Marketing', author: 'Alex Thompson', authorInitials: 'AT', authorGradient: 'from-cyan-500 to-teal-500', updated: 'Updated 2 weeks ago', views: 9 },
+];
+
+export const mockActivity: ActivityItem[] = [
+  { id: 'a1', user: 'David Kim', action: 'updated', target: 'API Documentation', time: '2 hours ago', userInitials: 'DK', userGradient: 'from-sky-500 to-blue-500' },
+  { id: 'a2', user: 'Elena Vasquez', action: 'created', target: 'Q3 Marketing Strategy', time: '3 days ago', userInitials: 'EV', userGradient: 'from-amber-500 to-orange-500' },
+  { id: 'a3', user: 'Priya Sharma', action: 'updated', target: 'Design System Components', time: '4 days ago', userInitials: 'PS', userGradient: 'from-fuchsia-500 to-purple-500' },
+  { id: 'a4', user: 'Marcus Rodriguez', action: 'updated', target: 'Engineering Onboarding Guide', time: '2 days ago', userInitials: 'MR', userGradient: 'from-emerald-500 to-teal-500' },
+  { id: 'a5', user: 'Sarah Chen', action: 'updated', target: 'Meeting Notes Template', time: '5 days ago', userInitials: 'SC', userGradient: 'from-indigo-500 to-violet-500' },
 ];

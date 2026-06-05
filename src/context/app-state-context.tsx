@@ -2,11 +2,11 @@
 
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import {
-  Project, Task, ContentItem, WorkTrip, CreativeTask, User,
+  Project, Task, ContentItem, WorkTrip, CreativeTask, User, Document, ActivityItem,
   ProjectStatus, TaskPriority, ApprovalStatus, ContentType, Platform, WorkTripType, RiskLevel,
 } from '@/types';
 import {
-  mockProjects, mockTasks, mockContentItems, mockWorkTrips, mockCreativeTasks, mockUsers,
+  mockProjects, mockTasks, mockContentItems, mockWorkTrips, mockCreativeTasks, mockUsers, mockDocuments, mockActivity,
 } from '@/lib/mock-data';
 
 // ─── Notification Types ─────────────────────────────────────────────────────
@@ -28,6 +28,8 @@ interface AppStateContextType {
   contentItems: ContentItem[];
   workTrips: WorkTrip[];
   creativeTasks: CreativeTask[];
+  documents: Document[];
+  activities: ActivityItem[];
   users: User[];
   notifications: AppNotification[];
 
@@ -53,6 +55,14 @@ interface AppStateContextType {
 
   // Creative Task CRUD
   updateCreativeTask: (id: string, updates: Partial<CreativeTask>) => void;
+
+  // Document CRUD
+  addDocument: (doc: Omit<Document, 'id'>) => void;
+  updateDocument: (id: string, updates: Partial<Document>) => void;
+  deleteDocument: (id: string) => void;
+
+  // Activities
+  addActivity: (activity: Omit<ActivityItem, 'id'>) => void;
 
   // Notifications
   addNotification: (notification: Omit<AppNotification, 'id' | 'timestamp' | 'read'>) => void;
@@ -125,6 +135,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [contentItems, setContentItems] = useState<ContentItem[]>(mockContentItems);
   const [workTrips, setWorkTrips] = useState<WorkTrip[]>(mockWorkTrips);
   const [creativeTasks, setCreativeTasks] = useState<CreativeTask[]>(mockCreativeTasks);
+  const [documents, setDocuments] = useState<Document[]>(mockDocuments);
+  const [activities, setActivities] = useState<ActivityItem[]>(mockActivity);
   const [notifications, setNotifications] = useState<AppNotification[]>(initialNotifications);
 
   // ─── Project CRUD ───────────────────────────────────────────────────────
@@ -188,6 +200,26 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setCreativeTasks(prev => prev.map(ct => ct.id === id ? { ...ct, ...updates } : ct));
   }, []);
 
+  // ─── Document CRUD ──────────────────────────────────────────────────────
+  const addDocument = useCallback((doc: Omit<Document, 'id'>) => {
+    const newDoc: Document = { ...doc, id: generateId('d') };
+    setDocuments(prev => [newDoc, ...prev]);
+  }, []);
+
+  const updateDocument = useCallback((id: string, updates: Partial<Document>) => {
+    setDocuments(prev => prev.map(d => d.id === id ? { ...d, ...updates } : d));
+  }, []);
+
+  const deleteDocument = useCallback((id: string) => {
+    setDocuments(prev => prev.filter(d => d.id !== id));
+  }, []);
+
+  // ─── Activity CRUD ──────────────────────────────────────────────────────
+  const addActivity = useCallback((activity: Omit<ActivityItem, 'id'>) => {
+    const newActivity: ActivityItem = { ...activity, id: generateId('a') };
+    setActivities(prev => [newActivity, ...prev]);
+  }, []);
+
   // ─── Notification CRUD ──────────────────────────────────────────────────
   const addNotification = useCallback((notification: Omit<AppNotification, 'id' | 'timestamp' | 'read'>) => {
     const newNotification: AppNotification = {
@@ -212,13 +244,15 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   return (
     <AppStateContext.Provider
       value={{
-        projects, tasks, contentItems, workTrips, creativeTasks,
+        projects, tasks, contentItems, workTrips, creativeTasks, documents, activities,
         users: mockUsers, notifications,
         addProject, updateProject, deleteProject,
         addTask, updateTask, deleteTask,
         addContentItem, updateContentItem, deleteContentItem,
         addWorkTrip, updateWorkTrip, deleteWorkTrip,
         updateCreativeTask,
+        addDocument, updateDocument, deleteDocument,
+        addActivity,
         addNotification, markNotificationRead, markAllNotificationsRead, unreadNotificationCount,
       }}
     >

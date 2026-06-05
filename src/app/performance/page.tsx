@@ -3,7 +3,9 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { getInitials } from '@/lib/utils';
-import { mockUsers, productivityData } from '@/lib/mock-data';
+import { productivityData } from '@/lib/mock-data';
+import { useAppState } from '@/context/app-state-context';
+import { useToast } from '@/components/ui/toast';
 import {
   Zap,
   Target,
@@ -164,8 +166,27 @@ function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: 
 /* ─── Main Component ──────────────────────────────────────── */
 
 export default function PerformancePage() {
+  const { users } = useAppState();
+  const { addToast } = useToast();
   const [hoveredMember, setHoveredMember] = useState<string | null>(null);
+  const [timePeriod, setTimePeriod] = useState('Last 30 days');
+  const [showPeriodDropdown, setShowPeriodDropdown] = useState(false);
   const totalTasks = taskDistribution.reduce((sum, d) => sum + d.value, 0);
+
+  const handleExport = () => {
+    addToast({
+      title: 'Exporting Report',
+      message: `Generating CSV for ${timePeriod}...`,
+      type: 'info'
+    });
+    setTimeout(() => {
+      addToast({
+        title: 'Export Complete',
+        message: 'Report has been downloaded successfully.',
+        type: 'success'
+      });
+    }, 1500);
+  };
 
   return (
     <div className="space-y-8 pb-8">
@@ -182,11 +203,33 @@ export default function PerformancePage() {
             Analytics & insights across your entire team
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <button className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-            Last 30 days
+        <div className="flex items-center gap-2 relative">
+          <button 
+            onClick={() => setShowPeriodDropdown(!showPeriodDropdown)}
+            className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+          >
+            {timePeriod}
           </button>
-          <button className="px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all">
+          {showPeriodDropdown && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setShowPeriodDropdown(false)} />
+              <div className="absolute top-full mt-2 left-0 w-40 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#16161f] shadow-xl z-50">
+                {['Last 7 days', 'Last 30 days', 'This Quarter', 'This Year'].map(period => (
+                  <button
+                    key={period}
+                    onClick={() => { setTimePeriod(period); setShowPeriodDropdown(false); }}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-white/5 first:rounded-t-xl last:rounded-b-xl dark:text-gray-200 text-gray-700"
+                  >
+                    {period}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+          <button 
+            onClick={handleExport}
+            className="px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all"
+          >
             Export Report
           </button>
         </div>
@@ -570,9 +613,9 @@ export default function PerformancePage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          {mockUsers.map((user, idx) => {
-            const perf = memberPerformance[user.id];
-            const statusCfg = statusConfig[perf.status];
+          {users.map((user, idx) => {
+            const perf = memberPerformance[user.id] || { tasksCompleted: 0, onTime: 100, status: 'available' };
+            const statusCfg = statusConfig[perf.status as keyof typeof statusConfig];
             return (
               <div
                 key={user.id}
