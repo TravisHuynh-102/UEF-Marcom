@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/context/theme-context";
+import { LanguageProvider } from "@/context/language-context";
 import { RoleProvider } from "@/context/role-context";
 import { AppStateProvider } from "@/context/app-state-context";
 import { ToastProvider } from "@/components/ui/toast";
@@ -25,8 +26,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                var theme = localStorage.getItem('theme');
+                var isDark = false;
+                if (theme === 'dark') {
+                  isDark = true;
+                } else if (theme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                  isDark = true;
+                }
+                if (isDark) document.documentElement.classList.add('dark');
+              } catch (e) {}
+            `,
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -44,13 +61,15 @@ export default function RootLayout({
       </head>
       <body className="bg-background text-on-background font-body-md text-body-md antialiased overflow-hidden flex h-screen">
         <ThemeProvider>
-          <RoleProvider>
-            <AppStateProvider>
-              <ToastProvider>
-                <AppShell>{children}</AppShell>
-              </ToastProvider>
-            </AppStateProvider>
-          </RoleProvider>
+          <LanguageProvider>
+            <RoleProvider>
+              <AppStateProvider>
+                <ToastProvider>
+                  <AppShell>{children}</AppShell>
+                </ToastProvider>
+              </AppStateProvider>
+            </RoleProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

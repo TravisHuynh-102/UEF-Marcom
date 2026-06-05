@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useRole } from '@/context/role-context';
 import { canAccessRoute } from '@/lib/permissions';
+import { useLanguage } from '@/context/language-context';
+import { Dictionary } from '@/locales/en';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -14,6 +16,7 @@ interface SidebarProps {
 
 interface NavItem {
   label: string;
+  dictKey?: keyof Dictionary;
   icon: string;
   href: string;
   isAI?: boolean;
@@ -21,26 +24,27 @@ interface NavItem {
 }
 
 const mainNavItems: NavItem[] = [
-  { label: 'Dashboard', icon: 'dashboard', href: '/' },
+  { label: 'Dashboard', dictKey: 'sidebar.dashboard', icon: 'dashboard', href: '/' },
   { label: 'Projects', icon: 'folder', href: '/projects' },
   { label: 'My Tasks', icon: 'assignment', href: '/tasks' },
-  { label: 'Content Calendar', icon: 'calendar_today', href: '/content-calendar' },
-  { label: 'Work Calendar', icon: 'event', href: '/work-calendar' },
-  { label: 'Creative Performance', icon: 'trending_up', href: '/creative-performance', separatorBefore: true },
+  { label: 'Content Calendar', dictKey: 'sidebar.contentCalendar', icon: 'calendar_today', href: '/content-calendar' },
+  { label: 'Work Calendar', dictKey: 'sidebar.workCalendar', icon: 'event', href: '/work-calendar' },
+  { label: 'Creative Performance', dictKey: 'sidebar.creativePerformance', icon: 'trending_up', href: '/creative-performance', separatorBefore: true },
   { label: 'Team Performance', icon: 'group', href: '/performance' },
   { label: 'AI Chief of Staff', icon: 'smart_toy', href: '/ai-assistant', isAI: true, separatorBefore: true },
-  { label: 'Knowledge Hub', icon: 'book', href: '/knowledge' },
-  { label: 'Chat', icon: 'chat', href: '/chat' },
+  { label: 'Knowledge Hub', dictKey: 'sidebar.knowledgeHub', icon: 'book', href: '/knowledge' },
+  { label: 'Chat', dictKey: 'sidebar.chat', icon: 'chat', href: '/chat' },
 ];
 
 const bottomNavItems: NavItem[] = [
-  { label: 'Settings', icon: 'settings', href: '/settings' },
+  { label: 'Settings', dictKey: 'sidebar.settings', icon: 'settings', href: '/settings' },
   { label: 'Support', icon: 'help', href: '/support' },
 ];
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { currentRole } = useRole();
+  const { t } = useLanguage();
 
   return (
     <>
@@ -98,7 +102,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                   )}>
                     {item.icon}
                   </span>
-                  <span>{item.label}</span>
+                  <span>{item.dictKey ? t(item.dictKey) : item.label}</span>
                 </Link>
               </React.Fragment>
             );
@@ -126,7 +130,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 )}>
                   {item.icon}
                 </span>
-                <span>{item.label}</span>
+                <span>{item.dictKey ? t(item.dictKey) : item.label}</span>
               </Link>
             )
           })}

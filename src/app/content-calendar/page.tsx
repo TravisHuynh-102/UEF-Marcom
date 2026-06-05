@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { getInitials } from '@/lib/utils';
 import { useRole } from '@/context/role-context';
+import { useLanguage } from '@/context/language-context';
 import { useAppState } from '@/context/app-state-context';
 import { useToast } from '@/components/ui/toast';
 import CreateContentModal from '@/components/modals/create-content-modal';
@@ -782,6 +783,7 @@ function Sidebar({
 
 export default function ContentCalendarPage() {
   const { currentRole, currentUser, hasPermission } = useRole();
+  const { t } = useLanguage();
   const { contentItems, updateContentItem, addNotification } = useAppState();
   const { addToast } = useToast();
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -885,7 +887,7 @@ export default function ContentCalendarPage() {
               <CalendarDays className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-[var(--text-primary)]">Content Calendar</h1>
+              <h1 className="text-xl font-bold text-[var(--text-primary)]">{t('content.title')}</h1>
               <p className="text-xs text-[var(--text-muted)]">
                 {roleFilteredItems.length} content items · {monthName}
               </p>
@@ -906,7 +908,7 @@ export default function ContentCalendarPage() {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all active:scale-[0.97]"
               >
                 <Plus className="w-4 h-4" />
-                Tạo Khung Lịch
+                {t('content.createSchedule')}
               </button>
             )}
             {canSubmitIdea && !canCreateCalendar && (
@@ -915,7 +917,7 @@ export default function ContentCalendarPage() {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all active:scale-[0.97]"
               >
                 <Plus className="w-4 h-4" />
-                Đề xuất Ý tưởng
+                {t('content.suggestIdea')}
               </button>
             )}
           </div>

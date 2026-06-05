@@ -4,6 +4,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/context/theme-context';
+import { useLanguage } from '@/context/language-context';
 import { useRole } from '@/context/role-context';
 import { useAppState } from '@/context/app-state-context';
 import { UserRole } from '@/types';
@@ -39,6 +40,8 @@ interface SearchResult {
 
 export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const { currentRole, currentUser, setCurrentRole } = useRole();
+  const { theme, setTheme } = useTheme();
+  const { locale, setLocale, t } = useLanguage();
   const { projects, tasks, contentItems, users, notifications, markNotificationRead, markAllNotificationsRead, unreadNotificationCount } = useAppState();
   const router = useRouter();
   
@@ -160,7 +163,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
             onChange={e => setSearchQuery(e.target.value)}
             onFocus={() => setSearchFocused(true)}
             className="bg-surface-container border border-outline-variant rounded-lg py-1.5 pl-10 pr-4 w-64 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-body-sm placeholder:text-on-surface-variant/50" 
-            placeholder="Search across TeamOS..." 
+            placeholder={t('header.search')} 
           />
           {/* Search Dropdown */}
           {showSearchResults && (
@@ -245,6 +248,26 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
           )}
         </div>
 
+        {/* Language Switcher */}
+        <button
+          onClick={() => setLocale(locale === 'en' ? 'vi' : 'en')}
+          className="text-on-surface-variant hover:text-primary transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-[11px] font-bold uppercase border border-outline-variant/50"
+          title="Toggle Language"
+        >
+          {locale}
+        </button>
+
+        {/* Theme Switcher */}
+        <button
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className="text-on-surface-variant hover:text-primary transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container border border-outline-variant/50"
+          title="Toggle Theme"
+        >
+          <span className="material-symbols-outlined text-[18px]">
+            {theme === 'dark' ? 'light_mode' : 'dark_mode'}
+          </span>
+        </button>
+
         {/* Notifications */}
         <div ref={notifRef} className="relative">
           <button 
@@ -260,7 +283,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
           {notifOpen && (
             <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-xl border border-outline-variant bg-surface-container shadow-2xl overflow-hidden">
               <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant/30">
-                <h3 className="text-body-sm font-bold text-on-surface">Notifications</h3>
+                <h3 className="text-body-sm font-bold text-on-surface">{t('header.notifications')}</h3>
                 {unreadNotificationCount > 0 && (
                   <button onClick={markAllNotificationsRead} className="text-[11px] font-medium text-primary hover:text-primary-fixed transition-colors">
                     Mark all read
