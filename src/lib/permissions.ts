@@ -5,9 +5,9 @@ export type Permission =
   // Projects
   | 'project.create' | 'project.edit' | 'project.delete' | 'project.assign_lead'
   | 'project.view_all' | 'project.view_own'
-  // Content Calendar
-  | 'content.create' | 'content.edit' | 'content.approve' | 'content.schedule'
-  | 'content.view_all' | 'content.view_team' | 'content.submit'
+  // Content Calendar (UPDATED)
+  | 'content.create_calendar' | 'content.submit_idea' | 'content.edit_all' | 'content.edit_own'
+  | 'content.approve' | 'content.schedule' | 'content.view_all' | 'content.view_team'
   // Work Calendar
   | 'work_calendar.create_for_team' | 'work_calendar.approve' | 'work_calendar.view_all'
   | 'work_calendar.request' | 'work_calendar.view_team'
@@ -27,7 +27,7 @@ export type Permission =
 // ─── Role → Permission Mapping ─────────────────────────────────────────────
 const MANAGER_PERMISSIONS: Permission[] = [
   'project.create', 'project.edit', 'project.delete', 'project.assign_lead', 'project.view_all', 'project.view_own',
-  'content.create', 'content.edit', 'content.approve', 'content.schedule', 'content.view_all', 'content.view_team', 'content.submit',
+  'content.create_calendar', 'content.submit_idea', 'content.edit_all', 'content.approve', 'content.view_all', 'content.schedule',
   'work_calendar.create_for_team', 'work_calendar.approve', 'work_calendar.view_all', 'work_calendar.request', 'work_calendar.view_team',
   'performance.view_all', 'performance.view_team', 'performance.view_self', 'performance.export', 'performance.rate_quality',
   'settings.team', 'settings.billing', 'settings.integrations', 'settings.appearance', 'settings.profile', 'settings.notifications',
@@ -38,7 +38,7 @@ const MANAGER_PERMISSIONS: Permission[] = [
 
 const LEADER_PERMISSIONS: Permission[] = [
   'project.edit', 'project.view_all', 'project.view_own',
-  'content.create', 'content.edit', 'content.submit', 'content.view_team',
+  'content.create_calendar', 'content.submit_idea', 'content.edit_all', 'content.approve', 'content.view_team', 'content.schedule',
   'work_calendar.create_for_team', 'work_calendar.view_team', 'work_calendar.request',
   'performance.view_team', 'performance.view_self', 'performance.rate_quality',
   'settings.appearance', 'settings.profile', 'settings.notifications',
@@ -48,7 +48,7 @@ const LEADER_PERMISSIONS: Permission[] = [
 
 const STAFF_PERMISSIONS: Permission[] = [
   'project.view_own',
-  'content.create', 'content.submit',
+  'content.submit_idea', 'content.edit_own', 'content.view_team',
   'work_calendar.request',
   'performance.view_self',
   'settings.profile', 'settings.notifications',

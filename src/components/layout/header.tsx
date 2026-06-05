@@ -2,24 +2,6 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import {
-  Search,
-  Plus,
-  Bell,
-  Sun,
-  Moon,
-  ChevronDown,
-  Command,
-  Shield,
-  Star,
-  UserIcon,
-  X,
-  FileText,
-  FolderKanban,
-  CalendarDays,
-  Users,
-  CheckCircle2,
-} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/context/theme-context';
 import { useRole } from '@/context/role-context';
@@ -40,43 +22,37 @@ const pageTitles: Record<string, { title: string; subtitle?: string }> = {
   '/creative-performance': { title: 'Creative Performance', subtitle: 'Design & Video metrics' },
 };
 
-const roleConfig: Record<UserRole, { label: string; icon: React.ElementType; color: string; bg: string }> = {
-  Manager: { label: 'Manager', icon: Shield, color: 'text-violet-400', bg: 'bg-violet-500/15' },
-  Leader: { label: 'Leader', icon: Star, color: 'text-amber-400', bg: 'bg-amber-500/15' },
-  Staff: { label: 'Staff', icon: UserIcon, color: 'text-sky-400', bg: 'bg-sky-500/15' },
+const roleConfig: Record<UserRole, { label: string; icon: string; color: string; bg: string }> = {
+  Manager: { label: 'Manager', icon: 'shield', color: 'text-primary', bg: 'bg-primary/10' },
+  Leader: { label: 'Leader', icon: 'star', color: 'text-tertiary-container', bg: 'bg-tertiary-container/10' },
+  Staff: { label: 'Staff', icon: 'person', color: 'text-sky-400', bg: 'bg-sky-500/10' },
 };
 
-// ─── Search Result Types ────────────────────────────────────────────────────
 interface SearchResult {
   id: string;
   title: string;
   category: 'Projects' | 'Tasks' | 'Content' | 'People';
   subtitle?: string;
   link: string;
-  icon: React.ElementType;
+  icon: string;
 }
 
-export default function Header() {
-  const { theme, toggleTheme } = useTheme();
+export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const { currentRole, currentUser, setCurrentRole } = useRole();
   const { projects, tasks, contentItems, users, notifications, markNotificationRead, markAllNotificationsRead, unreadNotificationCount } = useAppState();
   const router = useRouter();
+  
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  
   const pathname = usePathname();
   const pageInfo = pageTitles[pathname] || { title: 'TeamOS AI' };
   const currentRoleConfig = roleConfig[currentRole];
+  
   const searchRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
-
-  const greeting = (() => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  })();
 
   // ─── Search Results ─────────────────────────────────────────────────────
   const searchResults = useMemo<SearchResult[]>(() => {
@@ -84,32 +60,28 @@ export default function Header() {
     const q = searchQuery.toLowerCase();
     const results: SearchResult[] = [];
 
-    // Search projects
     projects.filter(p => p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q))
       .slice(0, 3)
-      .forEach(p => results.push({ id: p.id, title: p.name, category: 'Projects', subtitle: p.status, link: '/projects', icon: FolderKanban }));
+      .forEach(p => results.push({ id: p.id, title: p.name, category: 'Projects', subtitle: p.status, link: '/projects', icon: 'folder' }));
 
-    // Search tasks
     tasks.filter(t => t.title.toLowerCase().includes(q) || t.projectName.toLowerCase().includes(q))
       .slice(0, 3)
-      .forEach(t => results.push({ id: t.id, title: t.title, category: 'Tasks', subtitle: t.projectName, link: '/tasks', icon: FileText }));
+      .forEach(t => results.push({ id: t.id, title: t.title, category: 'Tasks', subtitle: t.projectName, link: '/tasks', icon: 'description' }));
 
-    // Search content
     contentItems.filter(c => c.title.toLowerCase().includes(q))
       .slice(0, 3)
-      .forEach(c => results.push({ id: c.id, title: c.title, category: 'Content', subtitle: `${c.platform} • ${c.type}`, link: '/content-calendar', icon: CalendarDays }));
+      .forEach(c => results.push({ id: c.id, title: c.title, category: 'Content', subtitle: `${c.platform} • ${c.type}`, link: '/content-calendar', icon: 'calendar_today' }));
 
-    // Search people
     users.filter(u => u.name.toLowerCase().includes(q) || u.department.toLowerCase().includes(q))
       .slice(0, 3)
-      .forEach(u => results.push({ id: u.id, title: u.name, category: 'People', subtitle: `${u.role} • ${u.department}`, link: '/settings', icon: Users }));
+      .forEach(u => results.push({ id: u.id, title: u.name, category: 'People', subtitle: `${u.role} • ${u.department}`, link: '/settings', icon: 'group' }));
 
     return results;
   }, [searchQuery, projects, tasks, contentItems, users]);
 
   const showSearchResults = searchFocused && searchQuery.length >= 2;
 
-  // Close search on click outside
+  // Click outside to close Search
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -120,7 +92,7 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  // Close notifications on click outside
+  // Click outside to close Notifications
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
@@ -154,7 +126,6 @@ export default function Header() {
     setSearchFocused(false);
   };
 
-  // Group search results by category
   const groupedResults = useMemo(() => {
     const groups: Record<string, SearchResult[]> = {};
     searchResults.forEach(r => {
@@ -164,253 +135,146 @@ export default function Header() {
     return groups;
   }, [searchResults]);
 
-  // Notification type colors
-  const notifTypeConfig = {
-    success: { icon: '✅', color: 'text-emerald-400' },
-    info: { icon: 'ℹ️', color: 'text-blue-400' },
-    warning: { icon: '⚠️', color: 'text-amber-400' },
-    error: { icon: '❌', color: 'text-red-400' },
-  };
-
   return (
-    <header
-      className={cn(
-        'sticky top-0 z-40 flex h-16 items-center justify-between gap-4 border-b px-6 transition-colors',
-        theme === 'dark'
-          ? 'bg-[#0d0d14]/80 backdrop-blur-xl border-white/[0.05]'
-          : 'bg-white/80 backdrop-blur-xl border-gray-200'
-      )}
-    >
-      {/* Left: Page Title & Greeting */}
-      <div className="flex min-w-0 flex-col">
-        <h1
-          className={cn(
-            'text-lg font-bold tracking-tight',
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          )}
-        >
-          {pageInfo.title}
-        </h1>
-        <p
-          className={cn(
-            'text-xs',
-            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-          )}
-        >
-          {pathname === '/' ? `${greeting}, ${currentUser.name.split(' ')[0]}` : pageInfo.subtitle}
-        </p>
-      </div>
-
-      {/* Center: Global Search */}
-      <div
-        ref={searchRef}
-        className={cn(
-          'relative hidden md:flex items-center transition-all duration-300 ease-out',
-          searchFocused ? 'w-[420px]' : 'w-[340px]'
-        )}
+    <header className="h-16 flex justify-between items-center px-gutter shrink-0 bg-surface/80 backdrop-blur-md z-10 sticky top-0 border-b border-outline-variant/30">
+      {/* Mobile Menu Toggle */}
+      <button 
+        onClick={onMenuClick}
+        className="md:hidden text-on-surface-variant hover:text-primary transition-colors"
       >
-        <Search
-          className={cn(
-            'absolute left-3.5 h-4 w-4 pointer-events-none transition-colors z-10',
-            searchFocused
-              ? theme === 'dark'
-                ? 'text-violet-400'
-                : 'text-violet-500'
-              : theme === 'dark'
-                ? 'text-gray-500'
-                : 'text-gray-400'
-          )}
-        />
-        <input
-          type="text"
-          placeholder="Search anything…"
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-          onFocus={() => setSearchFocused(true)}
-          className={cn(
-            'h-9 w-full rounded-xl border pl-10 pr-20 text-sm outline-none transition-all duration-200 placeholder:text-gray-500',
-            theme === 'dark'
-              ? 'bg-white/[0.04] border-white/[0.08] text-white focus:border-violet-500/40 focus:bg-white/[0.06] focus:ring-1 focus:ring-violet-500/20'
-              : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-violet-300 focus:bg-white focus:ring-1 focus:ring-violet-200'
-          )}
-        />
-        {searchQuery ? (
-          <button
-            onClick={() => { setSearchQuery(''); }}
-            className={cn(
-              'absolute right-3 flex items-center justify-center rounded-md p-1 transition-colors',
-              theme === 'dark' ? 'text-gray-500 hover:text-white' : 'text-gray-400 hover:text-gray-600'
-            )}
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        ) : (
-          <div
-            className={cn(
-              'absolute right-3 flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-medium',
-              theme === 'dark'
-                ? 'border-white/10 bg-white/[0.05] text-gray-500'
-                : 'border-gray-200 bg-gray-100 text-gray-400'
-            )}
-          >
-            <Command className="h-3 w-3" />
-            <span>K</span>
-          </div>
-        )}
+        <span className="material-symbols-outlined">menu</span>
+      </button>
 
-        {/* Search Results Dropdown */}
-        {showSearchResults && (
-          <div
-            className={cn(
-              'absolute top-full left-0 right-0 mt-2 rounded-xl border shadow-2xl overflow-hidden',
-              theme === 'dark'
-                ? 'bg-[#16161f] border-white/[0.08]'
-                : 'bg-white border-gray-200'
-            )}
-          >
-            {searchResults.length === 0 ? (
-              <div className="px-4 py-8 text-center">
-                <Search className={cn('h-8 w-8 mx-auto mb-2', theme === 'dark' ? 'text-gray-600' : 'text-gray-300')} />
-                <p className={cn('text-sm', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
-                  No results for &quot;{searchQuery}&quot;
-                </p>
-              </div>
-            ) : (
-              <div className="max-h-80 overflow-y-auto py-1.5">
-                {Object.entries(groupedResults).map(([category, results]) => (
-                  <div key={category}>
-                    <p className={cn(
-                      'px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wider',
-                      theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                    )}>
-                      {category}
-                    </p>
-                    {results.map(result => (
-                      <button
-                        key={result.id}
-                        onClick={() => handleSearchResultClick(result)}
-                        className={cn(
-                          'flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors',
-                          theme === 'dark'
-                            ? 'hover:bg-white/[0.04]'
-                            : 'hover:bg-gray-50'
-                        )}
-                      >
-                        <div className={cn(
-                          'flex h-8 w-8 items-center justify-center rounded-lg',
-                          theme === 'dark' ? 'bg-white/[0.06]' : 'bg-gray-100'
-                        )}>
-                          <result.icon className={cn('h-4 w-4', theme === 'dark' ? 'text-gray-400' : 'text-gray-500')} />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className={cn('text-sm font-medium truncate', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
-                            {result.title}
-                          </p>
-                          {result.subtitle && (
-                            <p className={cn('text-xs truncate', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
-                              {result.subtitle}
-                            </p>
-                          )}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+      {/* Title */}
+      <div className="font-headline-md text-headline-md font-bold text-on-surface hidden md:block">
+        {pageInfo.title}
       </div>
 
-      {/* Right: Actions */}
-      <div className="flex items-center gap-1.5">
-        {/* Quick Add */}
-        <button
-          className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-600/20 transition-all hover:shadow-violet-600/30 hover:scale-105 active:scale-95"
-          title="Quick Add"
-        >
-          <Plus className="h-4 w-4" strokeWidth={2.5} />
-        </button>
+      <div className="flex items-center gap-4 ml-auto">
+        {/* Search Bar */}
+        <div ref={searchRef} className="relative hidden sm:block">
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+          <input 
+            type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            className="bg-surface-container border border-outline-variant rounded-lg py-1.5 pl-10 pr-4 w-64 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-body-sm placeholder:text-on-surface-variant/50" 
+            placeholder="Search across TeamOS..." 
+          />
+          {/* Search Dropdown */}
+          {showSearchResults && (
+            <div className="absolute top-full left-0 right-0 mt-2 rounded-xl border border-outline-variant bg-surface-container shadow-xl overflow-hidden z-50">
+              {searchResults.length === 0 ? (
+                <div className="px-4 py-8 text-center">
+                  <span className="material-symbols-outlined text-[32px] text-on-surface-variant mb-2">search_off</span>
+                  <p className="text-body-sm text-on-surface-variant">No results for &quot;{searchQuery}&quot;</p>
+                </div>
+              ) : (
+                <div className="max-h-80 overflow-y-auto py-2">
+                  {Object.entries(groupedResults).map(([category, results]) => (
+                    <div key={category}>
+                      <p className="px-4 py-1 text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
+                        {category}
+                      </p>
+                      {results.map(result => (
+                        <button
+                          key={result.id}
+                          onClick={() => handleSearchResultClick(result)}
+                          className="flex w-full items-center gap-3 px-4 py-2 text-left hover:bg-surface transition-colors"
+                        >
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface">
+                            <span className="material-symbols-outlined text-[16px] text-on-surface-variant">{result.icon}</span>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-body-sm font-medium text-on-surface truncate">{result.title}</p>
+                            {result.subtitle && <p className="text-[11px] text-on-surface-variant truncate">{result.subtitle}</p>}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
-        {/* Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className={cn(
-            'flex h-8 w-8 items-center justify-center rounded-xl transition-all hover:scale-105 active:scale-95',
-            theme === 'dark'
-              ? 'text-gray-400 hover:bg-white/[0.06] hover:text-yellow-400'
-              : 'text-gray-500 hover:bg-gray-100 hover:text-amber-500'
+        {/* Role Switcher */}
+        <div className="relative">
+          <button
+            onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
+            className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 hover:bg-surface-container transition-colors"
+          >
+            <span className={cn('flex items-center gap-1.5 rounded text-[11px] font-semibold px-2 py-0.5', currentRoleConfig.bg, currentRoleConfig.color)}>
+              <span className="material-symbols-outlined text-[14px]">{currentRoleConfig.icon}</span>
+              {currentRoleConfig.label}
+            </span>
+            <span className="material-symbols-outlined text-[16px] text-on-surface-variant">arrow_drop_down</span>
+          </button>
+
+          {roleDropdownOpen && (
+            <>
+              <div className="fixed inset-0 z-40" onClick={() => setRoleDropdownOpen(false)} />
+              <div className="absolute right-0 top-full z-50 mt-1.5 w-48 rounded-xl border border-outline-variant bg-surface-container shadow-xl p-1.5">
+                <p className="px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
+                  Switch Role (Demo)
+                </p>
+                {(['Manager', 'Leader', 'Staff'] as UserRole[]).map((role) => {
+                  const config = roleConfig[role];
+                  const isActive = currentRole === role;
+                  return (
+                    <button
+                      key={role}
+                      onClick={() => { setCurrentRole(role); setRoleDropdownOpen(false); }}
+                      className={cn(
+                        'flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-body-sm transition-colors',
+                        isActive ? 'bg-surface text-on-surface' : 'text-on-surface-variant hover:bg-surface hover:text-on-surface'
+                      )}
+                    >
+                      <span className={cn('flex h-6 w-6 items-center justify-center rounded-md', config.bg, config.color)}>
+                        <span className="material-symbols-outlined text-[14px]">{config.icon}</span>
+                      </span>
+                      {config.label}
+                      {isActive && <span className="ml-auto text-[10px] text-primary">●</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
           )}
-          title="Toggle theme"
-        >
-          {theme === 'dark' ? (
-            <Sun className="h-4 w-4" />
-          ) : (
-            <Moon className="h-4 w-4" />
-          )}
-        </button>
+        </div>
 
         {/* Notifications */}
         <div ref={notifRef} className="relative">
-          <button
+          <button 
             onClick={() => setNotifOpen(!notifOpen)}
-            className={cn(
-              'relative flex h-8 w-8 items-center justify-center rounded-xl transition-all hover:scale-105 active:scale-95',
-              theme === 'dark'
-                ? 'text-gray-400 hover:bg-white/[0.06] hover:text-white'
-                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
-            )}
-            title="Notifications"
+            className="text-on-surface-variant hover:text-primary transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container relative"
           >
-            <Bell className="h-4 w-4" />
-            {/* Unread badge */}
+            <span className="material-symbols-outlined text-[20px]">notifications</span>
             {unreadNotificationCount > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-lg shadow-red-500/30">
-                {unreadNotificationCount}
-              </span>
+              <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
             )}
           </button>
 
-          {/* Notifications Dropdown */}
           {notifOpen && (
-            <div
-              className={cn(
-                'absolute right-0 top-full z-50 mt-2 w-80 rounded-xl border shadow-2xl overflow-hidden',
-                theme === 'dark'
-                  ? 'bg-[#16161f] border-white/[0.08]'
-                  : 'bg-white border-gray-200'
-              )}
-            >
-              {/* Header */}
-              <div className={cn(
-                'flex items-center justify-between px-4 py-3 border-b',
-                theme === 'dark' ? 'border-white/[0.06]' : 'border-gray-100'
-              )}>
-                <h3 className={cn('text-sm font-bold', theme === 'dark' ? 'text-white' : 'text-gray-900')}>
-                  Notifications
-                </h3>
+            <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-xl border border-outline-variant bg-surface-container shadow-2xl overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant/30">
+                <h3 className="text-body-sm font-bold text-on-surface">Notifications</h3>
                 {unreadNotificationCount > 0 && (
-                  <button
-                    onClick={markAllNotificationsRead}
-                    className="text-[11px] font-medium text-violet-400 hover:text-violet-300 transition-colors"
-                  >
+                  <button onClick={markAllNotificationsRead} className="text-[11px] font-medium text-primary hover:text-primary-fixed transition-colors">
                     Mark all read
                   </button>
                 )}
               </div>
-
-              {/* List */}
               <div className="max-h-72 overflow-y-auto">
                 {notifications.length === 0 ? (
-                  <div className="px-4 py-8 text-center">
-                    <Bell className={cn('h-8 w-8 mx-auto mb-2', theme === 'dark' ? 'text-gray-600' : 'text-gray-300')} />
-                    <p className={cn('text-sm', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
-                      No notifications
-                    </p>
+                  <div className="px-4 py-8 text-center text-on-surface-variant">
+                    <span className="material-symbols-outlined text-[32px] mb-2">notifications_off</span>
+                    <p className="text-body-sm">No notifications</p>
                   </div>
                 ) : (
                   notifications.slice(0, 8).map(notif => {
-                    const config = notifTypeConfig[notif.type];
                     const timeAgo = getTimeAgo(notif.timestamp);
                     return (
                       <button
@@ -422,42 +286,18 @@ export default function Header() {
                         }}
                         className={cn(
                           'flex w-full items-start gap-3 px-4 py-3 text-left transition-colors',
-                          !notif.read
-                            ? theme === 'dark'
-                              ? 'bg-violet-500/[0.04]'
-                              : 'bg-violet-50/50'
-                            : '',
-                          theme === 'dark'
-                            ? 'hover:bg-white/[0.04]'
-                            : 'hover:bg-gray-50'
+                          !notif.read ? 'bg-primary/5' : 'hover:bg-surface'
                         )}
                       >
-                        <span className="text-base mt-0.5 shrink-0">{config.icon}</span>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <p className={cn(
-                              'text-sm font-medium truncate',
-                              theme === 'dark' ? 'text-white' : 'text-gray-900',
-                              notif.read && 'opacity-60'
-                            )}>
+                            <p className={cn('text-body-sm font-medium truncate', notif.read ? 'text-on-surface-variant' : 'text-on-surface')}>
                               {notif.title}
                             </p>
-                            {!notif.read && (
-                              <span className="h-1.5 w-1.5 rounded-full bg-violet-500 shrink-0" />
-                            )}
+                            {!notif.read && <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />}
                           </div>
-                          <p className={cn(
-                            'text-xs mt-0.5 line-clamp-2',
-                            theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-                          )}>
-                            {notif.message}
-                          </p>
-                          <p className={cn(
-                            'text-[10px] mt-1',
-                            theme === 'dark' ? 'text-gray-600' : 'text-gray-300'
-                          )}>
-                            {timeAgo}
-                          </p>
+                          <p className="text-[12px] mt-0.5 line-clamp-2 text-on-surface-variant">{notif.message}</p>
+                          <p className="text-[10px] mt-1 text-on-surface-variant/70">{timeAgo}</p>
                         </div>
                       </button>
                     );
@@ -468,114 +308,15 @@ export default function Header() {
           )}
         </div>
 
-        {/* Divider */}
-        <div
-          className={cn(
-            'mx-1.5 h-6 w-px',
-            theme === 'dark' ? 'bg-white/[0.08]' : 'bg-gray-200'
-          )}
-        />
-
-        {/* Role Switcher */}
-        <div className="relative">
-          <button
-            onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-            className={cn(
-              'flex items-center gap-2 rounded-xl px-2.5 py-1.5 transition-all',
-              theme === 'dark'
-                ? 'hover:bg-white/[0.06]'
-                : 'hover:bg-gray-100'
-            )}
-          >
-            <span className={cn('flex h-6 items-center gap-1.5 rounded-lg px-2 py-0.5 text-[11px] font-semibold', currentRoleConfig.bg, currentRoleConfig.color)}>
-              <currentRoleConfig.icon className="h-3 w-3" />
-              {currentRoleConfig.label}
-            </span>
-            <ChevronDown className={cn('h-3 w-3', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')} />
-          </button>
-
-          {roleDropdownOpen && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => setRoleDropdownOpen(false)} />
-              <div
-                className={cn(
-                  'absolute right-0 top-full z-50 mt-1.5 w-48 rounded-xl border p-1.5 shadow-xl',
-                  theme === 'dark'
-                    ? 'bg-[#16161f] border-white/[0.08]'
-                    : 'bg-white border-gray-200'
-                )}
-              >
-                <p className={cn('px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider', theme === 'dark' ? 'text-gray-500' : 'text-gray-400')}>
-                  Switch Role (Demo)
-                </p>
-                {(['Manager', 'Leader', 'Staff'] as UserRole[]).map((role) => {
-                  const config = roleConfig[role];
-                  const isActive = currentRole === role;
-                  return (
-                    <button
-                      key={role}
-                      onClick={() => { setCurrentRole(role); setRoleDropdownOpen(false); }}
-                      className={cn(
-                        'flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-all',
-                        isActive
-                          ? theme === 'dark'
-                            ? 'bg-white/[0.08] text-white'
-                            : 'bg-gray-100 text-gray-900'
-                          : theme === 'dark'
-                            ? 'text-gray-400 hover:bg-white/[0.04] hover:text-white'
-                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      )}
-                    >
-                      <span className={cn('flex h-6 w-6 items-center justify-center rounded-md', config.bg)}>
-                        <config.icon className={cn('h-3.5 w-3.5', config.color)} />
-                      </span>
-                      {config.label}
-                      {isActive && <span className="ml-auto text-[10px] text-emerald-400">●</span>}
-                    </button>
-                  );
-                })}
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Profile */}
-        <button
-          className={cn(
-            'flex items-center gap-2.5 rounded-xl px-2 py-1.5 transition-all',
-            theme === 'dark'
-              ? 'hover:bg-white/[0.04]'
-              : 'hover:bg-gray-50'
-          )}
-        >
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-[11px] font-bold text-white shadow-md shadow-violet-600/20">
-            {currentUser.name.split(' ').map(n => n[0]).join('')}
-          </div>
-          <div className="hidden lg:flex flex-col items-start">
-            <span
-              className={cn(
-                'text-sm font-semibold leading-tight',
-                theme === 'dark' ? 'text-white' : 'text-gray-900'
-              )}
-            >
-              {currentUser.name}
-            </span>
-            <span
-              className={cn(
-                'text-[11px] leading-tight',
-                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
-              )}
-            >
-              {currentUser.department}
-            </span>
-          </div>
+        {/* User Profile */}
+        <button className="w-8 h-8 rounded-lg overflow-hidden border border-outline-variant hover:border-primary transition-colors flex items-center justify-center bg-gradient-to-br from-primary to-inverse-primary text-[11px] font-bold text-white">
+          {currentUser.name.split(' ').map(n => n[0]).join('')}
         </button>
       </div>
     </header>
   );
 }
 
-// ─── Helper: relative time ──────────────────────────────────────────────────
 function getTimeAgo(timestamp: string): string {
   const now = new Date();
   const date = new Date(timestamp);

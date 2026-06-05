@@ -451,10 +451,9 @@ function WeekView({
                           <span className="text-[9px] text-[var(--text-muted)]">{item.platform}</span>
                         </div>
                         <div className="flex items-center gap-1 mt-1">
-                          <div className="w-4 h-4 rounded-full flex items-center justify-center text-[7px] font-bold bg-gradient-to-br from-indigo-500 to-violet-500 text-white">
+                          <div className="w-4 h-4 rounded-full flex items-center justify-center bg-[var(--card-bg)] text-[8px] font-bold shadow-sm">
                             {getInitials(item.assignee.name)}
                           </div>
-                          <StatusBadge status={item.status} />
                         </div>
                       </div>
                     );
@@ -469,13 +468,12 @@ function WeekView({
   );
 }
 
-/* ══════════════════════════ LIST VIEW ══════════════════════════ */
-
 function ListView({
   items,
   canApprove,
-  canEdit,
-  canSubmit,
+  canEditAll,
+  canEditOwn,
+  canSubmitIdea,
   currentUserId,
   currentRole,
   onApprove,
@@ -484,8 +482,9 @@ function ListView({
 }: {
   items: ContentItem[];
   canApprove: boolean;
-  canEdit: boolean;
-  canSubmit: boolean;
+  canEditAll: boolean;
+  canEditOwn: boolean;
+  canSubmitIdea: boolean;
   currentUserId: string;
   currentRole: string;
   onApprove: (id: string) => void;
@@ -493,9 +492,9 @@ function ListView({
   onSubmit: (id: string) => void;
 }) {
   return (
-    <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] overflow-hidden flex flex-col">
+    <div className="flex flex-col h-full">
       {/* Table header */}
-      <div className="grid grid-cols-[2fr_100px_100px_140px_120px_110px_140px] gap-3 px-5 py-3 border-b border-[var(--card-border)] bg-[var(--bg-tertiary)] text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+      <div className="grid grid-cols-[2fr_100px_100px_140px_120px_110px_140px] gap-3 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
         <span>Title</span>
         <span>Type</span>
         <span>Platform</span>
@@ -506,88 +505,126 @@ function ListView({
       </div>
 
       {/* Rows */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto flex flex-col gap-2.5 pb-4 px-1">
         {items.map((item) => (
           <div
             key={item.id}
-            className="group grid grid-cols-[2fr_100px_100px_140px_120px_110px_140px] gap-3 items-center px-5 py-3 border-b border-[var(--card-border)] hover:bg-[var(--card-hover)] transition-colors"
+            className="group grid grid-cols-[2fr_100px_100px_140px_120px_110px_140px] gap-3 items-center px-4 py-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:shadow-md hover:border-indigo-500/30 hover:-translate-y-0.5 transition-all duration-300"
           >
             {/* Title */}
-            <div className="flex items-center gap-2 min-w-0">
-              <span className={cn('shrink-0', CONTENT_TYPE_COLORS[item.type].text)}>
+            <div className="flex items-center gap-3 min-w-0">
+              <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center shrink-0', CONTENT_TYPE_COLORS[item.type].bg, CONTENT_TYPE_COLORS[item.type].text)}>
                 {CONTENT_TYPE_ICONS[item.type]}
-              </span>
-              <span className="text-sm font-medium text-[var(--text-primary)] truncate">
-                {item.title}
-              </span>
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-sm font-semibold text-[var(--text-primary)] truncate group-hover:text-indigo-500 transition-colors">
+                  {item.title}
+                </span>
+                <span className="text-[11px] text-[var(--text-muted)] truncate mt-0.5">
+                  ID: {item.id.split('-')[0]}
+                </span>
+              </div>
             </div>
 
             {/* Type */}
-            <TypeBadge type={item.type} />
+            <div>
+              <TypeBadge type={item.type} />
+            </div>
 
             {/* Platform */}
-            <div className="flex items-center gap-1.5 text-xs text-[var(--text-secondary)]">
+            <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)]">
               {PLATFORM_ICONS[item.platform]}
               {item.platform}
             </div>
 
             {/* Scheduled */}
-            <div className="text-xs text-[var(--text-secondary)] tabular-nums">
-              <span>{new Date(item.scheduledDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-              <span className="text-[var(--text-muted)] ml-1">{item.scheduledTime}</span>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg border border-[var(--card-border)] bg-[var(--bg-tertiary)] flex flex-col items-center justify-center shrink-0">
+                <span className="text-[9px] font-semibold text-[var(--text-muted)] uppercase leading-none mb-0.5">
+                  {new Date(item.scheduledDate).toLocaleDateString('en-US', { month: 'short' })}
+                </span>
+                <span className="text-xs font-bold text-[var(--text-primary)] leading-none">
+                  {new Date(item.scheduledDate).getDate()}
+                </span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-medium text-[var(--text-secondary)]">
+                  {new Date(item.scheduledDate).toLocaleDateString('en-US', { weekday: 'short' })}
+                </span>
+                <span className="text-[11px] text-[var(--text-muted)]">
+                  {item.scheduledTime}
+                </span>
+              </div>
             </div>
 
             {/* Assignee */}
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-semibold bg-gradient-to-br from-indigo-500 to-violet-500 text-white">
+              <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold bg-gradient-to-br from-indigo-500 to-violet-500 text-white shadow-sm ring-2 ring-[var(--card-bg)]">
                 {getInitials(item.assignee.name)}
               </div>
-              <span className="text-xs text-[var(--text-secondary)] truncate">
-                {item.assignee.name.split(' ')[0]}
-              </span>
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-medium text-[var(--text-secondary)] truncate">
+                  {item.assignee.name}
+                </span>
+              </div>
             </div>
 
             {/* Status */}
-            <StatusBadge status={item.status} />
+            <div>
+              <StatusBadge status={item.status} />
+            </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-1 justify-end">
+            <div className="flex items-center gap-1.5 justify-end opacity-60 group-hover:opacity-100 transition-opacity">
               {canApprove && item.status === 'PendingReview' && (
                 <>
                   <button
                     onClick={() => onApprove(item.id)}
-                    className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-900/60 transition-colors"
+                    className="w-8 h-8 rounded-full flex items-center justify-center bg-emerald-100 text-emerald-600 hover:bg-emerald-500 hover:text-white dark:bg-emerald-500/20 dark:text-emerald-400 dark:hover:bg-emerald-500 dark:hover:text-white transition-all shadow-sm"
                     title="Approve"
                   >
-                    <Check className="w-3 h-3" />
-                    Approve
+                    <Check className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => onReject(item.id)}
-                    className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/60 transition-colors"
+                    className="w-8 h-8 rounded-full flex items-center justify-center bg-rose-100 text-rose-600 hover:bg-rose-500 hover:text-white dark:bg-rose-500/20 dark:text-rose-400 dark:hover:bg-rose-500 dark:hover:text-white transition-all shadow-sm"
                     title="Reject"
                   >
-                    <X className="w-3 h-3" />
-                    Reject
+                    <X className="w-4 h-4" />
                   </button>
                 </>
               )}
-              {canEdit && (
-                (currentRole !== 'Staff' || item.assignee.id === currentUserId) && (
+              {(canEditAll || (canEditOwn && item.assignee.id === currentUserId && (item.status === 'Draft' || item.status === 'PendingReview'))) && (
                   <button
-                    className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold text-[var(--text-muted)] hover:text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] transition-colors"
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-all"
                     title="Edit"
                   >
-                    <Edit3 className="w-3 h-3" />
-                    Edit
+                    <Edit3 className="w-4 h-4" />
                   </button>
-                )
               )}
-              {canSubmit && item.status === 'Draft' &&
+              {canSubmitIdea && item.status === 'Draft' &&
                 (currentRole !== 'Staff' || item.assignee.id === currentUserId) && (
                 <button
                   onClick={() => onSubmit(item.id)}
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold text-indigo-500 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-indigo-500 hover:bg-indigo-500 hover:text-white dark:hover:bg-indigo-500/20 transition-all shadow-sm"
+                  title={currentRole === 'Leader' ? 'Submit to Manager' : 'Submit to Leader'}
+                >
+                  <Send className="w-4 h-4 -ml-0.5" />
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+        {items.length === 0 && (
+          <div className="flex flex-col items-center justify-center h-48 border-2 border-dashed border-[var(--card-border)] rounded-2xl bg-[var(--card-bg)] text-sm text-[var(--text-muted)] mt-4">
+            <List className="w-8 h-8 mb-3 text-[var(--text-muted)] opacity-50" />
+            <p>No content items match your filters.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}enter gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold text-indigo-500 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors"
                   title={currentRole === 'Leader' ? 'Submit to Manager' : 'Submit to Leader'}
                 >
                   <Send className="w-3 h-3" />
@@ -764,9 +801,10 @@ export default function ContentCalendarPage() {
 
   // Permissions
   const canApprove = hasPermission('content.approve');
-  const canCreate = hasPermission('content.create');
-  const canEdit = hasPermission('content.edit') || currentRole === 'Staff'; // Staff can edit own
-  const canSubmit = hasPermission('content.submit');
+  const canCreateCalendar = hasPermission('content.create_calendar');
+  const canSubmitIdea = hasPermission('content.submit_idea');
+  const canEditAll = hasPermission('content.edit_all');
+  const canEditOwn = hasPermission('content.edit_own');
   const canViewAll = hasPermission('content.view_all');
   const canViewTeam = hasPermission('content.view_team');
 
@@ -855,22 +893,32 @@ export default function ContentCalendarPage() {
           </div>
 
           {/* Primary action (role-based) */}
-          {currentRole === 'Manager' ? (
-            pendingCount > 0 && (
+          <div className="flex items-center gap-2">
+            {canApprove && pendingCount > 0 && (
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-amber-500/30 bg-amber-500/[0.08] text-sm font-semibold text-amber-500">
                 <AlertCircle className="w-4 h-4" />
                 {pendingCount} Pending
               </div>
-            )
-          ) : (
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all active:scale-[0.97]"
-            >
-              <Plus className="w-4 h-4" />
-              {currentRole === 'Leader' ? 'Create & Schedule' : 'Create Draft'}
-            </button>
-          )}
+            )}
+            {canCreateCalendar && (
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all active:scale-[0.97]"
+              >
+                <Plus className="w-4 h-4" />
+                Tạo Khung Lịch
+              </button>
+            )}
+            {canSubmitIdea && !canCreateCalendar && (
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all active:scale-[0.97]"
+              >
+                <Plus className="w-4 h-4" />
+                Đề xuất Ý tưởng
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Toolbar */}
@@ -1018,8 +1066,9 @@ export default function ContentCalendarPage() {
             <ListView
               items={filteredItems}
               canApprove={canApprove}
-              canEdit={canEdit}
-              canSubmit={canSubmit}
+              canEditAll={canEditAll}
+              canEditOwn={canEditOwn}
+              canSubmitIdea={canSubmitIdea}
               currentUserId={currentUser.id}
               currentRole={currentRole}
               onApprove={handleApprove}
