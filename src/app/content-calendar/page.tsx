@@ -625,24 +625,6 @@ function ListView({
       </div>
     </div>
   );
-}enter gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold text-indigo-500 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors"
-                  title={currentRole === 'Leader' ? 'Submit to Manager' : 'Submit to Leader'}
-                >
-                  <Send className="w-3 h-3" />
-                  Submit
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
-        {items.length === 0 && (
-          <div className="flex items-center justify-center h-40 text-sm text-[var(--text-muted)]">
-            No content items match your filters.
-          </div>
-        )}
-      </div>
-    </div>
-  );
 }
 
 /* ══════════════════════════ RIGHT SIDEBAR ══════════════════════════ */

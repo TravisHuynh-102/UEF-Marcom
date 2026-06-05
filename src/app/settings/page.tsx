@@ -538,7 +538,7 @@ function IntegrationsTab() {
 // APPEARANCE TAB
 // ═══════════════════════════════════════════════════════════════════════════════
 function AppearanceTab() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [accent, setAccent] = useState('Indigo');
   const [sidebar, setSidebar] = useState<'expanded' | 'collapsed'>('expanded');
   const [density, setDensity] = useState<'comfortable' | 'compact'>('comfortable');
@@ -573,10 +573,7 @@ function AppearanceTab() {
             return (
               <button
                 key={m.id}
-                onClick={() => {
-                  if (m.id === 'light' && theme === 'dark') toggleTheme();
-                  if (m.id === 'dark' && theme === 'light') toggleTheme();
-                }}
+                onClick={() => setTheme(m.id as any)}
                 className={cn(
                   'flex flex-col items-center gap-3 rounded-xl border p-5 transition-all',
                   isActive
