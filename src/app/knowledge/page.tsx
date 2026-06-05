@@ -1,0 +1,596 @@
+'use client';
+
+import { useState, useMemo } from 'react';
+import { cn } from '@/lib/utils';
+import { getInitials } from '@/lib/utils';
+import {
+  BookOpen,
+  Search,
+  Plus,
+  Grid,
+  List,
+  Eye,
+  Bookmark,
+  BookMarked,
+  Clock,
+  MoreHorizontal,
+  FileText,
+  ChevronRight,
+  Star,
+  Filter,
+} from 'lucide-react';
+
+/* ─── Types ───────────────────────────────────────────────── */
+
+interface Document {
+  id: string;
+  emoji: string;
+  title: string;
+  type: string;
+  typeColor: string;
+  category: string;
+  author: string;
+  authorInitials: string;
+  authorGradient: string;
+  updated: string;
+  views: number;
+}
+
+interface ActivityItem {
+  id: string;
+  user: string;
+  action: string;
+  target: string;
+  time: string;
+  userInitials: string;
+  userGradient: string;
+}
+
+/* ─── Static Data ─────────────────────────────────────────── */
+
+const categories = ['All', 'Engineering', 'Design', 'Marketing', 'Company', 'Onboarding'];
+
+const documents: Document[] = [
+  {
+    id: 'd1',
+    emoji: '📘',
+    title: 'Engineering Onboarding Guide',
+    type: 'Guide',
+    typeColor: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300',
+    category: 'Engineering',
+    author: 'Marcus Rodriguez',
+    authorInitials: 'MR',
+    authorGradient: 'from-emerald-500 to-teal-500',
+    updated: 'Updated 2 days ago',
+    views: 12,
+  },
+  {
+    id: 'd2',
+    emoji: '🎨',
+    title: 'Brand Guidelines v3.0',
+    type: 'Reference',
+    typeColor: 'bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300',
+    category: 'Design',
+    author: 'Aisha Patel',
+    authorInitials: 'AP',
+    authorGradient: 'from-rose-500 to-pink-500',
+    updated: 'Updated 1 week ago',
+    views: 45,
+  },
+  {
+    id: 'd3',
+    emoji: '📊',
+    title: 'Q3 Marketing Strategy',
+    type: 'Strategy',
+    typeColor: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300',
+    category: 'Marketing',
+    author: 'Elena Vasquez',
+    authorInitials: 'EV',
+    authorGradient: 'from-amber-500 to-orange-500',
+    updated: 'Updated 3 days ago',
+    views: 28,
+  },
+  {
+    id: 'd4',
+    emoji: '💻',
+    title: 'API Documentation',
+    type: 'Technical',
+    typeColor: 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
+    category: 'Engineering',
+    author: 'David Kim',
+    authorInitials: 'DK',
+    authorGradient: 'from-sky-500 to-blue-500',
+    updated: 'Updated today',
+    views: 67,
+  },
+  {
+    id: 'd5',
+    emoji: '📝',
+    title: 'Meeting Notes Template',
+    type: 'Template',
+    typeColor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300',
+    category: 'Company',
+    author: 'Sarah Chen',
+    authorInitials: 'SC',
+    authorGradient: 'from-indigo-500 to-violet-500',
+    updated: 'Updated 5 days ago',
+    views: 15,
+  },
+  {
+    id: 'd6',
+    emoji: '🔄',
+    title: 'Sprint Retrospective Q2',
+    type: 'Report',
+    typeColor: 'bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-500/15 dark:text-fuchsia-300',
+    category: 'Engineering',
+    author: 'Marcus Rodriguez',
+    authorInitials: 'MR',
+    authorGradient: 'from-emerald-500 to-teal-500',
+    updated: 'Updated 1 week ago',
+    views: 22,
+  },
+  {
+    id: 'd7',
+    emoji: '🎯',
+    title: 'Design System Components',
+    type: 'Reference',
+    typeColor: 'bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300',
+    category: 'Design',
+    author: 'Priya Sharma',
+    authorInitials: 'PS',
+    authorGradient: 'from-fuchsia-500 to-purple-500',
+    updated: 'Updated 4 days ago',
+    views: 38,
+  },
+  {
+    id: 'd8',
+    emoji: '💼',
+    title: 'Sales Playbook 2026',
+    type: 'Playbook',
+    typeColor: 'bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300',
+    category: 'Marketing',
+    author: 'Alex Thompson',
+    authorInitials: 'AT',
+    authorGradient: 'from-cyan-500 to-teal-500',
+    updated: 'Updated 2 weeks ago',
+    views: 9,
+  },
+];
+
+const recentActivity: ActivityItem[] = [
+  {
+    id: 'a1',
+    user: 'David Kim',
+    action: 'updated',
+    target: 'API Documentation',
+    time: '2 hours ago',
+    userInitials: 'DK',
+    userGradient: 'from-sky-500 to-blue-500',
+  },
+  {
+    id: 'a2',
+    user: 'Elena Vasquez',
+    action: 'created',
+    target: 'Q3 Marketing Strategy',
+    time: '3 days ago',
+    userInitials: 'EV',
+    userGradient: 'from-amber-500 to-orange-500',
+  },
+  {
+    id: 'a3',
+    user: 'Priya Sharma',
+    action: 'updated',
+    target: 'Design System Components',
+    time: '4 days ago',
+    userInitials: 'PS',
+    userGradient: 'from-fuchsia-500 to-purple-500',
+  },
+  {
+    id: 'a4',
+    user: 'Marcus Rodriguez',
+    action: 'updated',
+    target: 'Engineering Onboarding Guide',
+    time: '2 days ago',
+    userInitials: 'MR',
+    userGradient: 'from-emerald-500 to-teal-500',
+  },
+  {
+    id: 'a5',
+    user: 'Sarah Chen',
+    action: 'updated',
+    target: 'Meeting Notes Template',
+    time: '5 days ago',
+    userInitials: 'SC',
+    userGradient: 'from-indigo-500 to-violet-500',
+  },
+];
+
+/* ─── Main Component ──────────────────────────────────────── */
+
+export default function KnowledgePage() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [bookmarked, setBookmarked] = useState<Set<string>>(new Set(['d4', 'd2']));
+
+  const toggleBookmark = (id: string) => {
+    setBookmarked((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const filteredDocs = useMemo(() => {
+    return documents.filter((doc) => {
+      const matchesCategory = activeCategory === 'All' || doc.category === activeCategory;
+      const matchesSearch =
+        !searchQuery ||
+        doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        doc.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        doc.author.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchesCategory && matchesSearch;
+    });
+  }, [activeCategory, searchQuery]);
+
+  return (
+    <div className="space-y-6 pb-8">
+      {/* ── Header ───────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 shadow-lg shadow-indigo-500/20">
+              <BookOpen className="w-5 h-5 text-white" />
+            </div>
+            Knowledge Hub
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 ml-[52px]">
+            Team wiki & shared documentation
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {/* Search bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+            <input
+              type="text"
+              placeholder="Search documents…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={cn(
+                'pl-9 pr-4 py-2 w-64 text-sm rounded-lg transition-all',
+                'bg-gray-50 dark:bg-white/5',
+                'border border-gray-200 dark:border-white/10',
+                'text-gray-900 dark:text-white',
+                'placeholder:text-gray-400 dark:placeholder:text-gray-500',
+                'focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/40'
+              )}
+            />
+          </div>
+
+          {/* View toggle */}
+          <div className="flex items-center rounded-lg border border-gray-200 dark:border-white/10 overflow-hidden">
+            <button
+              onClick={() => setViewMode('grid')}
+              className={cn(
+                'p-2 transition-colors',
+                viewMode === 'grid'
+                  ? 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+              )}
+            >
+              <Grid className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={cn(
+                'p-2 transition-colors',
+                viewMode === 'list'
+                  ? 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+              )}
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* New Document button */}
+          <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all">
+            <Plus className="w-4 h-4" />
+            New Document
+          </button>
+        </div>
+      </div>
+
+      {/* ── Categories Bar ───────────────────────────────── */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={cn(
+              'flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all',
+              activeCategory === cat
+                ? 'bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-md shadow-indigo-500/20'
+                : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10'
+            )}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Documents ────────────────────────────────────── */}
+      {filteredDocs.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20">
+          <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600 mb-3" />
+          <p className="text-sm text-gray-500 dark:text-gray-400">No documents found</p>
+        </div>
+      ) : viewMode === 'grid' ? (
+        /* ── Grid View ───────────────────────────────────── */
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          {filteredDocs.map((doc) => (
+            <div
+              key={doc.id}
+              className={cn(
+                'group relative rounded-xl p-5 transition-all duration-200 cursor-pointer',
+                'bg-white dark:bg-[#12121a]',
+                'border border-gray-100 dark:border-white/5',
+                'shadow-sm dark:shadow-none',
+                'hover:shadow-lg hover:-translate-y-0.5 dark:hover:border-white/10'
+              )}
+            >
+              {/* Top row: emoji + actions */}
+              <div className="flex items-start justify-between mb-3">
+                <span className="text-3xl leading-none">{doc.emoji}</span>
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleBookmark(doc.id);
+                    }}
+                    className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                  >
+                    {bookmarked.has(doc.id) ? (
+                      <BookMarked className="w-4 h-4 text-amber-500" />
+                    ) : (
+                      <Bookmark className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                    )}
+                  </button>
+                  <button
+                    onClick={(e) => e.stopPropagation()}
+                    className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                  >
+                    <MoreHorizontal className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Title */}
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                {doc.title}
+              </h3>
+
+              {/* Type badge */}
+              <span
+                className={cn(
+                  'inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium mb-3',
+                  doc.typeColor
+                )}
+              >
+                {doc.type}
+              </span>
+
+              {/* Author */}
+              <div className="flex items-center gap-2 mb-3">
+                <div
+                  className={cn(
+                    'flex items-center justify-center w-6 h-6 rounded-full text-white text-[10px] font-semibold bg-gradient-to-br',
+                    doc.authorGradient
+                  )}
+                >
+                  {doc.authorInitials}
+                </div>
+                <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                  {doc.author}
+                </span>
+              </div>
+
+              {/* Footer: updated + views */}
+              <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-white/5">
+                <span className="text-xs text-gray-400 dark:text-gray-500">{doc.updated}</span>
+                <div className="flex items-center gap-1">
+                  <Eye className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+                  <span className="text-xs text-gray-400 dark:text-gray-500">{doc.views}</span>
+                </div>
+              </div>
+
+              {/* Bookmark indicator (always visible when bookmarked) */}
+              {bookmarked.has(doc.id) && (
+                <div className="absolute top-0 right-4">
+                  <div className="w-5 h-7 bg-gradient-to-b from-amber-400 to-amber-500 rounded-b-sm shadow-sm" />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        /* ── List View ───────────────────────────────────── */
+        <div
+          className={cn(
+            'rounded-xl overflow-hidden',
+            'bg-white dark:bg-[#12121a]',
+            'border border-gray-100 dark:border-white/5',
+            'shadow-sm dark:shadow-none'
+          )}
+        >
+          {/* List header */}
+          <div className="grid grid-cols-[1fr_100px_140px_80px_80px_40px] items-center gap-4 px-5 py-3 border-b border-gray-100 dark:border-white/5">
+            <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+              Document
+            </span>
+            <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+              Type
+            </span>
+            <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+              Author
+            </span>
+            <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+              Updated
+            </span>
+            <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider text-right">
+              Views
+            </span>
+            <span />
+          </div>
+          {filteredDocs.map((doc, idx) => (
+            <div
+              key={doc.id}
+              className={cn(
+                'group grid grid-cols-[1fr_100px_140px_80px_80px_40px] items-center gap-4 px-5 py-3.5 transition-colors cursor-pointer',
+                'hover:bg-gray-50 dark:hover:bg-white/[0.02]',
+                idx < filteredDocs.length - 1 && 'border-b border-gray-50 dark:border-white/[0.03]'
+              )}
+            >
+              {/* Document name */}
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="text-lg flex-shrink-0">{doc.emoji}</span>
+                <span className="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  {doc.title}
+                </span>
+                {bookmarked.has(doc.id) && (
+                  <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500 flex-shrink-0" />
+                )}
+              </div>
+              {/* Type */}
+              <span
+                className={cn(
+                  'inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium w-fit',
+                  doc.typeColor
+                )}
+              >
+                {doc.type}
+              </span>
+              {/* Author */}
+              <div className="flex items-center gap-2 min-w-0">
+                <div
+                  className={cn(
+                    'flex items-center justify-center w-5 h-5 rounded-full text-white text-[9px] font-semibold bg-gradient-to-br flex-shrink-0',
+                    doc.authorGradient
+                  )}
+                >
+                  {doc.authorInitials}
+                </div>
+                <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                  {doc.author}
+                </span>
+              </div>
+              {/* Updated */}
+              <span className="text-xs text-gray-400 dark:text-gray-500 truncate">
+                {doc.updated.replace('Updated ', '')}
+              </span>
+              {/* Views */}
+              <div className="flex items-center gap-1 justify-end">
+                <Eye className="w-3 h-3 text-gray-400 dark:text-gray-500" />
+                <span className="text-xs text-gray-400 dark:text-gray-500">{doc.views}</span>
+              </div>
+              {/* Actions */}
+              <div className="flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleBookmark(doc.id);
+                  }}
+                  className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                >
+                  {bookmarked.has(doc.id) ? (
+                    <BookMarked className="w-3.5 h-3.5 text-amber-500" />
+                  ) : (
+                    <Bookmark className="w-3.5 h-3.5 text-gray-400" />
+                  )}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ── Recent Activity Section ──────────────────────── */}
+      <div
+        className={cn(
+          'rounded-xl p-6',
+          'bg-white dark:bg-[#12121a]',
+          'border border-gray-100 dark:border-white/5',
+          'shadow-sm dark:shadow-none'
+        )}
+      >
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2">
+            <Clock className="w-5 h-5 text-indigo-500" />
+            <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+              Recent Activity
+            </h3>
+          </div>
+          <button className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1">
+            View all <ChevronRight className="w-3 h-3" />
+          </button>
+        </div>
+
+        <div className="relative">
+          {/* Timeline line */}
+          <div className="absolute left-[15px] top-3 bottom-3 w-px bg-gray-100 dark:bg-white/5" />
+
+          <div className="space-y-0">
+            {recentActivity.map((activity, idx) => (
+              <div
+                key={activity.id}
+                className={cn(
+                  'relative flex items-start gap-4 py-3 pl-0 group transition-colors rounded-lg',
+                )}
+              >
+                {/* Timeline dot with avatar */}
+                <div className="relative z-10 flex-shrink-0">
+                  <div
+                    className={cn(
+                      'flex items-center justify-center w-8 h-8 rounded-full text-white text-[10px] font-semibold bg-gradient-to-br ring-4 ring-white dark:ring-[#12121a]',
+                      activity.userGradient
+                    )}
+                  >
+                    {activity.userInitials}
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 min-w-0 pt-1">
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    <span className="font-semibold text-gray-900 dark:text-white">
+                      {activity.user}
+                    </span>{' '}
+                    <span className={cn(
+                      'inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium mx-0.5',
+                      activity.action === 'created'
+                        ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
+                        : 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400'
+                    )}>
+                      {activity.action}
+                    </span>{' '}
+                    <span className="font-medium text-gray-900 dark:text-white">
+                      {activity.target}
+                    </span>
+                  </p>
+                </div>
+
+                {/* Time */}
+                <span className="flex-shrink-0 text-xs text-gray-400 dark:text-gray-500 pt-1.5">
+                  {activity.time}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
