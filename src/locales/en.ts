@@ -5,7 +5,7 @@ export const en = {
   'sidebar.workCalendar': 'Work Calendar',
   'sidebar.creativePerformance': 'Creative Performance',
   'sidebar.knowledgeHub': 'Knowledge Hub',
-  'sidebar.chat': 'Team Chat',
+  'sidebar.notes': 'Notes',
   'sidebar.analytics': 'Analytics',
   'sidebar.settings': 'Settings',
 

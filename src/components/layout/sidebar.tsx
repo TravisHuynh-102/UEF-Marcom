@@ -33,7 +33,7 @@ const mainNavItems: NavItem[] = [
   { label: 'Team Performance', icon: 'group', href: '/performance' },
   { label: 'AI Chief of Staff', icon: 'smart_toy', href: '/ai-assistant', isAI: true, separatorBefore: true },
   { label: 'Knowledge Hub', dictKey: 'sidebar.knowledgeHub', icon: 'book', href: '/knowledge' },
-  { label: 'Chat', dictKey: 'sidebar.chat', icon: 'chat', href: '/chat' },
+  { label: 'Notes', dictKey: 'sidebar.notes', icon: 'edit_document', href: '/notes' },
 ];
 
 const bottomNavItems: NavItem[] = [

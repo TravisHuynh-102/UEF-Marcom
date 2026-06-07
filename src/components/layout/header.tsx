@@ -16,7 +16,7 @@ const pageTitles: Record<string, { title: string; subtitle?: string }> = {
   '/ai-assistant': { title: 'AI Chief of Staff', subtitle: 'Your AI-powered operations partner' },
   '/performance': { title: 'Team Performance', subtitle: 'Analytics & insights' },
   '/knowledge': { title: 'Knowledge Hub', subtitle: 'Team wiki & documents' },
-  '/chat': { title: 'Chat', subtitle: 'Team communication' },
+  '/notes': { title: 'Notes', subtitle: 'Personal and team documents' },
   '/settings': { title: 'Settings', subtitle: 'Manage your workspace' },
   '/content-calendar': { title: 'Content Calendar', subtitle: 'Plan & schedule content' },
   '/work-calendar': { title: 'Work Calendar', subtitle: 'Team schedules & trips' },

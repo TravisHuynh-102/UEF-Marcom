@@ -7,7 +7,7 @@ export const vi: Dictionary = {
   'sidebar.workCalendar': 'Lịch Làm việc',
   'sidebar.creativePerformance': 'Hiệu suất Sáng tạo',
   'sidebar.knowledgeHub': 'Kho Kiến thức',
-  'sidebar.chat': 'Trò chuyện Nhóm',
+  'sidebar.notes': 'Ghi chú (Notes)',
   'sidebar.analytics': 'Phân tích',
   'sidebar.settings': 'Cài đặt',
 
