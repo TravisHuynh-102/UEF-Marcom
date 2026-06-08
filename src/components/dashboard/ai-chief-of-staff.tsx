@@ -56,11 +56,7 @@ export default function AIChiefOfStaff() {
       {/* Main card */}
       <div
         className={cn(
-          'relative z-10 rounded-2xl overflow-hidden',
-          'bg-white/70 dark:bg-white/[0.03]',
-          'backdrop-blur-xl',
-          'border border-white/20 dark:border-white/10',
-          'shadow-lg dark:shadow-none'
+          'relative z-10 glass-panel overflow-hidden'
         )}
       >
         {/* Subtle inner gradient overlay */}
@@ -98,12 +94,9 @@ export default function AIChiefOfStaff() {
                 <div
                   key={card.question}
                   className={cn(
-                    'group/card relative rounded-xl p-5 transition-all duration-300 cursor-pointer',
-                    'bg-white/60 dark:bg-white/[0.04]',
-                    'border border-gray-100 dark:border-white/[0.06]',
-                    'hover:border-gray-200 dark:hover:border-white/10',
-                    'hover:shadow-md dark:hover:shadow-none',
-                    'hover:scale-[1.02]'
+                    'group/card relative rounded-xl p-5 hover-lift cursor-pointer',
+                    'glass',
+                    'hover:shadow-md'
                   )}
                 >
                   {/* Accent background glow */}

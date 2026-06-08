@@ -51,10 +51,7 @@ export default function AISummaryFeed() {
   return (
     <div
       className={cn(
-        'rounded-xl overflow-hidden flex flex-col',
-        'bg-white dark:bg-[#12121a]',
-        'border border-gray-100 dark:border-white/5',
-        'shadow-sm dark:shadow-none'
+        'glass-panel flex flex-col'
       )}
     >
       {/* Header */}

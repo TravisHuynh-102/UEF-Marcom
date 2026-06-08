@@ -24,7 +24,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <Sidebar isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
 
       {/* Main Content Area */}
-      <div className="ml-0 md:ml-[260px] flex-1 flex flex-col h-screen overflow-hidden bg-background">
+      <div className="ml-0 md:ml-[260px] flex-1 flex flex-col h-screen overflow-hidden bg-transparent">
         <Header onMenuClick={() => setMobileMenuOpen(true)} />
         
         {/* Scrollable Content */}

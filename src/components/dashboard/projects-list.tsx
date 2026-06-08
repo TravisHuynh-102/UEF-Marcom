@@ -62,10 +62,7 @@ export default function ProjectsList() {
   return (
     <div
       className={cn(
-        'rounded-xl overflow-hidden',
-        'bg-white dark:bg-[#12121a]',
-        'border border-gray-100 dark:border-white/5',
-        'shadow-sm dark:shadow-none'
+        'glass-panel overflow-hidden'
       )}
     >
       {/* Header */}

@@ -139,7 +139,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   }, [searchResults]);
 
   return (
-    <header className="h-16 flex justify-between items-center px-gutter shrink-0 bg-surface/80 backdrop-blur-md z-10 sticky top-0 border-b border-outline-variant/30">
+    <header className="h-[72px] flex justify-between items-center px-gutter shrink-0 glass z-10 sticky top-0 border-b-0 shadow-sm">
       {/* Mobile Menu Toggle */}
       <button 
         onClick={onMenuClick}
@@ -149,7 +149,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
       </button>
 
       {/* Title */}
-      <div className="font-headline-md text-headline-md font-bold text-on-surface hidden md:block">
+      <div className="font-headline-md text-[26px] font-bold text-on-surface hidden md:block tracking-tight">
         {pageInfo.title}
       </div>
 
@@ -162,7 +162,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             onFocus={() => setSearchFocused(true)}
-            className="bg-surface-container border border-outline-variant rounded-lg py-1.5 pl-10 pr-4 w-64 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-body-sm placeholder:text-on-surface-variant/50" 
+            className="h-10 w-64 rounded-full glass pl-10 pr-4 text-body-sm text-on-surface placeholder:text-on-surface-variant focus:w-80 transition-smooth focus:ring-2 focus:ring-primary/20 outline-none" 
             placeholder={t('header.search')} 
           />
           {/* Search Dropdown */}

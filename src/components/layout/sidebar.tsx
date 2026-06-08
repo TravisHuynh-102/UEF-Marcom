@@ -49,7 +49,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
     <>
       <nav className={cn(
-        "fixed left-0 top-0 h-screen w-sidebar_width bg-surface-container-lowest border-r border-outline-variant flex flex-col py-lg z-20 transition-transform duration-300 md:translate-x-0",
+        "fixed left-0 top-0 h-screen w-sidebar_width glass border-r border-outline-variant flex flex-col py-lg z-20 transition-transform duration-300 md:translate-x-0 shadow-lg",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {/* Header */}
@@ -65,7 +65,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         {/* AI Action */}
         <div className="px-4 mb-lg">
-          <button className="w-full bg-primary text-on-primary py-2.5 rounded-lg font-label-md text-label-md flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-[0_0_15px_rgba(157,93,255,0.15)]">
+          <button className="w-full bg-primary text-on-primary py-2.5 rounded-xl font-label-md text-label-md flex items-center justify-center gap-2 hover-lift shadow-glow">
             <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>smart_toy</span>
             AI Generate Content
           </button>
@@ -88,12 +88,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     }
                   }}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-md font-label-md text-label-md group transition-colors",
+                    "flex items-center gap-3 px-3 py-2 rounded-xl font-label-md text-label-md group transition-smooth",
                     isActive 
-                      ? "bg-surface-container border-l-2 border-primary text-on-surface rounded-l-none" 
+                      ? "bg-primary-container text-primary shadow-sm" 
                       : item.isAI
-                        ? "text-primary hover:bg-surface-container hover:text-primary-fixed"
-                        : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                        ? "text-primary hover:bg-surface-container hover:shadow-sm"
+                        : "text-on-surface-variant hover:bg-surface-container hover:text-on-surface hover:shadow-sm"
                   )}
                 >
                   <span className={cn(

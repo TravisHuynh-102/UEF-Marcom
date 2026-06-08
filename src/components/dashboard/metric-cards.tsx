@@ -109,12 +109,7 @@ export default function MetricCards() {
           <div
             key={metric.label}
             className={cn(
-              'relative rounded-xl p-6 transition-all duration-200',
-              'bg-white dark:bg-[#12121a]',
-              'border border-gray-100 dark:border-white/5',
-              'shadow-sm dark:shadow-none',
-              'hover:shadow-md dark:hover:border-white/10',
-              'group cursor-pointer'
+              'relative p-6 glass-panel hover-lift group cursor-pointer'
             )}
           >
             {/* Top row: label + icon */}
