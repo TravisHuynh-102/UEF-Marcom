@@ -139,59 +139,62 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   }, [searchResults]);
 
   return (
-    <header className="h-[72px] flex justify-between items-center px-gutter shrink-0 glass z-10 sticky top-0 border-b-0 shadow-sm">
-      {/* Mobile Menu Toggle */}
-      <button 
-        onClick={onMenuClick}
-        className="md:hidden text-on-surface-variant hover:text-primary transition-colors"
-      >
-        <span className="material-symbols-outlined">menu</span>
-      </button>
-
-      {/* Title */}
-      <div className="font-headline-md text-[26px] font-bold text-on-surface hidden md:block tracking-tight">
-        {pageInfo.title}
+    <header className="flex justify-between items-center w-full px-gutter h-16 shrink-0 bg-[#191919] z-40 relative border-b border-[#2C2C2C]">
+      {/* Mobile Menu Toggle & Title */}
+      <div className="flex items-center gap-2">
+        <button 
+          onClick={onMenuClick}
+          className="md:hidden text-[#A4A4A4] hover:text-white transition-colors"
+        >
+          <span className="material-symbols-outlined">menu</span>
+        </button>
+        <h2 className="font-headline-md text-headline-md font-bold text-white flex items-center gap-2">
+          {pageInfo.title === 'AI Chief of Staff' && (
+            <span className="material-symbols-outlined text-[#9D5DFF]">smart_toy</span>
+          )}
+          {pageInfo.title}
+        </h2>
       </div>
 
-      <div className="flex items-center gap-4 ml-auto">
+      <div className="flex items-center gap-4">
         {/* Search Bar */}
-        <div ref={searchRef} className="relative hidden sm:block">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+        <div ref={searchRef} className="relative hidden sm:block w-64">
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#A4A4A4] text-[18px]">search</span>
           <input 
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             onFocus={() => setSearchFocused(true)}
-            className="h-10 w-64 rounded-full glass pl-10 pr-4 text-body-sm text-on-surface placeholder:text-on-surface-variant focus:w-80 transition-smooth focus:ring-2 focus:ring-primary/20 outline-none" 
-            placeholder={t('header.search')} 
+            className="w-full bg-[#121212] border border-[#2C2C2C] text-white rounded-full py-1.5 pl-10 pr-4 focus:outline-none focus:border-[#9D5DFF] focus:ring-1 focus:ring-[#9D5DFF] transition-all font-body-sm text-body-sm placeholder:text-[#A4A4A4]" 
+            placeholder="Ask AI anything..." 
           />
           {/* Search Dropdown */}
           {showSearchResults && (
-            <div className="absolute top-full left-0 right-0 mt-2 rounded-xl border border-outline-variant bg-surface-container shadow-xl overflow-hidden z-50">
+            <div className="absolute top-full left-0 right-0 mt-2 rounded-xl border border-[#2C2C2C] bg-[#202020] shadow-xl overflow-hidden z-50">
               {searchResults.length === 0 ? (
                 <div className="px-4 py-8 text-center">
-                  <span className="material-symbols-outlined text-[32px] text-on-surface-variant mb-2">search_off</span>
-                  <p className="text-body-sm text-on-surface-variant">No results for &quot;{searchQuery}&quot;</p>
+                  <span className="material-symbols-outlined text-[32px] text-[#A4A4A4] mb-2">search_off</span>
+                  <p className="text-body-sm text-[#A4A4A4]">No results for &quot;{searchQuery}&quot;</p>
                 </div>
               ) : (
                 <div className="max-h-80 overflow-y-auto py-2">
                   {Object.entries(groupedResults).map(([category, results]) => (
                     <div key={category}>
-                      <p className="px-4 py-1 text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
+                      <p className="px-4 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#A4A4A4]">
                         {category}
                       </p>
                       {results.map(result => (
                         <button
                           key={result.id}
                           onClick={() => handleSearchResultClick(result)}
-                          className="flex w-full items-center gap-3 px-4 py-2 text-left hover:bg-surface transition-colors"
+                          className="flex w-full items-center gap-3 px-4 py-2 text-left hover:bg-[#2A2A2A] transition-colors"
                         >
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface">
-                            <span className="material-symbols-outlined text-[16px] text-on-surface-variant">{result.icon}</span>
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#191919]">
+                            <span className="material-symbols-outlined text-[16px] text-[#A4A4A4]">{result.icon}</span>
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="text-body-sm font-medium text-on-surface truncate">{result.title}</p>
-                            {result.subtitle && <p className="text-[11px] text-on-surface-variant truncate">{result.subtitle}</p>}
+                            <p className="text-body-sm font-medium text-white truncate">{result.title}</p>
+                            {result.subtitle && <p className="text-[11px] text-[#A4A4A4] truncate">{result.subtitle}</p>}
                           </div>
                         </button>
                       ))}
@@ -203,96 +206,31 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
           )}
         </div>
 
-        {/* Role Switcher */}
-        <div className="relative">
-          <button
-            onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-            className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 hover:bg-surface-container transition-colors"
-          >
-            <span className={cn('flex items-center gap-1.5 rounded text-[11px] font-semibold px-2 py-0.5', currentRoleConfig.bg, currentRoleConfig.color)}>
-              <span className="material-symbols-outlined text-[14px]">{currentRoleConfig.icon}</span>
-              {currentRoleConfig.label}
-            </span>
-            <span className="material-symbols-outlined text-[16px] text-on-surface-variant">arrow_drop_down</span>
-          </button>
-
-          {roleDropdownOpen && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => setRoleDropdownOpen(false)} />
-              <div className="absolute right-0 top-full z-50 mt-1.5 w-48 rounded-xl border border-outline-variant bg-surface-container shadow-xl p-1.5">
-                <p className="px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">
-                  Switch Role (Demo)
-                </p>
-                {(['Manager', 'Leader', 'Staff'] as UserRole[]).map((role) => {
-                  const config = roleConfig[role];
-                  const isActive = currentRole === role;
-                  return (
-                    <button
-                      key={role}
-                      onClick={() => { setCurrentRole(role); setRoleDropdownOpen(false); }}
-                      className={cn(
-                        'flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-body-sm transition-colors',
-                        isActive ? 'bg-surface text-on-surface' : 'text-on-surface-variant hover:bg-surface hover:text-on-surface'
-                      )}
-                    >
-                      <span className={cn('flex h-6 w-6 items-center justify-center rounded-md', config.bg, config.color)}>
-                        <span className="material-symbols-outlined text-[14px]">{config.icon}</span>
-                      </span>
-                      {config.label}
-                      {isActive && <span className="ml-auto text-[10px] text-primary">●</span>}
-                    </button>
-                  );
-                })}
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Language Switcher */}
-        <button
-          onClick={() => setLocale(locale === 'en' ? 'vi' : 'en')}
-          className="text-on-surface-variant hover:text-primary transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container text-[11px] font-bold uppercase border border-outline-variant/50"
-          title="Toggle Language"
-        >
-          {locale}
-        </button>
-
-        {/* Theme Switcher */}
-        <button
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className="text-on-surface-variant hover:text-primary transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container border border-outline-variant/50"
-          title="Toggle Theme"
-        >
-          <span className="material-symbols-outlined text-[18px]">
-            {theme === 'dark' ? 'light_mode' : 'dark_mode'}
-          </span>
-        </button>
-
         {/* Notifications */}
         <div ref={notifRef} className="relative">
           <button 
             onClick={() => setNotifOpen(!notifOpen)}
-            className="text-on-surface-variant hover:text-primary transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container relative"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-[#A4A4A4] hover:text-white hover:bg-[#202020] transition-colors relative"
           >
-            <span className="material-symbols-outlined text-[20px]">notifications</span>
+            <span className="material-symbols-outlined">notifications</span>
             {unreadNotificationCount > 0 && (
-              <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
+              <span className="absolute top-0 right-0 w-2 h-2 bg-[#ffb4ab] rounded-full"></span>
             )}
           </button>
 
           {notifOpen && (
-            <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-xl border border-outline-variant bg-surface-container shadow-2xl overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-outline-variant/30">
-                <h3 className="text-body-sm font-bold text-on-surface">{t('header.notifications')}</h3>
+            <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-xl border border-[#2C2C2C] bg-[#202020] shadow-2xl overflow-hidden">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-[#2C2C2C]">
+                <h3 className="text-body-sm font-bold text-white">Notifications</h3>
                 {unreadNotificationCount > 0 && (
-                  <button onClick={markAllNotificationsRead} className="text-[11px] font-medium text-primary hover:text-primary-fixed transition-colors">
+                  <button onClick={markAllNotificationsRead} className="text-[11px] font-medium text-[#9D5DFF] hover:opacity-80 transition-colors">
                     Mark all read
                   </button>
                 )}
               </div>
               <div className="max-h-72 overflow-y-auto">
                 {notifications.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-on-surface-variant">
+                  <div className="px-4 py-8 text-center text-[#A4A4A4]">
                     <span className="material-symbols-outlined text-[32px] mb-2">notifications_off</span>
                     <p className="text-body-sm">No notifications</p>
                   </div>
@@ -309,18 +247,18 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
                         }}
                         className={cn(
                           'flex w-full items-start gap-3 px-4 py-3 text-left transition-colors',
-                          !notif.read ? 'bg-primary/5' : 'hover:bg-surface'
+                          !notif.read ? 'bg-[#9D5DFF]/5' : 'hover:bg-[#2A2A2A]'
                         )}
                       >
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <p className={cn('text-body-sm font-medium truncate', notif.read ? 'text-on-surface-variant' : 'text-on-surface')}>
+                            <p className={cn('text-body-sm font-medium truncate', notif.read ? 'text-[#A4A4A4]' : 'text-white')}>
                               {notif.title}
                             </p>
-                            {!notif.read && <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />}
+                            {!notif.read && <span className="h-1.5 w-1.5 rounded-full bg-[#9D5DFF] shrink-0" />}
                           </div>
-                          <p className="text-[12px] mt-0.5 line-clamp-2 text-on-surface-variant">{notif.message}</p>
-                          <p className="text-[10px] mt-1 text-on-surface-variant/70">{timeAgo}</p>
+                          <p className="text-[12px] mt-0.5 line-clamp-2 text-[#A4A4A4]">{notif.message}</p>
+                          <p className="text-[10px] mt-1 text-[#A4A4A4]/70">{timeAgo}</p>
                         </div>
                       </button>
                     );
@@ -332,9 +270,42 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
         </div>
 
         {/* User Profile */}
-        <button className="w-8 h-8 rounded-lg overflow-hidden border border-outline-variant hover:border-primary transition-colors flex items-center justify-center bg-gradient-to-br from-primary to-inverse-primary text-[11px] font-bold text-white">
-          {currentUser.name.split(' ').map(n => n[0]).join('')}
-        </button>
+        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#9D5DFF] to-[#563a82] p-[1px] relative cursor-pointer" onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}>
+          <div className="w-full h-full rounded-full bg-[#202020] flex items-center justify-center overflow-hidden">
+            <span className="text-[12px] font-bold text-white">{currentUser.name.split(' ').map(n => n[0]).join('')}</span>
+          </div>
+
+          {/* Role Switcher Dropdown (Demo) */}
+          {roleDropdownOpen && (
+            <>
+              <div className="fixed inset-0 z-40 cursor-default" onClick={(e) => { e.stopPropagation(); setRoleDropdownOpen(false); }} />
+              <div className="absolute right-0 top-full z-50 mt-1.5 w-48 rounded-xl border border-[#2C2C2C] bg-[#202020] shadow-xl p-1.5 cursor-default">
+                <p className="px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#A4A4A4]">
+                  Switch Role (Demo)
+                </p>
+                {(['Manager', 'Leader', 'Staff'] as UserRole[]).map((role) => {
+                  const isActive = currentRole === role;
+                  return (
+                    <button
+                      key={role}
+                      onClick={(e) => { e.stopPropagation(); setCurrentRole(role); setRoleDropdownOpen(false); }}
+                      className={cn(
+                        'flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-body-sm transition-colors',
+                        isActive ? 'bg-[#191919] text-white' : 'text-[#A4A4A4] hover:bg-[#191919] hover:text-white'
+                      )}
+                    >
+                      <span className="material-symbols-outlined text-[14px]">
+                        {role === 'Manager' ? 'shield' : role === 'Leader' ? 'star' : 'person'}
+                      </span>
+                      {role}
+                      {isActive && <span className="ml-auto text-[10px] text-[#9D5DFF]">●</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </header>
   );
