@@ -316,6 +316,7 @@ export default function TasksPage() {
 
   // Initialize / sync taskColumns whenever tasks change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTaskColumns((prev) => {
       const next = { ...prev };
       tasks.forEach((t) => {

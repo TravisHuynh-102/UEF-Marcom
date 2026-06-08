@@ -56,6 +56,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const saved = localStorage.getItem('teamos-role');
     if (saved && (saved === 'Manager' || saved === 'Leader' || saved === 'Staff')) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCurrentRoleState(saved as UserRole);
     }
   }, []);

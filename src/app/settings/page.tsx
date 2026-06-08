@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { cn, getInitials } from '@/lib/utils';
 import { mockUsers } from '@/lib/mock-data';
 import { useTheme } from '@/context/theme-context';
+import { useAppState } from '@/context/app-state-context';
+import { useRole } from '@/context/role-context';
 import {
   User,
   Users,
@@ -951,8 +953,6 @@ export default function SettingsPage() {
         return <AppearanceTab />;
       case 'security':
         return <SecurityTab />;
-      case 'billing':
-        return <BillingTab />;
     }
   };
 
