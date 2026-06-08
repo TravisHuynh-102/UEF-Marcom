@@ -15,7 +15,7 @@ export type Permission =
   | 'performance.view_all' | 'performance.view_team' | 'performance.view_self'
   | 'performance.export' | 'performance.rate_quality'
   // Settings
-  | 'settings.team' | 'settings.billing' | 'settings.integrations'
+  | 'settings.team' | 'settings.integrations'
   | 'settings.appearance' | 'settings.profile' | 'settings.notifications'
   // Knowledge Hub
   | 'knowledge.create' | 'knowledge.edit_all' | 'knowledge.edit_own' | 'knowledge.delete'
@@ -30,7 +30,7 @@ const MANAGER_PERMISSIONS: Permission[] = [
   'content.create_calendar', 'content.submit_idea', 'content.edit_all', 'content.approve', 'content.view_all', 'content.schedule',
   'work_calendar.create_for_team', 'work_calendar.approve', 'work_calendar.view_all', 'work_calendar.request', 'work_calendar.view_team',
   'performance.view_all', 'performance.view_team', 'performance.view_self', 'performance.export', 'performance.rate_quality',
-  'settings.team', 'settings.billing', 'settings.integrations', 'settings.appearance', 'settings.profile', 'settings.notifications',
+  'settings.team', 'settings.integrations', 'settings.appearance', 'settings.profile', 'settings.notifications',
   'knowledge.create', 'knowledge.edit_all', 'knowledge.edit_own', 'knowledge.delete',
   'chat.manage_channels',
   'ai.full_access', 'ai.team_insights', 'ai.personal_insights',
@@ -72,10 +72,10 @@ export function getPermissions(role: UserRole): Permission[] {
 }
 
 // ─── Settings Tab Visibility ────────────────────────────────────────────────
-export type SettingsTab = 'profile' | 'team' | 'notifications' | 'integrations' | 'appearance' | 'security' | 'billing';
+export type SettingsTab = 'profile' | 'team' | 'notifications' | 'integrations' | 'appearance' | 'security';
 
 const SETTINGS_TABS_BY_ROLE: Record<UserRole, SettingsTab[]> = {
-  Manager: ['profile', 'team', 'notifications', 'integrations', 'appearance', 'security', 'billing'],
+  Manager: ['profile', 'team', 'notifications', 'integrations', 'appearance', 'security'],
   Leader: ['profile', 'notifications', 'appearance'],
   Staff: ['profile', 'notifications'],
 };

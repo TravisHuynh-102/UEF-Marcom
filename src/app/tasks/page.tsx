@@ -24,12 +24,15 @@ import {
   Clock,
   AlertCircle,
   Trash2,
+  Copy,
 } from 'lucide-react';
+import { useRole } from '@/context/role-context';
 
 /* ────────────────────────── constants ────────────────────────── */
 
 type FilterPill = 'All' | 'Today' | 'Upcoming' | 'Overdue' | 'Completed';
-type ViewMode = 'list' | 'board';
+type ViewMode = 'list' | 'board' | 'table';
+type TaskScope = 'my' | 'team' | 'all';
 type BoardColumn = 'To Do' | 'In Progress' | 'Review' | 'Completed';
 
 const FILTERS: FilterPill[] = ['All', 'Today', 'Upcoming', 'Overdue', 'Completed'];
@@ -101,10 +104,12 @@ function TaskRow({
   task,
   onToggle,
   onDelete,
+  onDuplicate,
 }: {
   task: Task & { _completed: boolean };
   onToggle: () => void;
   onDelete: () => void;
+  onDuplicate: () => void;
 }) {
   const done = task._completed;
   const [menuOpen, setMenuOpen] = useState(false);
@@ -183,6 +188,13 @@ function TaskRow({
         {menuOpen && (
           <div className="absolute right-0 top-8 z-50 min-w-[140px] rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] shadow-xl py-1 animate-in fade-in zoom-in-95 duration-150">
             <button
+              onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onDuplicate(); }}
+              className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] transition-colors"
+            >
+              <Copy className="w-3.5 h-3.5" />
+              Duplicate
+            </button>
+            <button
               onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onDelete(); }}
               className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
             >
@@ -202,11 +214,13 @@ function BoardMiniCard({
   task,
   onToggle,
   onDelete,
+  onDuplicate,
   onDragStart,
 }: {
   task: Task & { _completed: boolean };
   onToggle: () => void;
   onDelete: () => void;
+  onDuplicate: () => void;
   onDragStart: (e: React.DragEvent) => void;
 }) {
   const done = task._completed;
@@ -249,6 +263,13 @@ function BoardMiniCard({
           {menuOpen && (
             <div className="absolute right-0 top-6 z-50 min-w-[120px] rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] shadow-xl py-1 animate-in fade-in zoom-in-95 duration-150">
               <button
+                onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onDuplicate(); }}
+                className="flex items-center gap-2 w-full px-3 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-tertiary)] transition-colors"
+              >
+                <Copy className="w-3.5 h-3.5" />
+                Duplicate
+              </button>
+              <button
                 onClick={(e) => { e.stopPropagation(); setMenuOpen(false); onDelete(); }}
                 className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
               >
@@ -273,10 +294,12 @@ function BoardMiniCard({
 /* ══════════════════════════ MAIN PAGE ══════════════════════════ */
 
 export default function TasksPage() {
-  const { tasks, updateTask, deleteTask } = useAppState();
+  const { tasks, updateTask, deleteTask, addTask } = useAppState();
+  const { currentRole, currentUser } = useRole();
   const { addToast } = useToast();
 
   const [activeFilter, setActiveFilter] = useState<FilterPill>('All');
+  const [taskScope, setTaskScope] = useState<TaskScope>('my');
   const [search, setSearch] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [completedExpanded, setCompletedExpanded] = useState(false);
@@ -336,6 +359,15 @@ export default function TasksPage() {
     setDeleteTarget(null);
   }, [deleteTarget, deleteTask, addToast]);
 
+  // Duplicate handler
+  const handleDuplicate = useCallback((taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task) return;
+    const newTask = { ...task, title: `${task.title} (Copy)`, completed: false };
+    addTask(newTask);
+    addToast({ title: 'Task Duplicated', message: `Copied "${task.title}"`, type: 'success' });
+  }, [tasks, addTask, addToast]);
+
   // Drag & Drop handlers
   const handleDragStart = useCallback((e: React.DragEvent, taskId: string) => {
     e.dataTransfer.setData('text/plain', taskId);
@@ -363,10 +395,15 @@ export default function TasksPage() {
   }, [updateTask]);
 
   /* ---- enrich tasks ---- */
-  const enriched = useMemo(
-    () => tasks.map((t) => ({ ...t, _completed: t.completed })),
-    [tasks]
-  );
+  const enriched = useMemo(() => {
+    return tasks
+      .filter((t) => {
+        if (taskScope === 'my') return t.assignee.id === currentUser.id;
+        if (taskScope === 'team') return t.assignee.department === currentUser.department;
+        return true; // 'all'
+      })
+      .map((t) => ({ ...t, _completed: t.completed }));
+  }, [tasks, taskScope, currentUser]);
 
   /* ---- filter ---- */
   const filtered = useMemo(() => {
@@ -457,6 +494,26 @@ export default function TasksPage() {
 
         {/* Toolbar */}
         <div className="flex items-center gap-3 flex-wrap">
+          {/* Scope toggle (if not Staff) */}
+          {currentRole !== 'Staff' && (
+            <div className="flex items-center rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-0.5">
+              {(['my', 'team', currentRole === 'Manager' ? 'all' : null].filter(Boolean) as TaskScope[]).map(scope => (
+                <button
+                  key={scope}
+                  onClick={() => setTaskScope(scope)}
+                  className={cn(
+                    'px-3 py-1.5 rounded-lg text-xs font-medium transition-all capitalize',
+                    taskScope === scope
+                      ? 'bg-[var(--bg-tertiary)] text-[var(--text-primary)] shadow-sm'
+                      : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
+                  )}
+                >
+                  {scope} Tasks
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* View toggle */}
           <div className="flex items-center rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] p-0.5">
             <button
@@ -482,6 +539,18 @@ export default function TasksPage() {
             >
               <LayoutGrid className="w-3.5 h-3.5" />
               Board
+            </button>
+            <button
+              onClick={() => setViewMode('table')}
+              className={cn(
+                'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
+                viewMode === 'table'
+                  ? 'bg-violet-500 text-white shadow-sm'
+                  : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
+              )}
+            >
+              <MoreHorizontal className="w-3.5 h-3.5" />
+              Table
             </button>
           </div>
 
@@ -574,7 +643,13 @@ export default function TasksPage() {
                     <div className="flex-1 h-px bg-[var(--card-border)]" />
                   </div>
                   {tasks.map((t) => (
-                    <TaskRow key={t.id} task={t} onToggle={() => toggle(t.id)} onDelete={() => setDeleteTarget({ id: t.id, title: t.title })} />
+                    <TaskRow 
+                      key={t.id} 
+                      task={t} 
+                      onToggle={() => toggle(t.id)} 
+                      onDelete={() => setDeleteTarget({ id: t.id, title: t.title })} 
+                      onDuplicate={() => handleDuplicate(t.id)}
+                    />
                   ))}
                 </div>
               ))}
@@ -607,8 +682,85 @@ export default function TasksPage() {
                   </button>
                   {completedExpanded &&
                     completedTasks.map((t) => (
-                      <TaskRow key={t.id} task={t} onToggle={() => toggle(t.id)} onDelete={() => setDeleteTarget({ id: t.id, title: t.title })} />
+                      <TaskRow 
+                        key={t.id} 
+                        task={t} 
+                        onToggle={() => toggle(t.id)} 
+                        onDelete={() => setDeleteTarget({ id: t.id, title: t.title })} 
+                        onDuplicate={() => handleDuplicate(t.id)}
+                      />
                     ))}
+                </div>
+              )}
+            </div>
+          </div>
+        ) : viewMode === 'table' ? (
+          /* ═══ Table View ═══ */
+          <div className="rounded-2xl border border-[var(--card-border)] bg-[var(--card-bg)] overflow-hidden h-full flex flex-col">
+            <div className="flex-1 overflow-x-auto overflow-y-auto">
+              <table className="w-full text-left text-sm whitespace-nowrap min-w-[800px]">
+                <thead className="sticky top-0 bg-[var(--bg-tertiary)] z-10 shadow-sm">
+                  <tr>
+                    <th className="w-10 px-4 py-3 font-semibold text-[var(--text-muted)]"></th>
+                    <th className="px-4 py-3 font-semibold text-[var(--text-muted)]">Task Name</th>
+                    <th className="px-4 py-3 font-semibold text-[var(--text-muted)]">Priority</th>
+                    <th className="px-4 py-3 font-semibold text-[var(--text-muted)]">Project</th>
+                    <th className="px-4 py-3 font-semibold text-[var(--text-muted)]">Assignee</th>
+                    <th className="px-4 py-3 font-semibold text-[var(--text-muted)]">Due Date</th>
+                    <th className="w-10 px-4 py-3 font-semibold text-[var(--text-muted)]"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--card-border)]">
+                  {filtered.map(t => {
+                    const done = t._completed;
+                    return (
+                      <tr key={t.id} className={cn("hover:bg-[var(--card-hover)] transition-colors group/row", done && "opacity-50")}>
+                        <td className="px-4 py-3 text-center">
+                          <button onClick={() => toggle(t.id)} className="transition-transform active:scale-90 align-middle">
+                            {done ? <CheckCircle2 className="w-4 h-4 text-emerald-500" /> : <Circle className="w-4 h-4 text-[var(--text-muted)] hover:text-indigo-500" />}
+                          </button>
+                        </td>
+                        <td className={cn("px-4 py-3 font-medium", done ? 'line-through text-[var(--text-muted)]' : 'text-[var(--text-primary)]')}>
+                          {t.title}
+                        </td>
+                        <td className="px-4 py-3">
+                          <PriorityBadge priority={t.priority} />
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="px-2 py-1 rounded bg-[var(--bg-tertiary)] text-[var(--text-muted)] text-[11px] font-medium">
+                            {t.projectName}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-[9px] text-white font-bold">
+                              {getInitials(t.assignee.name)}
+                            </div>
+                            <span className="text-[var(--text-secondary)]">{t.assignee.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-[var(--text-secondary)]">
+                          {new Date(t.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex gap-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
+                            <button onClick={() => handleDuplicate(t.id)} className="p-1 hover:bg-[var(--bg-tertiary)] rounded text-[var(--text-muted)]" title="Duplicate">
+                              <Copy className="w-3.5 h-3.5" />
+                            </button>
+                            <button onClick={() => setDeleteTarget({ id: t.id, title: t.title })} className="p-1 hover:bg-rose-500/10 rounded text-rose-500" title="Delete">
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              {filtered.length === 0 && (
+                <div className="flex flex-col items-center justify-center h-40 text-[var(--text-muted)] text-sm">
+                  <ListTodo className="w-8 h-8 opacity-30 mb-2" />
+                  No tasks to display
                 </div>
               )}
             </div>
@@ -655,13 +807,19 @@ export default function TasksPage() {
                   </div>
                   <div className="flex flex-col gap-3 flex-1 overflow-y-auto pr-1">
                     {colTasks.map((t) => (
-                      <BoardMiniCard
+                      <div
                         key={t.id}
-                        task={t}
-                        onToggle={() => toggle(t.id)}
-                        onDelete={() => setDeleteTarget({ id: t.id, title: t.title })}
+                        draggable
                         onDragStart={(e) => handleDragStart(e, t.id)}
-                      />
+                      >
+                        <BoardMiniCard 
+                          task={t} 
+                          onToggle={() => toggle(t.id)} 
+                          onDelete={() => setDeleteTarget({ id: t.id, title: t.title })} 
+                          onDuplicate={() => handleDuplicate(t.id)}
+                          onDragStart={(e) => handleDragStart(e, t.id)} 
+                        />
+                      </div>
                     ))}
                     {colTasks.length === 0 && (
                       <div className="flex items-center justify-center h-20 rounded-xl border-2 border-dashed border-[var(--card-border)] text-xs text-[var(--text-muted)]">

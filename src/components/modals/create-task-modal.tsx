@@ -24,6 +24,12 @@ export default function CreateTaskModal({ isOpen, onClose, defaultProjectId }: C
   const [projectId, setProjectId] = useState(defaultProjectId || '');
   const [dueDate, setDueDate] = useState('');
 
+  const filteredUsers = React.useMemo(() => {
+    if (currentUser.role === 'Manager') return users;
+    // Leader sees only their department members + themselves
+    return users.filter(u => u.department === currentUser.department || u.id === currentUser.id);
+  }, [users, currentUser]);
+
   const resetForm = () => {
     setTitle('');
     setDescription('');
@@ -109,7 +115,7 @@ export default function CreateTaskModal({ isOpen, onClose, defaultProjectId }: C
         <FormField label="Assignee" required>
           <FormSelect value={assigneeId} onChange={e => setAssigneeId(e.target.value)}>
             <option value="">Select assignee...</option>
-            {users.map(u => (
+            {filteredUsers.map(u => (
               <option key={u.id} value={u.id}>{u.name} — {u.department}</option>
             ))}
           </FormSelect>

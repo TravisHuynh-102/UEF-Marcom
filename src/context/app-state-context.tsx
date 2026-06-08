@@ -31,6 +31,7 @@ interface AppStateContextType {
   documents: Document[];
   activities: ActivityItem[];
   users: User[];
+  deleteUser: (id: string) => void;
   notifications: AppNotification[];
 
   // Project CRUD
@@ -137,6 +138,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [creativeTasks, setCreativeTasks] = useState<CreativeTask[]>(mockCreativeTasks);
   const [documents, setDocuments] = useState<Document[]>(mockDocuments);
   const [activities, setActivities] = useState<ActivityItem[]>(mockActivity);
+  const [users, setUsers] = useState<User[]>(mockUsers);
   const [notifications, setNotifications] = useState<AppNotification[]>(initialNotifications);
 
   // ─── Project CRUD ───────────────────────────────────────────────────────
@@ -220,6 +222,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setActivities(prev => [newActivity, ...prev]);
   }, []);
 
+  // ─── User CRUD ──────────────────────────────────────────────────────────
+  const deleteUser = useCallback((id: string) => {
+    setUsers(prev => prev.filter(u => u.id !== id));
+  }, []);
+
   // ─── Notification CRUD ──────────────────────────────────────────────────
   const addNotification = useCallback((notification: Omit<AppNotification, 'id' | 'timestamp' | 'read'>) => {
     const newNotification: AppNotification = {
@@ -245,14 +252,14 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     <AppStateContext.Provider
       value={{
         projects, tasks, contentItems, workTrips, creativeTasks, documents, activities,
-        users: mockUsers, notifications,
+        users, notifications,
         addProject, updateProject, deleteProject,
         addTask, updateTask, deleteTask,
         addContentItem, updateContentItem, deleteContentItem,
         addWorkTrip, updateWorkTrip, deleteWorkTrip,
         updateCreativeTask,
         addDocument, updateDocument, deleteDocument,
-        addActivity,
+        addActivity, deleteUser,
         addNotification, markNotificationRead, markAllNotificationsRead, unreadNotificationCount,
       }}
     >

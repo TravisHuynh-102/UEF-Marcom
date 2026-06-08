@@ -38,8 +38,7 @@ type TabId =
   | 'notifications'
   | 'integrations'
   | 'appearance'
-  | 'security'
-  | 'billing';
+  | 'security';
 
 interface TabDef {
   id: TabId;
@@ -54,7 +53,6 @@ const tabs: TabDef[] = [
   { id: 'integrations', label: 'Integrations', icon: Puzzle },
   { id: 'appearance', label: 'Appearance', icon: Palette },
   { id: 'security', label: 'Security', icon: Shield },
-  { id: 'billing', label: 'Billing', icon: CreditCard },
 ];
 
 // ─── Reusable toggle switch ──────────────────────────────────────────────────
@@ -231,6 +229,10 @@ function ProfileTab() {
 // TEAM TAB
 // ═══════════════════════════════════════════════════════════════════════════════
 function TeamTab() {
+  const { users, deleteUser } = useAppState();
+  const { currentRole } = useRole();
+  const isAdmin = currentRole === 'Manager';
+
   const roleBadgeStyles: Record<string, string> = {
     Owner: 'bg-purple-500/15 text-purple-400 border-purple-500/25',
     Manager: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
@@ -242,7 +244,7 @@ function TeamTab() {
     <div className="space-y-6">
       <Section
         title="Team Members"
-        description={`${mockUsers.length} members across your organization.`}
+        description={`${users.length} members across your organization.`}
       >
         {/* Invite button */}
         <div className="mb-5 flex items-center justify-between">
@@ -274,7 +276,7 @@ function TeamTab() {
               </tr>
             </thead>
             <tbody className="divide-y" style={{ borderColor: 'var(--card-border)' }}>
-              {mockUsers.map((u, idx) => (
+              {users.map((u, idx) => (
                 <tr
                   key={u.id}
                   className="transition-colors"
@@ -333,9 +335,18 @@ function TeamTab() {
                       <button className="rounded-lg p-1.5 transition-colors hover:bg-indigo-500/10">
                         <Edit size={14} className="text-indigo-400" />
                       </button>
-                      <button className="rounded-lg p-1.5 transition-colors hover:bg-rose-500/10">
-                        <Trash2 size={14} className="text-rose-400" />
-                      </button>
+                      {isAdmin && (
+                        <button 
+                          className="rounded-lg p-1.5 transition-colors hover:bg-rose-500/10"
+                          onClick={() => {
+                            if (confirm(`Are you sure you want to remove ${u.name}?`)) {
+                              deleteUser(u.id);
+                            }
+                          }}
+                        >
+                          <Trash2 size={14} className="text-rose-400" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -465,6 +476,21 @@ function IntegrationsTab() {
     Object.fromEntries(integrations.map((i) => [i.name, i.connected]))
   );
 
+  useEffect(() => {
+    const saved = localStorage.getItem('integrations_connected');
+    if (saved) {
+      setConnected(JSON.parse(saved));
+    }
+  }, []);
+
+  const toggleConnection = (name: string) => {
+    setConnected(prev => {
+      const next = { ...prev, [name]: !prev[name] };
+      localStorage.setItem('integrations_connected', JSON.stringify(next));
+      return next;
+    });
+  };
+
   return (
     <div className="space-y-6">
       <Section title="Connected Apps" description="Manage your third-party integrations and API connections.">
@@ -509,9 +535,7 @@ function IntegrationsTab() {
                 {ig.desc}
               </p>
               <button
-                onClick={() =>
-                  setConnected((prev) => ({ ...prev, [ig.name]: !prev[ig.name] }))
-                }
+                onClick={() => toggleConnection(ig.name)}
                 className={cn(
                   'mt-4 w-full rounded-lg py-2 text-xs font-semibold transition-all',
                   connected[ig.name]
@@ -543,6 +567,30 @@ function AppearanceTab() {
   const [sidebar, setSidebar] = useState<'expanded' | 'collapsed'>('expanded');
   const [density, setDensity] = useState<'comfortable' | 'compact'>('comfortable');
   const [fontSize, setFontSize] = useState<'small' | 'medium' | 'large'>('medium');
+
+  useEffect(() => {
+    const savedAccent = localStorage.getItem('theme_accent');
+    if (savedAccent) setAccent(savedAccent);
+    
+    const savedLayout = localStorage.getItem('theme_layout');
+    if (savedLayout) {
+      const { sidebar: s, density: d, fontSize: f } = JSON.parse(savedLayout);
+      if (s) setSidebar(s);
+      if (d) setDensity(d);
+      if (f) setFontSize(f);
+    }
+  }, []);
+
+  const handleAccentChange = (name: string, color: string) => {
+    setAccent(name);
+    localStorage.setItem('theme_accent', name);
+    document.documentElement.style.setProperty('--accent-color', color);
+  };
+
+  const saveLayout = (updates: any) => {
+    const current = { sidebar, density, fontSize, ...updates };
+    localStorage.setItem('theme_layout', JSON.stringify(current));
+  };
 
   const themeModes = [
     { id: 'light' as const, label: 'Light', icon: Sun, preview: 'bg-white border-gray-200' },
@@ -606,7 +654,7 @@ function AppearanceTab() {
           {accentColors.map((c) => (
             <button
               key={c.name}
-              onClick={() => setAccent(c.name)}
+              onClick={() => handleAccentChange(c.name, c.color)}
               className={cn(
                 'flex flex-col items-center gap-2 rounded-xl border p-4 transition-all',
                 accent === c.name
@@ -654,7 +702,7 @@ function AppearanceTab() {
               {(['expanded', 'collapsed'] as const).map((s) => (
                 <button
                   key={s}
-                  onClick={() => setSidebar(s)}
+                  onClick={() => { setSidebar(s); saveLayout({ sidebar: s }); }}
                   className={cn(
                     'rounded-lg border px-5 py-2 text-sm font-medium capitalize transition-all',
                     sidebar === s
@@ -681,7 +729,7 @@ function AppearanceTab() {
               {(['comfortable', 'compact'] as const).map((d) => (
                 <button
                   key={d}
-                  onClick={() => setDensity(d)}
+                  onClick={() => { setDensity(d); saveLayout({ density: d }); }}
                   className={cn(
                     'rounded-lg border px-5 py-2 text-sm font-medium capitalize transition-all',
                     density === d
@@ -708,7 +756,7 @@ function AppearanceTab() {
               {(['small', 'medium', 'large'] as const).map((f) => (
                 <button
                   key={f}
-                  onClick={() => setFontSize(f)}
+                  onClick={() => { setFontSize(f); saveLayout({ fontSize: f }); }}
                   className={cn(
                     'rounded-lg border px-5 py-2 text-sm font-medium capitalize transition-all',
                     fontSize === f
@@ -736,6 +784,16 @@ function AppearanceTab() {
 // ═══════════════════════════════════════════════════════════════════════════════
 function SecurityTab() {
   const [twoFactor, setTwoFactor] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('security_2fa');
+    if (saved === 'true') setTwoFactor(true);
+  }, []);
+
+  const handle2FAToggle = (val: boolean) => {
+    setTwoFactor(val);
+    localStorage.setItem('security_2fa', String(val));
+  };
 
   const sessions = [
     { browser: 'Chrome', device: 'MacBook Pro', location: 'San Francisco, US', lastActive: 'Active now', icon: Globe2, current: true },
@@ -796,7 +854,7 @@ function SecurityTab() {
               </p>
             </div>
           </div>
-          <ToggleSwitch enabled={twoFactor} onChange={setTwoFactor} />
+          <ToggleSwitch enabled={twoFactor} onChange={handle2FAToggle} />
         </div>
 
         {twoFactor && (
@@ -871,163 +929,7 @@ function SecurityTab() {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// BILLING TAB
-// ═══════════════════════════════════════════════════════════════════════════════
-function BillingTab() {
-  const plans = [
-    {
-      name: 'Free',
-      price: '$0',
-      features: ['3 team members', '5 GB storage', 'Basic analytics', 'Email support'],
-      current: false,
-    },
-    {
-      name: 'Pro',
-      price: '$29',
-      features: ['10 team members', '100 GB storage', 'AI insights', 'Priority support', 'Custom integrations'],
-      current: true,
-    },
-    {
-      name: 'Enterprise',
-      price: '$99',
-      features: ['Unlimited members', '1 TB storage', 'Advanced AI', 'Dedicated support', 'SSO & SAML', 'Audit logs'],
-      current: false,
-    },
-  ];
 
-  return (
-    <div className="space-y-6">
-      {/* Current Plan */}
-      <Section title="Current Plan" description="You are on the Pro plan.">
-        <div className="flex items-center justify-between rounded-xl border-2 border-indigo-500/30 bg-gradient-to-r from-indigo-500/5 to-violet-500/5 p-5">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-lg font-bold text-indigo-400">Pro Plan</span>
-              <span className="rounded-full bg-indigo-500/15 px-2.5 py-0.5 text-xs font-semibold text-indigo-400">
-                Active
-              </span>
-            </div>
-            <p className="mt-1 text-sm" style={{ color: 'var(--text-muted)' }}>
-              $29/month · 10 team members included
-            </p>
-          </div>
-          <button className="rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-500/20 transition hover:shadow-lg hover:shadow-indigo-500/30">
-            Upgrade Plan
-          </button>
-        </div>
-      </Section>
-
-      {/* Usage */}
-      <Section title="Usage" description="Current billing period usage overview.">
-        <div className="grid gap-4 sm:grid-cols-2">
-          {/* Members */}
-          <div className="rounded-lg border p-4" style={{ borderColor: 'var(--card-border)', background: 'var(--bg-tertiary)' }}>
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
-                Team Members
-              </p>
-              <span className="text-sm font-bold text-indigo-400">8 / 10</span>
-            </div>
-            <div className="mt-3 h-2 overflow-hidden rounded-full" style={{ background: 'var(--card-border)' }}>
-              <div className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500" style={{ width: '80%' }} />
-            </div>
-          </div>
-          {/* Storage */}
-          <div className="rounded-lg border p-4" style={{ borderColor: 'var(--card-border)', background: 'var(--bg-tertiary)' }}>
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
-                Storage
-              </p>
-              <span className="text-sm font-bold text-violet-400">45 GB / 100 GB</span>
-            </div>
-            <div className="mt-3 h-2 overflow-hidden rounded-full" style={{ background: 'var(--card-border)' }}>
-              <div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500" style={{ width: '45%' }} />
-            </div>
-          </div>
-        </div>
-      </Section>
-
-      {/* Plan Comparison */}
-      <Section title="Compare Plans">
-        <div className="grid gap-4 sm:grid-cols-3">
-          {plans.map((p) => (
-            <div
-              key={p.name}
-              className={cn(
-                'flex flex-col rounded-xl border p-5 transition-all',
-                p.current
-                  ? 'border-indigo-500/40 bg-indigo-500/5 ring-1 ring-indigo-500/20'
-                  : ''
-              )}
-              style={{
-                borderColor: p.current ? undefined : 'var(--card-border)',
-                background: p.current ? undefined : 'var(--bg-tertiary)',
-              }}
-            >
-              <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                {p.name}
-              </p>
-              <p className="mt-1">
-                <span className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-                  {p.price}
-                </span>
-                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                  /month
-                </span>
-              </p>
-              <ul className="mt-4 flex-1 space-y-2">
-                {p.features.map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-secondary)' }}>
-                    <Check size={12} className="shrink-0 text-emerald-400" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              {p.current ? (
-                <div className="mt-4 rounded-lg border py-2 text-center text-xs font-semibold text-indigo-400" style={{ borderColor: 'var(--card-border)' }}>
-                  Current Plan
-                </div>
-              ) : (
-                <button
-                  className="mt-4 rounded-lg border py-2 text-xs font-semibold transition-colors hover:bg-indigo-500/10 hover:text-indigo-400"
-                  style={{ borderColor: 'var(--card-border)', color: 'var(--text-secondary)' }}
-                >
-                  {p.name === 'Free' ? 'Downgrade' : 'Upgrade'}
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* Payment Method */}
-      <Section title="Payment Method" description="Manage your billing and payment details.">
-        <div className="flex items-center justify-between rounded-lg border p-4" style={{ borderColor: 'var(--card-border)', background: 'var(--bg-tertiary)' }}>
-          <div className="flex items-center gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400">
-              <CreditCard size={18} />
-            </div>
-            <div>
-              <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                Visa ending in 4242
-              </p>
-              <p className="mt-0.5 text-xs" style={{ color: 'var(--text-muted)' }}>
-                Next billing date: June 15, 2026
-              </p>
-            </div>
-          </div>
-          <button
-            className="rounded-lg border px-4 py-2 text-xs font-semibold transition-colors hover:bg-indigo-500/10 hover:text-indigo-400"
-            style={{ borderColor: 'var(--card-border)', color: 'var(--text-secondary)' }}
-          >
-            Update
-          </button>
-        </div>
-      </Section>
-    </div>
-  );
-}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // SETTINGS PAGE (default export)

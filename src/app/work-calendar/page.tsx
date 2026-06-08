@@ -496,7 +496,7 @@ export default function WorkCalendarPage() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all active:scale-[0.97]"
             >
               <Plus className="w-4 h-4" />
-              {currentRole === 'Manager' ? 'Create Schedule' : currentRole === 'Leader' ? 'Create Schedule' : 'Request Time Off'}
+              {currentRole === 'Manager' ? 'Create Schedule' : currentRole === 'Leader' ? 'Create Schedule' : 'Request Time'}
             </button>
           </div>
         </div>
