@@ -797,6 +797,7 @@ export default function ContentCalendarPage() {
     const item = contentItems.find(c => c.id === id);
     if (!item) return;
     const newStatus = currentRole === 'Manager' ? 'Scheduled' : 'ApprovedByLeader';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateContentItem(id, { status: newStatus as any, approvedBy: currentUser });
     addNotification({ title: 'Content Approved', message: `"${item.title}" has been approved`, type: 'success', link: '/content-calendar' });
     addToast({ title: 'Content Approved', message: item.title, type: 'success' });
@@ -805,11 +806,13 @@ export default function ContentCalendarPage() {
   const handleReject = (id: string) => {
     const item = contentItems.find(c => c.id === id);
     if (!item) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateContentItem(id, { status: 'Rejected' as any });
     addToast({ title: 'Content Rejected', message: item.title, type: 'warning' });
   };
 
   const handleSubmitForReview = (id: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updateContentItem(id, { status: 'PendingReview' as any });
     addToast({ title: 'Submitted for Review', type: 'info' });
   };

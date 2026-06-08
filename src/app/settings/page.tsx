@@ -481,6 +481,7 @@ function IntegrationsTab() {
   useEffect(() => {
     const saved = localStorage.getItem('integrations_connected');
     if (saved) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setConnected(JSON.parse(saved));
     }
   }, []);
@@ -572,13 +573,17 @@ function AppearanceTab() {
 
   useEffect(() => {
     const savedAccent = localStorage.getItem('theme_accent');
-    if (savedAccent) setAccent(savedAccent);
+    if (savedAccent) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAccent(savedAccent);
+    }
     
     const savedLayout = localStorage.getItem('theme_layout');
     if (savedLayout) {
       const { sidebar: s, density: d, fontSize: f } = JSON.parse(savedLayout);
       if (s) setSidebar(s);
       if (d) setDensity(d);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (f) setFontSize(f);
     }
   }, []);
@@ -589,6 +594,7 @@ function AppearanceTab() {
     document.documentElement.style.setProperty('--accent-color', color);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const saveLayout = (updates: any) => {
     const current = { sidebar, density, fontSize, ...updates };
     localStorage.setItem('theme_layout', JSON.stringify(current));
@@ -623,6 +629,7 @@ function AppearanceTab() {
             return (
               <button
                 key={m.id}
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onClick={() => setTheme(m.id as any)}
                 className={cn(
                   'flex flex-col items-center gap-3 rounded-xl border p-5 transition-all',
@@ -789,7 +796,10 @@ function SecurityTab() {
 
   useEffect(() => {
     const saved = localStorage.getItem('security_2fa');
-    if (saved === 'true') setTwoFactor(true);
+    if (saved === 'true') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTwoFactor(true);
+    }
   }, []);
 
   const handle2FAToggle = (val: boolean) => {

@@ -133,7 +133,7 @@ export function FormField({ label, required, children }: FormFieldProps) {
 }
 
 // ─── Reusable Input ─────────────────────────────────────────────────────────
-interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+type FormInputProps = React.InputHTMLAttributes<HTMLInputElement>;
 
 export function FormInput(props: FormInputProps) {
   const { theme } = useTheme();
@@ -176,7 +176,7 @@ export function FormSelect(props: FormSelectProps) {
 }
 
 // ─── Reusable Textarea ──────────────────────────────────────────────────────
-interface FormTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+type FormTextareaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
 export function FormTextarea(props: FormTextareaProps) {
   const { theme } = useTheme();
