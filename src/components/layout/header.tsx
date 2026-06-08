@@ -139,62 +139,62 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   }, [searchResults]);
 
   return (
-    <header className="flex justify-between items-center w-full px-gutter h-16 shrink-0 bg-[#191919] z-40 relative border-b border-[#2C2C2C]">
-      {/* Mobile Menu Toggle & Title */}
-      <div className="flex items-center gap-2">
+    <header className="flex justify-between items-center w-full px-4 h-12 shrink-0 bg-[var(--bg-main)] z-40 relative flex-none">
+      {/* Mobile Menu Toggle & Breadcrumb */}
+      <div className="flex items-center gap-1 overflow-hidden">
         <button 
           onClick={onMenuClick}
-          className="md:hidden text-[#A4A4A4] hover:text-white transition-colors"
+          className="md:hidden p-1 text-[var(--text-muted)] hover:bg-[var(--bg-hover)] rounded transition-colors"
         >
-          <span className="material-symbols-outlined">menu</span>
+          <span className="material-symbols-outlined text-[20px]">menu</span>
         </button>
-        <h2 className="font-headline-md text-headline-md font-bold text-white flex items-center gap-2">
-          {pageInfo.title === 'AI Chief of Staff' && (
-            <span className="material-symbols-outlined text-[#9D5DFF]">smart_toy</span>
-          )}
-          {pageInfo.title}
-        </h2>
+        
+        {/* Breadcrumb */}
+        <div className="flex items-center text-[14px] text-[var(--text-muted)] whitespace-nowrap overflow-hidden text-ellipsis">
+          <span className="hover:bg-[var(--bg-hover)] px-2 py-1 rounded cursor-pointer transition-colors truncate hidden sm:inline-block">TeamOS Workspace</span>
+          <span className="text-[var(--border-main)] mx-0.5 hidden sm:inline-block">/</span>
+          <span className="hover:bg-[var(--bg-hover)] px-2 py-1 rounded cursor-pointer transition-colors text-[var(--text-main)] truncate font-medium flex items-center gap-1.5">
+            {pageInfo.title === 'AI Chief of Staff' && <span className="text-[14px]">🤖</span>}
+            {pageInfo.title}
+          </span>
+        </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
         {/* Search Bar */}
-        <div ref={searchRef} className="relative hidden sm:block w-64">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#A4A4A4] text-[18px]">search</span>
+        <div ref={searchRef} className="relative hidden sm:block w-48">
+          <span className="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-[16px]">search</span>
           <input 
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             onFocus={() => setSearchFocused(true)}
-            className="w-full bg-[#121212] border border-[#2C2C2C] text-white rounded-full py-1.5 pl-10 pr-4 focus:outline-none focus:border-[#9D5DFF] focus:ring-1 focus:ring-[#9D5DFF] transition-all font-body-sm text-body-sm placeholder:text-[#A4A4A4]" 
-            placeholder="Ask AI anything..." 
+            className="w-full bg-[var(--bg-sidebar)] border border-transparent text-[var(--text-main)] rounded py-1 pl-8 pr-2 focus:outline-none focus:border-[var(--border-main)] focus:bg-[var(--bg-main)] transition-all text-[14px] placeholder:text-[var(--text-muted)]" 
+            placeholder="Search..." 
           />
           {/* Search Dropdown */}
           {showSearchResults && (
-            <div className="absolute top-full left-0 right-0 mt-2 rounded-xl border border-[#2C2C2C] bg-[#202020] shadow-xl overflow-hidden z-50">
+            <div className="absolute top-full right-0 mt-2 w-80 rounded border border-[var(--border-light)] bg-[var(--bg-main)] shadow-lg overflow-hidden z-50">
               {searchResults.length === 0 ? (
-                <div className="px-4 py-8 text-center">
-                  <span className="material-symbols-outlined text-[32px] text-[#A4A4A4] mb-2">search_off</span>
-                  <p className="text-body-sm text-[#A4A4A4]">No results for &quot;{searchQuery}&quot;</p>
+                <div className="px-4 py-6 text-center">
+                  <p className="text-[14px] text-[var(--text-muted)]">No results for &quot;{searchQuery}&quot;</p>
                 </div>
               ) : (
                 <div className="max-h-80 overflow-y-auto py-2">
                   {Object.entries(groupedResults).map(([category, results]) => (
                     <div key={category}>
-                      <p className="px-4 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#A4A4A4]">
+                      <p className="px-3 py-1 text-[11px] font-medium text-[var(--text-muted)]">
                         {category}
                       </p>
                       {results.map(result => (
                         <button
                           key={result.id}
                           onClick={() => handleSearchResultClick(result)}
-                          className="flex w-full items-center gap-3 px-4 py-2 text-left hover:bg-[#2A2A2A] transition-colors"
+                          className="flex w-full items-center gap-2 px-3 py-1.5 text-left hover:bg-[var(--bg-hover)] transition-colors"
                         >
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#191919]">
-                            <span className="material-symbols-outlined text-[16px] text-[#A4A4A4]">{result.icon}</span>
-                          </div>
+                          <span className="text-[16px]">{result.icon}</span>
                           <div className="min-w-0 flex-1">
-                            <p className="text-body-sm font-medium text-white truncate">{result.title}</p>
-                            {result.subtitle && <p className="text-[11px] text-[#A4A4A4] truncate">{result.subtitle}</p>}
+                            <p className="text-[14px] text-[var(--text-main)] truncate">{result.title}</p>
                           </div>
                         </button>
                       ))}
@@ -210,29 +210,28 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
         <div ref={notifRef} className="relative">
           <button 
             onClick={() => setNotifOpen(!notifOpen)}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-[#A4A4A4] hover:text-white hover:bg-[#202020] transition-colors relative"
+            className="w-8 h-8 rounded flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-hover)] transition-colors relative"
           >
-            <span className="material-symbols-outlined">notifications</span>
+            <span className="material-symbols-outlined text-[20px]">notifications</span>
             {unreadNotificationCount > 0 && (
-              <span className="absolute top-0 right-0 w-2 h-2 bg-[#ffb4ab] rounded-full"></span>
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
             )}
           </button>
 
           {notifOpen && (
-            <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-xl border border-[#2C2C2C] bg-[#202020] shadow-2xl overflow-hidden">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-[#2C2C2C]">
-                <h3 className="text-body-sm font-bold text-white">Notifications</h3>
+            <div className="absolute right-0 top-full z-50 mt-1 w-80 rounded border border-[var(--border-light)] bg-[var(--bg-main)] shadow-lg overflow-hidden">
+              <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--border-light)]">
+                <h3 className="text-[14px] font-medium text-[var(--text-main)]">Updates</h3>
                 {unreadNotificationCount > 0 && (
-                  <button onClick={markAllNotificationsRead} className="text-[11px] font-medium text-[#9D5DFF] hover:opacity-80 transition-colors">
+                  <button onClick={markAllNotificationsRead} className="text-[12px] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
                     Mark all read
                   </button>
                 )}
               </div>
               <div className="max-h-72 overflow-y-auto">
                 {notifications.length === 0 ? (
-                  <div className="px-4 py-8 text-center text-[#A4A4A4]">
-                    <span className="material-symbols-outlined text-[32px] mb-2">notifications_off</span>
-                    <p className="text-body-sm">No notifications</p>
+                  <div className="px-4 py-8 text-center text-[var(--text-muted)]">
+                    <p className="text-[14px]">You're all caught up.</p>
                   </div>
                 ) : (
                   notifications.slice(0, 8).map(notif => {
@@ -246,19 +245,18 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
                           setNotifOpen(false);
                         }}
                         className={cn(
-                          'flex w-full items-start gap-3 px-4 py-3 text-left transition-colors',
-                          !notif.read ? 'bg-[#9D5DFF]/5' : 'hover:bg-[#2A2A2A]'
+                          'flex w-full items-start gap-3 px-3 py-2.5 text-left transition-colors',
+                          !notif.read ? 'bg-[var(--bg-sidebar)]' : 'hover:bg-[var(--bg-hover)]'
                         )}
                       >
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <p className={cn('text-body-sm font-medium truncate', notif.read ? 'text-[#A4A4A4]' : 'text-white')}>
+                            <p className={cn('text-[14px] truncate', !notif.read ? 'font-medium text-[var(--text-main)]' : 'text-[var(--text-muted)]')}>
                               {notif.title}
                             </p>
-                            {!notif.read && <span className="h-1.5 w-1.5 rounded-full bg-[#9D5DFF] shrink-0" />}
                           </div>
-                          <p className="text-[12px] mt-0.5 line-clamp-2 text-[#A4A4A4]">{notif.message}</p>
-                          <p className="text-[10px] mt-1 text-[#A4A4A4]/70">{timeAgo}</p>
+                          <p className="text-[13px] mt-0.5 line-clamp-2 text-[var(--text-muted)]">{notif.message}</p>
+                          <p className="text-[12px] mt-1 text-[var(--text-muted)]">{timeAgo}</p>
                         </div>
                       </button>
                     );
@@ -270,18 +268,16 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
         </div>
 
         {/* User Profile */}
-        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#9D5DFF] to-[#563a82] p-[1px] relative cursor-pointer" onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}>
-          <div className="w-full h-full rounded-full bg-[#202020] flex items-center justify-center overflow-hidden">
-            <span className="text-[12px] font-bold text-white">{currentUser.name.split(' ').map(n => n[0]).join('')}</span>
-          </div>
+        <div className="w-7 h-7 rounded bg-[var(--bg-hover)] flex items-center justify-center cursor-pointer ml-1" onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}>
+          <span className="text-[12px] font-medium text-[var(--text-main)]">{currentUser.name.split(' ').map(n => n[0]).join('')}</span>
 
           {/* Role Switcher Dropdown (Demo) */}
           {roleDropdownOpen && (
             <>
               <div className="fixed inset-0 z-40 cursor-default" onClick={(e) => { e.stopPropagation(); setRoleDropdownOpen(false); }} />
-              <div className="absolute right-0 top-full z-50 mt-1.5 w-48 rounded-xl border border-[#2C2C2C] bg-[#202020] shadow-xl p-1.5 cursor-default">
-                <p className="px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#A4A4A4]">
-                  Switch Role (Demo)
+              <div className="absolute right-0 top-full z-50 mt-1 w-48 rounded border border-[var(--border-light)] bg-[var(--bg-main)] shadow-lg p-1 cursor-default">
+                <p className="px-2 py-1 text-[11px] font-medium text-[var(--text-muted)] uppercase">
+                  Switch Role
                 </p>
                 {(['Manager', 'Leader', 'Staff'] as UserRole[]).map((role) => {
                   const isActive = currentRole === role;
@@ -290,15 +286,12 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
                       key={role}
                       onClick={(e) => { e.stopPropagation(); setCurrentRole(role); setRoleDropdownOpen(false); }}
                       className={cn(
-                        'flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-body-sm transition-colors',
-                        isActive ? 'bg-[#191919] text-white' : 'text-[#A4A4A4] hover:bg-[#191919] hover:text-white'
+                        'flex w-full items-center gap-2 rounded px-2 py-1.5 text-[14px] transition-colors',
+                        isActive ? 'bg-[var(--bg-hover)] text-[var(--text-main)] font-medium' : 'text-[var(--text-muted)] hover:bg-[var(--bg-hover)]'
                       )}
                     >
-                      <span className="material-symbols-outlined text-[14px]">
-                        {role === 'Manager' ? 'shield' : role === 'Leader' ? 'star' : 'person'}
-                      </span>
                       {role}
-                      {isActive && <span className="ml-auto text-[10px] text-[#9D5DFF]">●</span>}
+                      {isActive && <span className="ml-auto text-[12px]">✓</span>}
                     </button>
                   );
                 })}
