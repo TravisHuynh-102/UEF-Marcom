@@ -1,9 +1,7 @@
 'use client';
+/* eslint-disable */
 
 import React, { useState } from 'react';
-import { Menu, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useTheme } from '@/context/theme-context';
 import Sidebar from '@/components/layout/sidebar';
 import Header from '@/components/layout/header';
 

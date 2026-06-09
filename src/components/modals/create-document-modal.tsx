@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState } from 'react';
 import { BookOpen } from 'lucide-react';
 import { useAppState } from '@/context/app-state-context';

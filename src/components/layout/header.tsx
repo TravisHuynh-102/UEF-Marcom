@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable */
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';

@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable */
 
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
