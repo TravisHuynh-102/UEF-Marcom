@@ -231,7 +231,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
               <div className="max-h-72 overflow-y-auto">
                 {notifications.length === 0 ? (
                   <div className="px-4 py-8 text-center text-[var(--text-muted)]">
-                    <p className="text-[14px]">You're all caught up.</p>
+                    <p className="text-[14px]">You&apos;re all caught up.</p>
                   </div>
                 ) : (
                   notifications.slice(0, 8).map(notif => {

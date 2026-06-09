@@ -23,7 +23,7 @@ export default function DashboardPage() {
           </div>
           <div>
             <p className="font-semibold text-[16px] mb-1">Good morning. Here is your daily intelligence briefing.</p>
-            <p className="text-[var(--color-apple-subtle)] text-[14px]">I've analyzed yesterday's sprint metrics and team communications. We have 3 blocking issues that require your attention today, and team sentiment is currently trending positive.</p>
+            <p className="text-[var(--color-apple-subtle)] text-[14px]">I&apos;ve analyzed yesterday&apos;s sprint metrics and team communications. We have 3 blocking issues that require your attention today, and team sentiment is currently trending positive.</p>
           </div>
         </div>
 
