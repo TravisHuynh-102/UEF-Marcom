@@ -6,6 +6,7 @@ import { getInitials } from '@/lib/utils';
 import { useAppState } from '@/context/app-state-context';
 import { useRole } from '@/context/role-context';
 import { useToast } from '@/components/ui/toast';
+import { PageHeader } from '@/components/ui/page-header';
 import CreateProjectModal from '@/components/modals/create-project-modal';
 import { ConfirmDeleteModal } from '@/components/modals/modal-wrapper';
 import { Project, ProjectStatus, RiskLevel } from '@/types';
@@ -39,21 +40,44 @@ const STATUSES: ProjectStatus[] = [
 ];
 
 const STATUS_COLORS: Record<ProjectStatus, { bg: string; text: string; dot: string }> = {
-  Backlog:       { bg: 'bg-[var(--bg-hover)]', text: 'text-[var(--text-muted)]', dot: 'bg-gray-400' },
-  Planned:       { bg: 'bg-sky-100 dark:bg-sky-900/30', text: 'text-sky-700 dark:text-sky-400', dot: 'bg-sky-500' },
-  'In Progress': { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-700 dark:text-blue-400', dot: 'bg-blue-500' },
-  Review:        { bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-700 dark:text-purple-400', dot: 'bg-purple-500' },
-  Completed:     { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-700 dark:text-emerald-400', dot: 'bg-emerald-500' },
-  Blocked:       { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', dot: 'bg-red-500' },
+  Backlog:       { bg: 'bg-black/[0.04]', text: 'text-[var(--color-apple-subtle)]', dot: 'bg-gray-400' },
+  Planned:       { bg: 'bg-sky-50', text: 'text-sky-600', dot: 'bg-sky-500' },
+  'In Progress': { bg: 'bg-blue-50', text: 'text-blue-600', dot: 'bg-blue-500' },
+  Review:        { bg: 'bg-purple-50', text: 'text-purple-600', dot: 'bg-purple-500' },
+  Completed:     { bg: 'bg-emerald-50', text: 'text-emerald-600', dot: 'bg-emerald-500' },
+  Blocked:       { bg: 'bg-red-50', text: 'text-red-600', dot: 'bg-red-500' },
 };
 
 const RISK_CONFIG: Record<RiskLevel, { icon: React.ReactNode; color: string }> = {
-  Safe:      { icon: <Shield className="w-3 h-3" />, color: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400' },
-  'At Risk': { icon: <AlertTriangle className="w-3 h-3" />, color: 'text-amber-600 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400' },
-  Blocked:   { icon: <XCircle className="w-3 h-3" />, color: 'text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400' },
+  Safe:      { icon: <Shield className="w-3 h-3" />, color: 'text-emerald-600 bg-emerald-50' },
+  'At Risk': { icon: <AlertTriangle className="w-3 h-3" />, color: 'text-amber-600 bg-amber-50' },
+  Blocked:   { icon: <XCircle className="w-3 h-3" />, color: 'text-red-600 bg-red-50' },
 };
 
 const SORT_OPTIONS = ['Name', 'Due Date', 'Progress', 'Risk'] as const;
+
+/* ────────── Gradient banners for project cards ────────── */
+const CARD_GRADIENTS = [
+  'from-blue-400/80 to-indigo-500/80',
+  'from-purple-400/80 to-pink-500/80',
+  'from-emerald-400/80 to-teal-500/80',
+  'from-orange-400/80 to-rose-500/80',
+  'from-cyan-400/80 to-blue-500/80',
+  'from-pink-400/80 to-violet-500/80',
+];
+
+function getGradient(name: string) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return CARD_GRADIENTS[Math.abs(hash) % CARD_GRADIENTS.length];
+}
+
+/* Avatar color from name */
+function avatarHsl(name: string) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+  return `hsl(${Math.abs(h) % 360}, 60%, 72%)`;
+}
 
 /* ────────────────────────── sub-components ────────────────────── */
 
@@ -61,18 +85,19 @@ function AvatarStack({ members, max = 3 }: { members: Project['members']; max?: 
   const visible = members.slice(0, max);
   const overflow = members.length - max;
   return (
-    <div className="flex -space-x-1">
+    <div className="flex -space-x-1.5">
       {visible.map((m) => (
         <div
           key={m.id}
           title={m.name}
-          className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-medium border border-[var(--bg-main)] bg-[var(--border-light)] text-[var(--text-main)]"
+          className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-semibold text-white border-[1.5px] border-white"
+          style={{ backgroundColor: avatarHsl(m.name) }}
         >
           {getInitials(m.name)}
         </div>
       ))}
       {overflow > 0 && (
-        <div className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-medium border border-[var(--bg-main)] bg-[var(--border-light)] text-[var(--text-muted)]">
+        <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-semibold bg-black/[0.06] text-[var(--color-apple-subtle)] border-[1.5px] border-white">
           +{overflow}
         </div>
       )}
@@ -83,7 +108,7 @@ function AvatarStack({ members, max = 3 }: { members: Project['members']; max?: 
 function RiskBadge({ risk }: { risk: RiskLevel }) {
   const c = RISK_CONFIG[risk];
   return (
-    <span className={cn('inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium', c.color)}>
+    <span className={cn('inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium', c.color)}>
       {c.icon}
       {risk}
     </span>
@@ -91,20 +116,15 @@ function RiskBadge({ risk }: { risk: RiskLevel }) {
 }
 
 function ProgressBar({ value }: { value: number }) {
-  const color =
-    value >= 80
-      ? 'bg-emerald-500'
-      : value >= 50
-      ? 'bg-blue-500'
-      : value >= 25
-      ? 'bg-amber-500'
-      : 'bg-red-500';
   return (
     <div className="flex items-center gap-2 w-full">
-      <div className="flex-1 h-1.5 rounded-full bg-[var(--border-light)] overflow-hidden">
-        <div className={cn('h-full rounded-full transition-all duration-500', color)} style={{ width: `${value}%` }} />
+      <div className="flex-1 h-[3px] rounded-full bg-black/[0.06] overflow-hidden">
+        <div
+          className="h-full rounded-full bg-[var(--color-apple-green)] transition-all duration-500"
+          style={{ width: `${value}%` }}
+        />
       </div>
-      <span className="text-[11px] font-medium text-[var(--text-muted)] tabular-nums w-8 text-right">{value}%</span>
+      <span className="text-[11px] font-medium text-[var(--color-apple-subtle)] tabular-nums w-8 text-right">{value}%</span>
     </div>
   );
 }
@@ -113,32 +133,32 @@ function ProgressBar({ value }: { value: number }) {
 
 function ProjectExpandedDetail({ project }: { project: Project }) {
   return (
-    <div className="mt-3 pt-3 border-t border-[var(--border-light)] space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
+    <div className="mt-3 pt-3 border-t border-black/[0.06] space-y-3 animate-in fade-in slide-in-from-top-1 duration-200">
       {/* Description */}
       {project.description && (
         <div>
-          <p className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1">Description</p>
-          <p className="text-[13px] text-[var(--text-main)] leading-relaxed">{project.description}</p>
+          <p className="text-[11px] font-semibold text-[var(--color-apple-subtle)] uppercase tracking-wider mb-1">Description</p>
+          <p className="text-[13px] text-[var(--color-apple-text)] leading-relaxed">{project.description}</p>
         </div>
       )}
 
       {/* Due Date */}
       <div className="flex items-center gap-2">
-        <Clock className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-        <span className="text-[13px] text-[var(--text-main)]">
+        <Clock className="w-3.5 h-3.5 text-[var(--color-apple-subtle)]" />
+        <span className="text-[13px] text-[var(--color-apple-text)]">
           Due: {new Date(project.dueDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
         </span>
       </div>
 
       {/* Progress Bar */}
       <div>
-        <p className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1.5">Progress</p>
+        <p className="text-[11px] font-semibold text-[var(--color-apple-subtle)] uppercase tracking-wider mb-1.5">Progress</p>
         <ProgressBar value={project.progress} />
       </div>
 
       {/* Members */}
       <div>
-        <p className="text-[11px] font-semibold text-[var(--text-muted)] uppercase tracking-wider mb-1.5 flex items-center gap-1">
+        <p className="text-[11px] font-semibold text-[var(--color-apple-subtle)] uppercase tracking-wider mb-1.5 flex items-center gap-1">
           <Users className="w-3 h-3" />
           Team ({project.members.length})
         </p>
@@ -146,9 +166,12 @@ function ProjectExpandedDetail({ project }: { project: Project }) {
           {project.members.map((m) => (
             <span
               key={m.id}
-              className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-[var(--bg-hover)] border border-[var(--border-light)] text-[12px] font-medium text-[var(--text-main)]"
+              className="inline-flex items-center gap-1.5 px-2 py-1 rounded-full bg-black/[0.03] text-[12px] font-medium text-[var(--color-apple-text)]"
             >
-              <span className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold bg-[var(--border-light)]">
+              <span
+                className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold text-white"
+                style={{ backgroundColor: avatarHsl(m.name) }}
+              >
                 {getInitials(m.name)}
               </span>
               {m.name}
@@ -178,61 +201,67 @@ function ProjectCard({
   return (
     <div
       className={cn(
-        'group relative rounded shadow-sm p-3 border transition-colors cursor-pointer bg-[var(--bg-main)] text-[14px]',
-        'hover:bg-[var(--bg-hover)] border-[var(--border-light)]',
-        isExpanded && 'border-[var(--accent-primary)]'
+        'group relative apple-card overflow-hidden cursor-pointer transition-all duration-200',
+        'hover:-translate-y-0.5 hover:shadow-md',
+        isExpanded && 'ring-1 ring-[var(--color-apple-blue)]/30'
       )}
       onClick={onToggleExpand}
     >
-      {/* Header */}
-      <div className="flex items-start justify-between mb-2">
-        <h4 className="font-medium text-[var(--text-main)] leading-snug pr-2">
-          {project.name}
-        </h4>
-        <div className="flex items-center gap-0.5">
-          {isManager && onDelete && (
+      {/* Gradient Banner */}
+      <div className={cn('h-20 bg-gradient-to-br', getGradient(project.name))} />
+
+      {/* Card Body */}
+      <div className="p-4">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-2">
+          <h4 className="font-semibold text-[15px] text-[var(--color-apple-text)] leading-snug pr-2">
+            {project.name}
+          </h4>
+          <div className="flex items-center gap-0.5">
+            {isManager && onDelete && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-[8px] hover:bg-red-500/10 hover:text-red-500 text-[var(--color-apple-subtle)]"
+                title="Delete project"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
             <button
-              onClick={(e) => { e.stopPropagation(); onDelete(); }}
-              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md hover:bg-red-500/10 hover:text-red-500 text-[var(--text-muted)]"
-              title="Delete project"
+              onClick={(e) => { e.stopPropagation(); onToggleExpand(); }}
+              className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-[8px] hover:bg-black/[0.04] text-[var(--color-apple-subtle)]"
             >
-              <Trash2 className="w-3.5 h-3.5" />
+              {isExpanded
+                ? <ChevronUp className="w-4 h-4" />
+                : <MoreHorizontal className="w-4 h-4" />
+              }
             </button>
-          )}
-          <button
-            onClick={(e) => { e.stopPropagation(); onToggleExpand(); }}
-            className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-md hover:text-[var(--text-main)] text-[var(--text-muted)]"
-          >
-            {isExpanded
-              ? <ChevronUp className="w-4 h-4" />
-              : <MoreHorizontal className="w-4 h-4" />
-            }
-          </button>
+          </div>
         </div>
+
+        {/* Description */}
+        <p className="text-[13px] text-[var(--color-apple-subtle)] mb-3 line-clamp-2 leading-relaxed">{project.description}</p>
+
+        {/* Progress */}
+        <div className="mb-3">
+          <ProgressBar value={project.progress} />
+        </div>
+
+        {/* Risk + Due */}
+        <div className="flex items-center justify-between mb-3">
+          <RiskBadge risk={project.risk} />
+          <span className="inline-flex items-center gap-1 text-[11px] text-[var(--color-apple-subtle)]">
+            <Calendar className="w-3 h-3" />
+            {new Date(project.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+          </span>
+        </div>
+
+        {/* Bottom: avatars */}
+        <AvatarStack members={project.members} />
+
+        {/* Expanded detail */}
+        {isExpanded && <ProjectExpandedDetail project={project} />}
       </div>
-
-      {/* Description */}
-      <p className="text-[12px] text-[var(--text-muted)] mb-3 line-clamp-2 leading-relaxed">{project.description}</p>
-
-      {/* Progress */}
-      <div className="mb-3">
-        <ProgressBar value={project.progress} />
-      </div>
-
-      {/* Risk + Due */}
-      <div className="flex items-center justify-between mb-3">
-        <RiskBadge risk={project.risk} />
-        <span className="inline-flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
-          <Calendar className="w-3 h-3" />
-          {new Date(project.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-        </span>
-      </div>
-
-      {/* Bottom: avatars */}
-      <AvatarStack members={project.members} />
-
-      {/* Expanded detail */}
-      {isExpanded && <ProjectExpandedDetail project={project} />}
     </div>
   );
 }
@@ -254,19 +283,20 @@ function BoardColumn({
   onDeleteProject: (project: Project) => void;
   isManager: boolean;
 }) {
-  const sc = STATUS_COLORS[status];
   return (
-    <div className="w-[260px] shrink-0 flex flex-col">
+    <div className="w-[280px] shrink-0 flex flex-col">
       {/* Column header */}
-      <div className="flex items-center gap-2 mb-3 px-1 text-[14px] font-medium text-[var(--text-main)]">
-        <span className={cn('w-4 h-4 rounded-[3px] flex items-center justify-center text-[10px]', sc.bg, sc.text)}>•</span>
-        {status}
-        <span className="text-[var(--text-muted)] font-normal text-[12px] ml-1">{projects.length}</span>
-        <span className="ml-auto text-[var(--text-muted)] hover:bg-[var(--bg-hover)] w-6 h-6 flex items-center justify-center rounded cursor-pointer">+</span>
+      <div className="flex items-center gap-2 mb-4 px-1">
+        <span className="text-[13px] font-semibold text-[var(--color-apple-subtle)] uppercase tracking-wider">
+          {status}
+        </span>
+        <span className="text-[12px] font-medium text-[var(--color-apple-subtle)]/60 bg-black/[0.04] rounded-full px-2 py-0.5">
+          {projects.length}
+        </span>
       </div>
 
       {/* Cards */}
-      <div className="flex-1 space-y-2">
+      <div className="flex-1 space-y-3">
         {projects.map((p) => (
           <ProjectCard
             key={p.id}
@@ -278,7 +308,9 @@ function BoardColumn({
           />
         ))}
         {/* Add button */}
-        <div className="h-8 hover:bg-[var(--bg-hover)] rounded-[4px] border border-transparent transition-colors flex items-center px-3 cursor-pointer text-[14px] text-[var(--text-muted)] opacity-0 hover:opacity-100">+ New</div>
+        <div className="h-9 hover:bg-black/[0.02] rounded-[10px] border border-dashed border-black/[0.08] transition-colors flex items-center justify-center cursor-pointer text-[13px] text-[var(--color-apple-subtle)] opacity-0 hover:opacity-100">
+          <Plus className="w-3.5 h-3.5 mr-1" /> New
+        </div>
       </div>
     </div>
   );
@@ -301,21 +333,21 @@ function ProjectListRow({
 }) {
   const sc = STATUS_COLORS[project.status];
   return (
-    <div className="border-b border-[var(--border-light)]">
+    <div className="border-b border-black/[0.05]">
       <div
         onClick={onToggleExpand}
         className={cn(
-          'group grid grid-cols-[2fr_120px_160px_100px_120px_100px_80px] gap-4 items-center px-4 py-3 hover:bg-[var(--bg-hover)] transition-colors cursor-pointer text-[14px]',
-          isExpanded && 'bg-[var(--bg-hover)]'
+          'group grid grid-cols-[2fr_120px_160px_100px_120px_100px_80px] gap-4 items-center px-5 py-3 hover:bg-black/[0.02] transition-colors cursor-pointer text-[13.5px]',
+          isExpanded && 'bg-black/[0.02]'
         )}
       >
         {/* Name */}
         <div className="flex items-center gap-3 min-w-0">
-          <FolderKanban className="w-4 h-4 text-[var(--accent-primary)] shrink-0" />
-          <span className="font-medium text-[var(--text-main)] truncate">{project.name}</span>
+          <FolderKanban className="w-4 h-4 text-[var(--color-apple-blue)] shrink-0" />
+          <span className="font-medium text-[var(--color-apple-text)] truncate">{project.name}</span>
         </div>
         {/* Status */}
-        <span className={cn('inline-flex items-center px-1.5 py-0.5 rounded text-[12px]', sc.bg, sc.text)}>
+        <span className={cn('inline-flex items-center px-2 py-0.5 rounded-full text-[12px] font-medium', sc.bg, sc.text)}>
           {project.status}
         </span>
         {/* Progress */}
@@ -324,31 +356,34 @@ function ProjectListRow({
         <RiskBadge risk={project.risk} />
         {/* Lead */}
         <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-medium bg-[var(--border-light)] text-[var(--text-main)]">
+          <div
+            className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-semibold text-white"
+            style={{ backgroundColor: avatarHsl(project.lead.name) }}
+          >
             {getInitials(project.lead.name)}
           </div>
-          <span className="text-[13px] text-[var(--text-muted)] truncate">{project.lead.name.split(' ')[0]}</span>
+          <span className="text-[13px] text-[var(--color-apple-subtle)] truncate">{project.lead.name.split(' ')[0]}</span>
         </div>
         {/* Due */}
-        <span className="text-[13px] text-[var(--text-muted)] flex items-center gap-1">
+        <span className="text-[13px] text-[var(--color-apple-subtle)] flex items-center gap-1">
           {new Date(project.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
         </span>
         {/* Members + Actions */}
         <div className="flex items-center justify-between gap-1">
-          <span className="text-[13px] text-[var(--text-muted)]">{project.members.length} members</span>
+          <span className="text-[13px] text-[var(--color-apple-subtle)]">{project.members.length}</span>
           <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
             {isManager && onDelete && (
               <button
                 onClick={(e) => { e.stopPropagation(); onDelete(); }}
-                className="p-1 rounded hover:bg-red-500/10 hover:text-red-500 text-[var(--text-muted)]"
+                className="p-1 rounded-[8px] hover:bg-red-500/10 hover:text-red-500 text-[var(--color-apple-subtle)]"
                 title="Delete project"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             )}
             {isExpanded
-              ? <ChevronUp className="w-4 h-4 text-[var(--text-muted)] shrink-0" />
-              : <ChevronDown className="w-4 h-4 text-[var(--text-muted)] shrink-0" />
+              ? <ChevronUp className="w-4 h-4 text-[var(--color-apple-subtle)] shrink-0" />
+              : <ChevronDown className="w-4 h-4 text-[var(--color-apple-subtle)] shrink-0" />
             }
           </div>
         </div>
@@ -449,52 +484,83 @@ export default function ProjectsPage() {
   }, [filtered]);
 
   return (
-    <div className="flex flex-col h-full mt-4">
-      {/* Notion Database Header (Title & Views) */}
-      <div className="mb-6">
-        <h1 className="text-[32px] font-bold text-[var(--text-main)] mb-6 tracking-tight flex items-center gap-2">
-          <span className="text-[32px] select-none">📁</span> Projects
-        </h1>
-        
-        {/* View Tabs */}
-        <div className="flex items-center border-b border-[var(--border-light)] gap-4 px-2">
-          <div 
-            onClick={() => setView('board')}
-            className={cn("text-[14px] pb-2 cursor-pointer transition-colors", view === 'board' ? "font-medium border-b-2 border-[var(--text-main)] text-[var(--text-main)]" : "text-[var(--text-muted)] hover:text-[var(--text-main)]")}
-          >
-            Board View
-          </div>
-          <div 
-            onClick={() => setView('list')}
-            className={cn("text-[14px] pb-2 cursor-pointer transition-colors", view === 'list' ? "font-medium border-b-2 border-[var(--text-main)] text-[var(--text-main)]" : "text-[var(--text-muted)] hover:text-[var(--text-main)]")}
-          >
-            Table View
-          </div>
-        </div>
-      </div>
+    <div className="flex flex-col h-full">
+      {/* ────── Apple Page Header ────── */}
+      <PageHeader
+        title="Projects"
+        subtitle={`${projects.length} project${projects.length !== 1 ? 's' : ''} across your workspace`}
+        actions={
+          <>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[var(--color-apple-subtle)]" />
+              <input
+                type="text"
+                placeholder="Search projects…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-8 pr-4 py-1.5 rounded-full border border-black/[0.08] bg-white text-[13px] text-[var(--color-apple-text)] placeholder:text-[var(--color-apple-subtle)] outline-none focus:ring-2 focus:ring-[var(--color-apple-blue)]/20 w-52 transition-shadow"
+              />
+            </div>
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="bg-[var(--color-apple-blue)] text-white px-4 py-1.5 rounded-full text-[13px] font-medium hover:opacity-90 transition-opacity flex items-center gap-1.5"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              New project
+            </button>
+          </>
+        }
+      />
 
-      {/* Toolbar */}
-      <div className="flex justify-between items-center mb-6 text-[14px]">
-        <div className="flex items-center gap-3 text-[var(--text-muted)] relative">
-          
+      {/* ────── Toolbar ────── */}
+      <div className="flex justify-between items-center px-10 py-4">
+        <div className="flex items-center gap-2 relative">
+          {/* View toggle – segmented control */}
+          <div className="flex items-center bg-black/[0.05] rounded-[10px] p-0.5 mr-3">
+            <button
+              onClick={() => setView('board')}
+              className={cn(
+                'flex items-center gap-1.5 px-3 py-1 rounded-[8px] text-[13px] font-medium transition-all',
+                view === 'board'
+                  ? 'bg-white shadow-sm text-[var(--color-apple-text)]'
+                  : 'text-[var(--color-apple-subtle)] hover:text-[var(--color-apple-text)]'
+              )}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              Board
+            </button>
+            <button
+              onClick={() => setView('list')}
+              className={cn(
+                'flex items-center gap-1.5 px-3 py-1 rounded-[8px] text-[13px] font-medium transition-all',
+                view === 'list'
+                  ? 'bg-white shadow-sm text-[var(--color-apple-text)]'
+                  : 'text-[var(--color-apple-subtle)] hover:text-[var(--color-apple-text)]'
+              )}
+            >
+              <List className="w-3.5 h-3.5" />
+              List
+            </button>
+          </div>
+
           {/* Status filter */}
           <button
             onClick={() => { setShowStatusDropdown((v) => !v); setShowSortDropdown(false); }}
-            className="hover:bg-[var(--bg-hover)] px-2 py-1 rounded transition-colors flex items-center gap-1"
+            className="hover:bg-black/[0.04] px-3 py-1.5 rounded-[8px] transition-colors flex items-center gap-1.5 text-[13px] text-[var(--color-apple-subtle)]"
           >
             <Filter className="w-3.5 h-3.5" />
             {statusFilter === 'All' ? 'Filter' : statusFilter}
             <ChevronDown className="w-3 h-3" />
           </button>
           {showStatusDropdown && (
-            <div className="absolute top-full mt-1 left-0 z-50 w-44 rounded border border-[var(--border-light)] bg-[var(--bg-main)] shadow-lg py-1">
+            <div className="absolute top-full mt-1 left-[140px] z-50 w-44 rounded-[10px] border border-black/[0.06] bg-white shadow-lg py-1 backdrop-blur-xl">
               {(['All', ...STATUSES, 'Blocked'] as const).map((s) => (
                 <button
                   key={s}
                   onClick={() => { setStatusFilter(s as typeof statusFilter); setShowStatusDropdown(false); }}
                   className={cn(
-                    'w-full text-left px-3 py-1.5 text-[13px] hover:bg-[var(--bg-hover)] transition-colors',
-                    statusFilter === s ? 'text-[var(--accent-primary)] font-medium' : 'text-[var(--text-main)]'
+                    'w-full text-left px-3 py-1.5 text-[13px] hover:bg-black/[0.04] transition-colors',
+                    statusFilter === s ? 'text-[var(--color-apple-blue)] font-medium' : 'text-[var(--color-apple-text)]'
                   )}
                 >
                   {s}
@@ -506,20 +572,20 @@ export default function ProjectsPage() {
           {/* Sort */}
           <button
             onClick={() => { setShowSortDropdown((v) => !v); setShowStatusDropdown(false); }}
-            className="hover:bg-[var(--bg-hover)] px-2 py-1 rounded transition-colors flex items-center gap-1"
+            className="hover:bg-black/[0.04] px-3 py-1.5 rounded-[8px] transition-colors flex items-center gap-1.5 text-[13px] text-[var(--color-apple-subtle)]"
           >
             Sort
             <ChevronDown className="w-3 h-3" />
           </button>
           {showSortDropdown && (
-            <div className="absolute top-full mt-1 left-[70px] z-50 w-36 rounded border border-[var(--border-light)] bg-[var(--bg-main)] shadow-lg py-1">
+            <div className="absolute top-full mt-1 left-[230px] z-50 w-36 rounded-[10px] border border-black/[0.06] bg-white shadow-lg py-1 backdrop-blur-xl">
               {SORT_OPTIONS.map((opt) => (
                 <button
                   key={opt}
                   onClick={() => { setSortBy(opt); setShowSortDropdown(false); }}
                   className={cn(
-                    'w-full text-left px-3 py-1.5 text-[13px] hover:bg-[var(--bg-hover)] transition-colors',
-                    sortBy === opt ? 'text-[var(--accent-primary)] font-medium' : 'text-[var(--text-main)]'
+                    'w-full text-left px-3 py-1.5 text-[13px] hover:bg-black/[0.04] transition-colors',
+                    sortBy === opt ? 'text-[var(--color-apple-blue)] font-medium' : 'text-[var(--color-apple-text)]'
                   )}
                 >
                   {opt}
@@ -527,30 +593,11 @@ export default function ProjectsPage() {
               ))}
             </div>
           )}
-
-          {/* Search */}
-          <div className="flex items-center ml-2 border-l border-[var(--border-light)] pl-2">
-            <Search className="w-4 h-4 text-[var(--text-muted)] mr-2" />
-            <input
-              type="text"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="bg-transparent border-none outline-none text-[14px] w-40 text-[var(--text-main)] placeholder:text-[var(--text-muted)]"
-            />
-          </div>
         </div>
-
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="bg-[var(--accent-primary)] text-white px-3 py-1.5 rounded font-medium hover:opacity-90 transition-opacity flex items-center gap-1"
-        >
-          New
-        </button>
       </div>
 
       {/* ────────── Body ────────── */}
-      <div className="flex-1 overflow-hidden pb-6">
+      <div className="flex-1 overflow-hidden px-10 py-2 pb-6">
         {view === 'board' ? (
           /* ═══ Board View ═══ */
           <div className="flex gap-6 h-full overflow-x-auto pb-4">
@@ -568,9 +615,9 @@ export default function ProjectsPage() {
           </div>
         ) : (
           /* ═══ List View (Table) ═══ */
-          <div className="border border-[var(--border-light)] rounded overflow-hidden flex flex-col h-full bg-[var(--bg-main)]">
+          <div className="apple-card overflow-hidden flex flex-col h-full">
             {/* Table header */}
-            <div className="grid grid-cols-[2fr_120px_160px_100px_120px_100px_80px] gap-4 px-4 py-2 border-b border-[var(--border-light)] bg-[var(--bg-sidebar)] text-[12px] font-medium text-[var(--text-muted)]">
+            <div className="grid grid-cols-[2fr_120px_160px_100px_120px_100px_80px] gap-4 px-5 py-3 border-b border-black/[0.06] text-[12px] font-medium text-[var(--color-apple-subtle)] uppercase tracking-wider">
               <span>Name</span>
               <span>Status</span>
               <span>Progress</span>
@@ -579,7 +626,7 @@ export default function ProjectsPage() {
               <span>Due</span>
               <span>Team</span>
             </div>
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto divide-y divide-black/[0.05]">
               {filtered.map((p) => (
                 <ProjectListRow
                   key={p.id}
@@ -591,7 +638,7 @@ export default function ProjectsPage() {
                 />
               ))}
               {filtered.length === 0 && (
-                <div className="flex items-center justify-center h-40 text-[14px] text-[var(--text-muted)]">
+                <div className="flex items-center justify-center h-40 text-[13.5px] text-[var(--color-apple-subtle)]">
                   No projects match your filters.
                 </div>
               )}

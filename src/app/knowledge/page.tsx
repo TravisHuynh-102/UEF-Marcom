@@ -8,6 +8,7 @@ import { useToast } from '@/components/ui/toast';
 import { useRole } from '@/context/role-context';
 import CreateDocumentModal from '@/components/modals/create-document-modal';
 import { ConfirmDeleteModal } from '@/components/modals/modal-wrapper';
+import { PageHeader } from '@/components/ui/page-header';
 import {
   BookOpen,
   Search,
@@ -78,77 +79,47 @@ export default function KnowledgePage() {
   }, [activeCategory, searchQuery]);
 
   return (
-    <div className="space-y-6 pb-8">
+    <div className="space-y-6 pb-8 px-10">
       {/* ── Header ───────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 shadow-lg shadow-indigo-500/20">
-              <BookOpen className="w-5 h-5 text-white" />
+      <PageHeader 
+        title="Knowledge Hub" 
+        subtitle="Everything your team needs to move fast" 
+        actions={
+          <>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-apple-subtle)]" />
+              <input
+                type="text"
+                placeholder="Search documents…"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 pr-4 py-1.5 rounded-full border border-black/[0.08] bg-white text-[13px] text-[var(--color-apple-text)] placeholder:text-[var(--color-apple-subtle)] outline-none focus:ring-2 focus:ring-[var(--color-apple-blue)]/20 w-52 transition-shadow"
+              />
             </div>
-            Knowledge Hub
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 ml-[52px]">
-            Team wiki & shared documentation
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {/* Search bar */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
-            <input
-              type="text"
-              placeholder="Search documents…"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className={cn(
-                'pl-9 pr-4 py-2 w-64 text-sm rounded-lg transition-all',
-                'bg-gray-50 dark:bg-white/5',
-                'border border-gray-200 dark:border-white/10',
-                'text-gray-900 dark:text-white',
-                'placeholder:text-gray-400 dark:placeholder:text-gray-500',
-                'focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/40'
-              )}
-            />
-          </div>
-
-          {/* View toggle */}
-          <div className="flex items-center rounded-lg border border-gray-200 dark:border-white/10 overflow-hidden">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={cn(
-                'p-2 transition-colors',
-                viewMode === 'grid'
-                  ? 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400'
-                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
-              )}
+            <div className="flex items-center bg-black/[0.05] rounded-[10px] p-0.5 mx-2">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={cn('p-1.5 rounded-[8px] transition-colors', viewMode === 'grid' ? 'bg-white shadow-sm text-[var(--color-apple-text)]' : 'text-[var(--color-apple-subtle)] hover:text-[var(--color-apple-text)]')}
+              >
+                <Grid className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={cn('p-1.5 rounded-[8px] transition-colors', viewMode === 'list' ? 'bg-white shadow-sm text-[var(--color-apple-text)]' : 'text-[var(--color-apple-subtle)] hover:text-[var(--color-apple-text)]')}
+              >
+                <List className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <button 
+              onClick={() => setShowCreateModal(true)}
+              className="bg-[var(--color-apple-blue)] text-white px-4 py-1.5 rounded-full text-[13px] font-medium hover:opacity-90 transition-opacity flex items-center gap-1.5"
             >
-              <Grid className="w-4 h-4" />
+              <Plus className="w-3.5 h-3.5" />
+              New Document
             </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={cn(
-                'p-2 transition-colors',
-                viewMode === 'list'
-                  ? 'bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400'
-                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
-              )}
-            >
-              <List className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* New Document button */}
-          <button 
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            New Document
-          </button>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {/* ── Categories Bar ───────────────────────────────── */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
@@ -159,8 +130,8 @@ export default function KnowledgePage() {
             className={cn(
               'flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all',
               activeCategory === cat
-                ? 'bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-md shadow-indigo-500/20'
-                : 'bg-gray-100 dark:bg-white/5 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10'
+                ? 'bg-[var(--color-apple-blue)] text-white shadow-sm'
+                : 'bg-black/[0.05] text-[var(--color-apple-subtle)] hover:bg-black/[0.08] dark:bg-white/[0.05] dark:hover:bg-white/[0.08]'
             )}
           >
             {cat}
@@ -172,7 +143,7 @@ export default function KnowledgePage() {
       {filteredDocs.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20">
           <FileText className="w-12 h-12 text-gray-300 dark:text-gray-600 mb-3" />
-          <p className="text-sm text-gray-500 dark:text-gray-400">No documents found</p>
+          <p className="text-sm text-[var(--color-apple-subtle)]">No documents found</p>
         </div>
       ) : viewMode === 'grid' ? (
         /* ── Grid View ───────────────────────────────────── */
@@ -181,11 +152,8 @@ export default function KnowledgePage() {
             <div
               key={doc.id}
               className={cn(
-                'group relative rounded-xl p-5 transition-all duration-200 cursor-pointer',
-                'bg-white dark:bg-[#12121a]',
-                'border border-gray-100 dark:border-white/5',
-                'shadow-sm dark:shadow-none',
-                'hover:shadow-lg hover:-translate-y-0.5 dark:hover:border-white/10'
+                'group relative apple-card p-5 transition-all duration-200 cursor-pointer',
+                'hover:shadow-md hover:-translate-y-0.5'
               )}
             >
               {/* Top row: emoji + actions */}
@@ -202,14 +170,14 @@ export default function KnowledgePage() {
                     {bookmarked.has(doc.id) ? (
                       <BookMarked className="w-4 h-4 text-amber-500" />
                     ) : (
-                      <Bookmark className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                      <Bookmark className="w-4 h-4 text-[var(--color-apple-subtle)]" />
                     )}
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); setMenuOpenId(menuOpenId === doc.id ? null : doc.id); }}
                     className="p-1 rounded-md hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
                   >
-                    <MoreHorizontal className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                    <MoreHorizontal className="w-4 h-4 text-[var(--color-apple-subtle)]" />
                   </button>
                   {menuOpenId === doc.id && currentRole === 'Manager' && (
                     <>
@@ -229,7 +197,7 @@ export default function KnowledgePage() {
               </div>
 
               {/* Title */}
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+              <h3 className="text-sm font-semibold text-[var(--color-apple-text)] mb-2 line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                 {doc.title}
               </h3>
 
@@ -253,17 +221,17 @@ export default function KnowledgePage() {
                 >
                   {doc.authorInitials}
                 </div>
-                <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                <span className="text-xs text-[var(--color-apple-subtle)] truncate">
                   {doc.author}
                 </span>
               </div>
 
               {/* Footer: updated + views */}
               <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-white/5">
-                <span className="text-xs text-gray-400 dark:text-gray-500">{doc.updated}</span>
+                <span className="text-xs text-[var(--color-apple-subtle)]">{doc.updated}</span>
                 <div className="flex items-center gap-1">
-                  <Eye className="w-3 h-3 text-gray-400 dark:text-gray-500" />
-                  <span className="text-xs text-gray-400 dark:text-gray-500">{doc.views}</span>
+                  <Eye className="w-3 h-3 text-[var(--color-apple-subtle)]" />
+                  <span className="text-xs text-[var(--color-apple-subtle)]">{doc.views}</span>
                 </div>
               </div>
 
@@ -280,27 +248,24 @@ export default function KnowledgePage() {
         /* ── List View ───────────────────────────────────── */
         <div
           className={cn(
-            'rounded-xl overflow-hidden',
-            'bg-white dark:bg-[#12121a]',
-            'border border-gray-100 dark:border-white/5',
-            'shadow-sm dark:shadow-none'
+            'apple-card overflow-hidden'
           )}
         >
           {/* List header */}
-          <div className="grid grid-cols-[1fr_100px_140px_80px_80px_40px] items-center gap-4 px-5 py-3 border-b border-gray-100 dark:border-white/5">
-            <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+          <div className="grid grid-cols-[1fr_100px_140px_80px_80px_40px] items-center gap-4 px-5 py-3 border-b border-black/[0.06] dark:border-white/[0.06]">
+            <span className="text-xs font-medium text-[var(--color-apple-subtle)] uppercase tracking-wider">
               Document
             </span>
-            <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+            <span className="text-xs font-medium text-[var(--color-apple-subtle)] uppercase tracking-wider">
               Type
             </span>
-            <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+            <span className="text-xs font-medium text-[var(--color-apple-subtle)] uppercase tracking-wider">
               Author
             </span>
-            <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+            <span className="text-xs font-medium text-[var(--color-apple-subtle)] uppercase tracking-wider">
               Updated
             </span>
-            <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider text-right">
+            <span className="text-xs font-medium text-[var(--color-apple-subtle)] uppercase tracking-wider text-right">
               Views
             </span>
             <span />
@@ -310,14 +275,14 @@ export default function KnowledgePage() {
               key={doc.id}
               className={cn(
                 'group grid grid-cols-[1fr_100px_140px_80px_80px_40px] items-center gap-4 px-5 py-3.5 transition-colors cursor-pointer',
-                'hover:bg-gray-50 dark:hover:bg-white/[0.02]',
-                idx < filteredDocs.length - 1 && 'border-b border-gray-50 dark:border-white/[0.03]'
+                'hover:bg-black/[0.02] dark:hover:bg-white/[0.02]',
+                idx < filteredDocs.length - 1 && 'border-b border-black/[0.06] dark:border-white/[0.06]'
               )}
             >
               {/* Document name */}
               <div className="flex items-center gap-3 min-w-0">
                 <span className="text-lg flex-shrink-0">{doc.emoji}</span>
-                <span className="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                <span className="text-sm font-medium text-[var(--color-apple-text)] truncate group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                   {doc.title}
                 </span>
                 {bookmarked.has(doc.id) && (
@@ -343,18 +308,18 @@ export default function KnowledgePage() {
                 >
                   {doc.authorInitials}
                 </div>
-                <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                <span className="text-xs text-[var(--color-apple-subtle)] truncate">
                   {doc.author}
                 </span>
               </div>
               {/* Updated */}
-              <span className="text-xs text-gray-400 dark:text-gray-500 truncate">
+              <span className="text-xs text-[var(--color-apple-subtle)] truncate">
                 {doc.updated.replace('Updated ', '')}
               </span>
               {/* Views */}
               <div className="flex items-center gap-1 justify-end">
-                <Eye className="w-3 h-3 text-gray-400 dark:text-gray-500" />
-                <span className="text-xs text-gray-400 dark:text-gray-500">{doc.views}</span>
+                <Eye className="w-3 h-3 text-[var(--color-apple-subtle)]" />
+                <span className="text-xs text-[var(--color-apple-subtle)]">{doc.views}</span>
               </div>
               {/* Actions */}
               <div className="flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity relative">
@@ -400,16 +365,13 @@ export default function KnowledgePage() {
       {/* ── Recent Activity Section ──────────────────────── */}
       <div
         className={cn(
-          'rounded-xl p-6',
-          'bg-white dark:bg-[#12121a]',
-          'border border-gray-100 dark:border-white/5',
-          'shadow-sm dark:shadow-none'
+          'apple-card p-6'
         )}
       >
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
             <Clock className="w-5 h-5 text-indigo-500" />
-            <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+            <h3 className="text-base font-semibold text-[var(--color-apple-text)]">
               Recent Activity
             </h3>
           </div>
@@ -444,8 +406,8 @@ export default function KnowledgePage() {
 
                 {/* Content */}
                 <div className="flex-1 min-w-0 pt-1">
-                  <p className="text-sm text-gray-600 dark:text-gray-300">
-                    <span className="font-semibold text-gray-900 dark:text-white">
+                  <p className="text-sm text-[var(--color-apple-text)]">
+                    <span className="font-semibold text-[var(--color-apple-text)]">
                       {activity.user}
                     </span>{' '}
                     <span className={cn(
@@ -456,14 +418,14 @@ export default function KnowledgePage() {
                     )}>
                       {activity.action}
                     </span>{' '}
-                    <span className="font-medium text-gray-900 dark:text-white">
+                    <span className="font-medium text-[var(--color-apple-text)]">
                       {activity.target}
                     </span>
                   </p>
                 </div>
 
                 {/* Time */}
-                <span className="flex-shrink-0 text-xs text-gray-400 dark:text-gray-500 pt-1.5">
+                <span className="flex-shrink-0 text-xs text-[var(--color-apple-subtle)] pt-1.5">
                   {activity.time}
                 </span>
               </div>

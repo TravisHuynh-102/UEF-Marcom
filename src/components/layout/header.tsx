@@ -139,7 +139,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   }, [searchResults]);
 
   return (
-    <header className="flex justify-between items-center w-full px-4 h-12 shrink-0 bg-[var(--bg-main)] z-40 relative flex-none">
+    <header className="flex justify-between items-center w-full px-8 h-14 shrink-0 bg-transparent z-40 relative flex-none">
       {/* Mobile Menu Toggle & Breadcrumb */}
       <div className="flex items-center gap-1 overflow-hidden">
         <button 

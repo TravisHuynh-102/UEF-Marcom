@@ -6,6 +6,7 @@ import { getInitials } from '@/lib/utils';
 import { productivityData } from '@/lib/mock-data';
 import { useAppState } from '@/context/app-state-context';
 import { useToast } from '@/components/ui/toast';
+import { PageHeader } from '@/components/ui/page-header';
 import {
   Zap,
   Target,
@@ -152,7 +153,7 @@ function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: 
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1a28] px-3 py-2 shadow-xl">
-      <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{label}</p>
+      <p className="text-xs font-medium text-[var(--color-apple-subtle)] mb-1">{label}</p>
       {payload.map((entry, i) => (
         <p key={i} className="text-sm font-semibold" style={{ color: entry.color }}>
           {entry.name}: {entry.value}
@@ -189,51 +190,46 @@ export default function PerformancePage() {
   };
 
   return (
-    <div className="space-y-8 pb-8">
+    <div className="space-y-8 pb-8 px-10">
       {/* ── Page Header ──────────────────────────────────── */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 shadow-lg shadow-indigo-500/20">
-              <Award className="w-5 h-5 text-white" />
+      <PageHeader 
+        title="Performance" 
+        subtitle="Creative & team — last 30 days" 
+        actions={
+          <>
+            <div className="relative">
+              <button 
+                onClick={() => setShowPeriodDropdown(!showPeriodDropdown)}
+                className="px-4 py-1.5 text-[13px] font-medium rounded-[12px] border border-black/[0.06] bg-[var(--color-apple-card)] text-[var(--color-apple-text)] hover:bg-black/[0.02] transition-colors"
+              >
+                {timePeriod}
+              </button>
+              {showPeriodDropdown && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setShowPeriodDropdown(false)} />
+                  <div className="absolute top-full mt-2 left-0 w-40 rounded-[12px] border border-black/[0.06] bg-[var(--color-apple-card)] shadow-xl z-50 overflow-hidden">
+                    {['Last 7 days', 'Last 30 days', 'This Quarter', 'This Year'].map(period => (
+                      <button
+                        key={period}
+                        onClick={() => { setTimePeriod(period); setShowPeriodDropdown(false); }}
+                        className="w-full text-left px-4 py-2 text-[13px] hover:bg-black/[0.04] text-[var(--color-apple-text)]"
+                      >
+                        {period}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
-            Team Performance
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 ml-[52px]">
-            Analytics & insights across your entire team
-          </p>
-        </div>
-        <div className="flex items-center gap-2 relative">
-          <button 
-            onClick={() => setShowPeriodDropdown(!showPeriodDropdown)}
-            className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
-          >
-            {timePeriod}
-          </button>
-          {showPeriodDropdown && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => setShowPeriodDropdown(false)} />
-              <div className="absolute top-full mt-2 left-0 w-40 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#16161f] shadow-xl z-50">
-                {['Last 7 days', 'Last 30 days', 'This Quarter', 'This Year'].map(period => (
-                  <button
-                    key={period}
-                    onClick={() => { setTimePeriod(period); setShowPeriodDropdown(false); }}
-                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-white/5 first:rounded-t-xl last:rounded-b-xl dark:text-gray-200 text-gray-700"
-                  >
-                    {period}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-          <button 
-            onClick={handleExport}
-            className="px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-indigo-500 to-violet-500 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all"
-          >
-            Export Report
-          </button>
-        </div>
-      </div>
+            <button 
+              onClick={handleExport}
+              className="px-4 py-1.5 text-[13px] font-medium rounded-full bg-[var(--color-apple-blue)] text-white hover:opacity-90 transition-opacity ml-2"
+            >
+              Export Report
+            </button>
+          </>
+        }
+      />
 
       {/* ── Top Metrics Row ──────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -243,16 +239,11 @@ export default function PerformancePage() {
             <div
               key={metric.label}
               className={cn(
-                'relative rounded-xl p-6 transition-all duration-200',
-                'bg-white dark:bg-[#12121a]',
-                'border border-gray-100 dark:border-white/5',
-                'shadow-sm dark:shadow-none',
-                'hover:shadow-md dark:hover:border-white/10',
-                'group cursor-pointer'
+                'apple-card p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md group cursor-pointer'
               )}
             >
               <div className="flex items-start justify-between mb-4">
-                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                <span className="text-sm font-medium text-[var(--color-apple-subtle)]">
                   {metric.label}
                 </span>
                 <div
@@ -265,7 +256,7 @@ export default function PerformancePage() {
                 </div>
               </div>
               <div className="mb-2">
-                <span className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+                <span className="text-3xl font-bold tracking-tight text-[var(--color-apple-text)]">
                   {metric.value}
                 </span>
               </div>
@@ -285,7 +276,7 @@ export default function PerformancePage() {
                 >
                   {metric.trend}
                 </span>
-                <span className="text-xs text-gray-400 dark:text-gray-500">vs last sprint</span>
+                <span className="text-xs text-[var(--color-apple-subtle)]">vs last sprint</span>
               </div>
 
               {/* Subtle top accent line */}
@@ -307,18 +298,15 @@ export default function PerformancePage() {
           {/* Productivity Over Time */}
           <div
             className={cn(
-              'rounded-xl p-6',
-              'bg-white dark:bg-[#12121a]',
-              'border border-gray-100 dark:border-white/5',
-              'shadow-sm dark:shadow-none'
+              'apple-card p-6'
             )}
           >
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-base font-semibold text-[var(--color-apple-text)]">
                   Team Productivity Over Time
                 </h3>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                <p className="text-xs text-[var(--color-apple-subtle)] mt-0.5">
                   Weekly average across all teams
                 </p>
               </div>
@@ -376,17 +364,14 @@ export default function PerformancePage() {
           {/* Task Distribution Donut */}
           <div
             className={cn(
-              'rounded-xl p-6',
-              'bg-white dark:bg-[#12121a]',
-              'border border-gray-100 dark:border-white/5',
-              'shadow-sm dark:shadow-none'
+              'apple-card p-6'
             )}
           >
             <div className="mb-6">
-              <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+              <h3 className="text-base font-semibold text-[var(--color-apple-text)]">
                 Task Distribution by Priority
               </h3>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+              <p className="text-xs text-[var(--color-apple-subtle)] mt-0.5">
                 Current sprint breakdown
               </p>
             </div>
@@ -413,8 +398,8 @@ export default function PerformancePage() {
                 </ResponsiveContainer>
                 {/* Center label */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-2xl font-bold text-gray-900 dark:text-white">{totalTasks}</span>
-                  <span className="text-xs text-gray-400 dark:text-gray-500">Total</span>
+                  <span className="text-2xl font-bold text-[var(--color-apple-text)]">{totalTasks}</span>
+                  <span className="text-xs text-[var(--color-apple-subtle)]">Total</span>
                 </div>
               </div>
               <div className="flex-1 space-y-3">
@@ -425,13 +410,13 @@ export default function PerformancePage() {
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: item.color }}
                       />
-                      <span className="text-sm text-gray-600 dark:text-gray-300">{item.name}</span>
+                      <span className="text-sm text-[var(--color-apple-text)]">{item.name}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                      <span className="text-sm font-semibold text-[var(--color-apple-text)]">
                         {item.value}
                       </span>
-                      <span className="text-xs text-gray-400 dark:text-gray-500">
+                      <span className="text-xs text-[var(--color-apple-subtle)]">
                         ({Math.round((item.value / totalTasks) * 100)}%)
                       </span>
                     </div>
@@ -447,24 +432,21 @@ export default function PerformancePage() {
           {/* Department Performance */}
           <div
             className={cn(
-              'rounded-xl p-6',
-              'bg-white dark:bg-[#12121a]',
-              'border border-gray-100 dark:border-white/5',
-              'shadow-sm dark:shadow-none'
+              'apple-card p-6'
             )}
           >
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-base font-semibold text-[var(--color-apple-text)]">
                   Department Performance
                 </h3>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                <p className="text-xs text-[var(--color-apple-subtle)] mt-0.5">
                   Target: 85% completion rate
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 border-t-2 border-dashed border-rose-400" />
-                <span className="text-xs text-gray-400 dark:text-gray-500">Target</span>
+                <span className="text-xs text-[var(--color-apple-subtle)]">Target</span>
               </div>
             </div>
             <div className="h-[280px]">
@@ -502,8 +484,8 @@ export default function PerformancePage() {
                       const d = payload[0].payload as (typeof departmentPerformance)[0];
                       return (
                         <div className="rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-[#1a1a28] px-3 py-2 shadow-xl">
-                          <p className="text-sm font-semibold text-gray-900 dark:text-white">{d.name}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{d.performance}% completion</p>
+                          <p className="text-sm font-semibold text-[var(--color-apple-text)]">{d.name}</p>
+                          <p className="text-xs text-[var(--color-apple-subtle)]">{d.performance}% completion</p>
                         </div>
                       );
                     }}
@@ -522,29 +504,26 @@ export default function PerformancePage() {
           {/* Sprint Burndown */}
           <div
             className={cn(
-              'rounded-xl p-6',
-              'bg-white dark:bg-[#12121a]',
-              'border border-gray-100 dark:border-white/5',
-              'shadow-sm dark:shadow-none'
+              'apple-card p-6'
             )}
           >
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                <h3 className="text-base font-semibold text-[var(--color-apple-text)]">
                   Sprint Burndown
                 </h3>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                <p className="text-xs text-[var(--color-apple-subtle)] mt-0.5">
                   Story points remaining — Sprint 14
                 </p>
               </div>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1.5">
                   <div className="w-4 border-t-2 border-dashed border-gray-400 dark:border-gray-500" />
-                  <span className="text-xs text-gray-400 dark:text-gray-500">Ideal</span>
+                  <span className="text-xs text-[var(--color-apple-subtle)]">Ideal</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-4 border-t-2 border-indigo-500" />
-                  <span className="text-xs text-gray-400 dark:text-gray-500">Actual</span>
+                  <span className="text-xs text-[var(--color-apple-subtle)]">Actual</span>
                 </div>
               </div>
             </div>
@@ -602,11 +581,11 @@ export default function PerformancePage() {
       <div>
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <h3 className="text-lg font-semibold text-[var(--color-apple-text)] flex items-center gap-2">
               <Users className="w-5 h-5 text-indigo-500" />
               Team Members Performance
             </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            <p className="text-sm text-[var(--color-apple-subtle)] mt-0.5">
               Individual contributions & capacity this sprint
             </p>
           </div>
@@ -622,13 +601,7 @@ export default function PerformancePage() {
                 onMouseEnter={() => setHoveredMember(user.id)}
                 onMouseLeave={() => setHoveredMember(null)}
                 className={cn(
-                  'relative rounded-xl p-5 transition-all duration-200 cursor-pointer',
-                  'bg-white dark:bg-[#12121a]',
-                  'border border-gray-100 dark:border-white/5',
-                  'shadow-sm dark:shadow-none',
-                  hoveredMember === user.id
-                    ? 'shadow-lg dark:border-white/10 -translate-y-0.5'
-                    : 'hover:shadow-md dark:hover:border-white/8'
+                  'apple-card p-5 transition-all duration-200 cursor-pointer hover:-translate-y-0.5'
                 )}
               >
                 {/* Header: Avatar + Info */}
@@ -651,10 +624,10 @@ export default function PerformancePage() {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                    <p className="text-sm font-semibold text-[var(--color-apple-text)] truncate">
                       {user.name}
                     </p>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 truncate">{user.role}</p>
+                    <p className="text-xs text-[var(--color-apple-subtle)] truncate">{user.role}</p>
                   </div>
                 </div>
 
@@ -673,13 +646,13 @@ export default function PerformancePage() {
                 {/* Personal Metrics */}
                 <div className="space-y-2.5 mb-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">Tasks completed</span>
-                    <span className="text-xs font-semibold text-gray-900 dark:text-white">
+                    <span className="text-xs text-[var(--color-apple-subtle)]">Tasks completed</span>
+                    <span className="text-xs font-semibold text-[var(--color-apple-text)]">
                       {perf.tasksCompleted}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">On-time delivery</span>
+                    <span className="text-xs text-[var(--color-apple-subtle)]">On-time delivery</span>
                     <span
                       className={cn(
                         'text-xs font-semibold',
@@ -695,8 +668,8 @@ export default function PerformancePage() {
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs text-gray-500 dark:text-gray-400">Capacity</span>
-                      <span className="text-xs font-semibold text-gray-900 dark:text-white">
+                      <span className="text-xs text-[var(--color-apple-subtle)]">Capacity</span>
+                      <span className="text-xs font-semibold text-[var(--color-apple-text)]">
                         {user.capacity}%
                       </span>
                     </div>
@@ -720,7 +693,7 @@ export default function PerformancePage() {
                 {/* Status indicator */}
                 <div className="flex items-center gap-1.5 pt-3 border-t border-gray-100 dark:border-white/5">
                   <div className={cn('w-2 h-2 rounded-full', statusCfg.color, perf.status === 'available' && 'pulse-dot')} />
-                  <span className="text-xs text-gray-500 dark:text-gray-400">{statusCfg.label}</span>
+                  <span className="text-xs text-[var(--color-apple-subtle)]">{statusCfg.label}</span>
                 </div>
               </div>
             );

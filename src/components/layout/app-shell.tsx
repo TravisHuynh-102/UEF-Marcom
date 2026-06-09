@@ -28,8 +28,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         <Header onMenuClick={() => setMobileMenuOpen(true)} />
         
         {/* Scrollable Content Canvas */}
-        <div className="flex-1 overflow-y-auto px-4 sm:px-12 md:px-24 py-8 custom-scrollbar">
-          <div className="max-w-[1000px] mx-auto w-full flex flex-col">
+        <div className="flex-1 overflow-y-auto custom-scrollbar relative">
+          <div className="w-full flex flex-col pb-24">
             {children}
           </div>
         </div>

@@ -1,121 +1,201 @@
 'use client';
 
-import { Sparkles, CheckCircle2, TrendingUp, MessageSquare, Briefcase, Zap } from 'lucide-react';
+import { useState } from 'react';
+import { Play, Sparkles, MoreHorizontal, ArrowUpRight, Flag } from 'lucide-react';
 
-export default function DashboardPage() {
+const velocity = [
+  { d: "Mon", v: 12 }, { d: "Tue", v: 18 }, { d: "Wed", v: 15 },
+  { d: "Thu", v: 22 }, { d: "Fri", v: 28 }, { d: "Sat", v: 24 }, { d: "Sun", v: 31 },
+];
+
+const initialTasks = [
+  { id: 1, text: "Review Q4 brand strategy deck", project: "Brand", done: false },
+  { id: 2, text: "Approve creative for Tet campaign", project: "Marketing", done: false },
+  { id: 3, text: "Sync with engineering on AI pipeline", project: "Product", done: true },
+  { id: 4, text: "Sign off on partnership MOU", project: "BD", done: false },
+  { id: 5, text: "Send weekly investor update", project: "Ops", done: false },
+];
+
+function Rings() {
+  const rings = [
+    { c: "#34c759", pct: 82, r: 38 },
+    { c: "#ff9f0a", pct: 67, r: 28 },
+    { c: "#ff375f", pct: 74, r: 18 },
+  ];
   return (
-    <div className="max-w-[800px] mx-auto w-full pt-8 pb-24 animate-in fade-in duration-500">
-      
-      {/* Title */}
-      <div className="mb-8">
-        <h1 className="text-[32px] font-semibold text-[var(--color-apple-text)] tracking-tight">Dashboard</h1>
-        <p className="text-[var(--color-apple-subtle)] mt-1">Overview of your team's pulse and tasks.</p>
-      </div>
-
-      {/* Content Blocks */}
-      <div className="space-y-6 text-[var(--color-apple-text)] text-[15px] leading-relaxed">
-        
-        {/* Callout / Briefing */}
-        <div className="apple-card bg-gradient-to-br from-white to-blue-50/30 dark:from-[var(--color-apple-card)] dark:to-blue-900/10 p-5 flex gap-4 items-start relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-gradient-to-br from-[#8e7cff] to-[#ff8ab8] shadow-sm mt-0.5">
-            <Sparkles className="h-5 w-5 text-white" />
-          </div>
-          <div>
-            <p className="font-semibold text-[16px] mb-1">Good morning. Here is your daily intelligence briefing.</p>
-            <p className="text-[var(--color-apple-subtle)] text-[14px]">I&apos;ve analyzed yesterday&apos;s sprint metrics and team communications. We have 3 blocking issues that require your attention today, and team sentiment is currently trending positive.</p>
-          </div>
-        </div>
-
-        <h2 className="text-[20px] font-semibold mt-10 mb-4 pb-2 flex items-center gap-2">
-          <Zap className="h-5 w-5 text-orange-500" /> Priority Actions
-        </h2>
-        
-        {/* To-Do List Style */}
-        <div className="space-y-3">
-          <div className="apple-card p-4 flex gap-3 items-start group hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-colors">
-            <CheckCircle2 className="mt-0.5 w-5 h-5 text-blue-500 shrink-0 opacity-40 group-hover:opacity-100 transition-opacity cursor-pointer" />
-            <div className="flex-1">
-              <span className="font-medium">Review Q3 Marketing Assets</span>
-              <p className="text-[13px] text-[var(--color-apple-subtle)] mt-1">Suggested delegation: Sarah. She completes similar reviews 30% faster.</p>
-            </div>
-            <button className="opacity-0 group-hover:opacity-100 text-[12px] bg-white dark:bg-[#2c2c2e] px-3 py-1.5 rounded-full text-[var(--color-apple-text)] hover:shadow-sm transition-all border border-black/[0.06] dark:border-white/[0.06] font-medium">Delegate</button>
-          </div>
-          
-          <div className="apple-card p-4 flex gap-3 items-start group hover:bg-black/[0.01] dark:hover:bg-white/[0.01] transition-colors">
-            <CheckCircle2 className="mt-0.5 w-5 h-5 text-blue-500 shrink-0 opacity-40 group-hover:opacity-100 transition-opacity cursor-pointer" />
-            <div className="flex-1">
-              <span className="font-medium">Update API Documentation</span>
-              <p className="text-[13px] text-[var(--color-apple-subtle)] mt-1">I can draft the initial update based on recent commit logs for David to review.</p>
-            </div>
-            <button className="opacity-0 group-hover:opacity-100 text-[12px] bg-white dark:bg-[#2c2c2e] px-3 py-1.5 rounded-full text-[var(--color-apple-text)] hover:shadow-sm transition-all border border-black/[0.06] dark:border-white/[0.06] font-medium">Auto-Draft</button>
-          </div>
-        </div>
-
-        <h2 className="text-[20px] font-semibold mt-10 mb-4 pb-2 flex items-center gap-2">
-          <TrendingUp className="h-5 w-5 text-emerald-500" /> Insights & Morale
-        </h2>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="apple-card p-5">
-            <div className="text-[12px] text-[var(--color-apple-subtle)] uppercase tracking-wider mb-2 font-semibold">Team Velocity</div>
-            <div className="text-[36px] font-semibold flex items-baseline gap-2 leading-none">
-              94 <span className="text-[16px] text-[var(--color-apple-subtle)] font-normal">pts</span>
-            </div>
-            <div className="mt-3 flex">
-              <span className="text-[12px] text-emerald-700 bg-emerald-100 dark:text-emerald-300 dark:bg-emerald-900/40 px-2.5 py-1 rounded-full font-medium">↑ 12% from last week</span>
-            </div>
-          </div>
-          
-          <div className="apple-card p-5">
-            <div className="text-[12px] text-[var(--color-apple-subtle)] uppercase tracking-wider mb-2 font-semibold">Overall Morale</div>
-            <div className="text-[36px] font-semibold flex items-baseline gap-2 leading-none">
-              78%
-            </div>
-            <div className="mt-3 flex">
-              <span className="text-[12px] text-blue-700 bg-blue-100 dark:text-blue-300 dark:bg-blue-900/40 px-2.5 py-1 rounded-full font-medium">Positive Trending</span>
-            </div>
-          </div>
-        </div>
-
-        <h2 className="text-[20px] font-semibold mt-10 mb-4 pb-2 flex items-center gap-2">
-          <MessageSquare className="h-5 w-5 text-purple-500" /> Strategic Assistant
-        </h2>
-        
-        {/* Embedded Chat Block */}
-        <div className="apple-card p-5 bg-gradient-to-b from-white to-gray-50/50 dark:from-[var(--color-apple-card)] dark:to-black/20">
-          <div className="space-y-5 mb-5 text-[14px]">
-            <div className="flex justify-end">
-              <div className="bg-[var(--color-apple-blue)] text-white px-4 py-2.5 rounded-[18px] rounded-tr-[4px] max-w-[80%] shadow-sm">
-                Can you summarize the blocker on the Genesis Project?
-              </div>
-            </div>
-            <div className="flex justify-start items-end gap-2">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#8e7cff] to-[#ff8ab8] shadow-sm mb-1">
-                <Sparkles className="h-3 w-3 text-white" />
-              </div>
-              <div className="bg-black/[0.04] dark:bg-white/[0.06] text-[var(--color-apple-text)] px-4 py-3 rounded-[18px] rounded-tl-[4px] max-w-[80%]">
-                <p className="mb-3">The primary blocker is awaiting client sign-off on the revised data schema.</p>
-                <div className="bg-white dark:bg-[#2c2c2e] p-3.5 rounded-[12px] border border-black/[0.05] dark:border-white/[0.05] shadow-sm">
-                  <div className="font-semibold text-[11px] text-[var(--color-apple-subtle)] mb-1.5 uppercase tracking-wider flex items-center gap-1.5">
-                    <Briefcase className="w-3 h-3" /> Proposed Action
-                  </div>
-                  <p className="text-[13px] mb-3">Draft a follow-up email to the client highlighting the impact on the timeline?</p>
-                  <button className="w-full text-[13px] font-medium bg-black text-white dark:bg-white dark:text-black px-3 py-2 rounded-[8px] hover:opacity-90 transition-opacity">Generate Draft</button>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="relative mt-2">
-            <input type="text" className="w-full bg-white dark:bg-[#1c1c1e] border border-black/[0.1] dark:border-white/[0.1] rounded-full px-5 py-3 text-[14px] focus:outline-none focus:ring-2 focus:ring-[var(--color-apple-blue)]/50 shadow-sm transition-all" placeholder="Ask the Strategic Assistant..." />
-            <button className="absolute right-2 top-2 bottom-2 bg-[var(--color-apple-blue)] text-white p-2 rounded-full hover:bg-blue-600 transition-colors">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <svg width="100" height="100" viewBox="0 0 100 100">
+      {rings.map((r) => {
+        const circ = 2 * Math.PI * r.r;
+        return (
+          <g key={r.r} transform="rotate(-90 50 50)">
+            <circle cx="50" cy="50" r={r.r} stroke={r.c} strokeOpacity="0.15" strokeWidth="6" fill="none" />
+            <circle cx="50" cy="50" r={r.r} stroke={r.c} strokeWidth="6" fill="none"
+              strokeDasharray={`${(circ * r.pct) / 100} ${circ}`} strokeLinecap="round" />
+          </g>
+        );
+      })}
+    </svg>
   );
 }
 
+/* Simple sparkline chart rendered with SVG (no recharts dependency needed) */
+function VelocityChart() {
+  const maxV = Math.max(...velocity.map(d => d.v));
+  const height = 120;
+  const width = 300;
+  const padding = { top: 10, right: 10, bottom: 24, left: 10 };
+  const chartW = width - padding.left - padding.right;
+  const chartH = height - padding.top - padding.bottom;
+
+  const points = velocity.map((d, i) => ({
+    x: padding.left + (i / (velocity.length - 1)) * chartW,
+    y: padding.top + chartH - (d.v / maxV) * chartH,
+  }));
+
+  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
+  const areaPath = `${linePath} L${points[points.length - 1].x},${height - padding.bottom} L${points[0].x},${height - padding.bottom} Z`;
+
+  return (
+    <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="velGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#5ac8fa" />
+          <stop offset="100%" stopColor="#0a84ff" />
+        </linearGradient>
+        <linearGradient id="velFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#0a84ff" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="#0a84ff" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={areaPath} fill="url(#velFill)" />
+      <path d={linePath} fill="none" stroke="url(#velGrad)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      {points.map((p, i) => (
+        <circle key={i} cx={p.x} cy={p.y} r="3" fill="white" stroke="url(#velGrad)" strokeWidth="1.5" opacity="0" className="hover:opacity-100 transition-opacity" />
+      ))}
+      {/* X-axis labels */}
+      {velocity.map((d, i) => (
+        <text key={d.d} x={points[i].x} y={height - 4} textAnchor="middle" fill="#86868b" fontSize="10" fontFamily="inherit">
+          {d.d}
+        </text>
+      ))}
+    </svg>
+  );
+}
+
+export default function DashboardPage() {
+  const [tasks, setTasks] = useState(initialTasks);
+  const toggle = (id: number) => setTasks((t) => t.map((x) => x.id === id ? { ...x, done: !x.done } : x));
+
+  const today = new Date();
+  const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+  const dateStr = today.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+
+  return (
+    <div className="relative px-10 py-8 pb-24">
+      {/* Header */}
+      <div className="mb-7 flex items-end justify-between">
+        <div>
+          <p className="text-[13px] font-medium uppercase tracking-wider text-[var(--color-apple-subtle)]">{dayName}, {dateStr}</p>
+          <h1 className="mt-1 text-[32px] font-semibold tracking-tight text-[var(--color-apple-text)]">Good morning</h1>
+        </div>
+        <div className="flex items-center gap-2 text-[13px] text-[var(--color-apple-subtle)]">
+          <span className="h-2 w-2 rounded-full bg-[var(--color-apple-green)]" />
+          All systems calm
+        </div>
+      </div>
+
+      {/* AI Daily Briefing */}
+      <div className="apple-card relative overflow-hidden p-7"
+        style={{ background: "linear-gradient(135deg, #f4ecff 0%, #ffe9f3 60%, #ffeede 100%)" }}>
+        <div className="flex items-start justify-between gap-6">
+          <div className="max-w-2xl">
+            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/60 px-2.5 py-1 text-[11.5px] font-medium text-[#6b46c1] backdrop-blur">
+              <Sparkles className="h-3 w-3" /> AI Daily Briefing
+            </div>
+            <h2 className="text-[22px] font-semibold leading-snug tracking-tight text-[#1d1d1f]">
+              Good morning. You have <span className="text-[#6b46c1]">3 projects</span> that need attention today, and team velocity is up 14% vs last week.
+            </h2>
+          </div>
+          <button className="flex shrink-0 items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-[13px] font-medium text-[#1d1d1f] shadow-sm backdrop-blur transition hover:bg-white">
+            <Play className="h-3.5 w-3.5 fill-current" /> Listen to briefing
+          </button>
+        </div>
+      </div>
+
+      {/* Bento grid */}
+      <div className="mt-6 grid grid-cols-12 gap-5">
+        {/* Priority actions */}
+        <section className="apple-card col-span-12 p-6 lg:col-span-7">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h3 className="text-[16px] font-semibold tracking-tight text-[var(--color-apple-text)]">Priority actions</h3>
+              <p className="text-[12.5px] text-[var(--color-apple-subtle)]">Curated by your Chief of Staff</p>
+            </div>
+            <button className="text-[12.5px] font-medium text-[var(--color-apple-blue)]">View all</button>
+          </div>
+          <ul className="divide-y divide-black/[0.05] dark:divide-white/[0.05]">
+            {tasks.map((t) => (
+              <li key={t.id} className="group flex items-center gap-3 py-3 transition-colors hover:bg-black/[0.015] dark:hover:bg-white/[0.015] -mx-2 px-2 rounded-[8px]">
+                <button
+                  onClick={() => toggle(t.id)}
+                  className={[
+                    "h-[18px] w-[18px] shrink-0 rounded-full border-[1.5px] transition-all flex items-center justify-center",
+                    t.done ? "border-[var(--color-apple-blue)] bg-[var(--color-apple-blue)]" : "border-[#c7c7cc] hover:border-[var(--color-apple-blue)]",
+                  ].join(" ")}
+                >
+                  {t.done && <svg className="h-2.5 w-2.5 text-white" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5L5 9l4.5-5.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                </button>
+                <div className="flex-1 min-w-0">
+                  <p className={["text-[13.5px] transition-all", t.done ? "text-[var(--color-apple-subtle)] line-through decoration-[1px]" : "text-[var(--color-apple-text)]"].join(" ")}>
+                    {t.text}
+                  </p>
+                </div>
+                <span className="rounded-full bg-black/[0.05] dark:bg-white/[0.05] px-2 py-0.5 text-[11px] text-[var(--color-apple-subtle)]">{t.project}</span>
+                <Flag className="h-3.5 w-3.5 text-[var(--color-apple-orange)] opacity-0 group-hover:opacity-100 transition-opacity" />
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Right column */}
+        <div className="col-span-12 grid gap-5 lg:col-span-5">
+          {/* Velocity */}
+          <section className="apple-card p-6">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-[14px] font-medium text-[var(--color-apple-subtle)]">Team velocity</h3>
+                <div className="mt-1 flex items-baseline gap-2">
+                  <span className="text-[26px] font-semibold tracking-tight text-[var(--color-apple-text)]">31</span>
+                  <span className="flex items-center text-[12.5px] font-medium text-[var(--color-apple-green)]"><ArrowUpRight className="h-3 w-3" /> 14%</span>
+                </div>
+              </div>
+              <MoreHorizontal className="h-4 w-4 text-[var(--color-apple-subtle)]" />
+            </div>
+            <div className="mt-3 h-[120px]">
+              <VelocityChart />
+            </div>
+          </section>
+
+          {/* Morale rings */}
+          <section className="apple-card p-6">
+            <h3 className="text-[14px] font-medium text-[var(--color-apple-subtle)]">Overall morale</h3>
+            <div className="mt-3 flex items-center gap-5">
+              <Rings />
+              <div className="space-y-2 text-[12.5px] text-[var(--color-apple-text)]">
+                <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#34c759]"/>Energy <span className="ml-auto font-medium">82%</span></div>
+                <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#ff9f0a]"/>Focus <span className="ml-auto font-medium">67%</span></div>
+                <div className="flex items-center gap-2"><span className="h-2 w-2 rounded-full bg-[#ff375f]"/>Mood <span className="ml-auto font-medium">74%</span></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      {/* Strategic assistant floating button */}
+      <button className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#8e7cff] to-[#ff8ab8] shadow-lg shadow-purple-500/30 transition hover:scale-105">
+        <Sparkles className="h-5 w-5 text-white" />
+        <span className="absolute inset-0 rounded-full bg-gradient-to-br from-[#8e7cff] to-[#ff8ab8] opacity-50 blur-xl -z-10" />
+      </button>
+    </div>
+  );
+}

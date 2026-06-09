@@ -3,108 +3,102 @@
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { useLanguage } from '@/context/language-context';
+import { Folder, Plus } from 'lucide-react';
 
-// Disable SSR for BlockNote since it relies on window/document
 const Editor = dynamic(() => import('@/components/ui/note-editor'), { ssr: false });
+
+const folders = [
+  { name: 'Personal', count: 12, active: false },
+  { name: 'Team', count: 8, active: true },
+  { name: 'Meetings', count: 24, active: false },
+  { name: 'Ideas', count: 6, active: false },
+];
 
 export default function NotesPage() {
   const { t } = useLanguage();
   const [activeNote, setActiveNote] = useState('1');
+  const [activeFolder, setActiveFolder] = useState('Team');
 
   const notesList = [
-    { id: '1', title: 'Product Launch Q3', preview: 'Key messaging and positioning...', date: 'Today' },
+    { id: '1', title: 'Product Launch Q3', preview: 'Key messaging and positioning...', date: 'Today, 10:42 AM', active: true },
     { id: '2', title: 'Team Retrospective', preview: 'What went well this sprint...', date: 'Yesterday' },
-    { id: '3', title: 'Design System Guidelines', preview: 'Color palette and typography...', date: 'Jun 1' },
+    { id: '3', title: 'Design System Guidelines', preview: 'Color palette and typography...', date: 'Mon' },
   ];
 
   const activeNoteData = notesList.find((n) => n.id === activeNote) || notesList[0];
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-surface">
-      {/* Sidebar / Note List */}
-      <div className="w-72 shrink-0 border-r border-outline-variant/30 bg-surface-container flex flex-col h-full">
-        <div className="p-4 border-b border-outline-variant/30 flex items-center justify-between">
-          <h2 className="font-semibold text-on-surface">Team Notes</h2>
-          <button className="p-1.5 hover:bg-surface-variant rounded-md text-on-surface-variant transition-colors" title="New Note">
-            <span className="material-symbols-outlined text-[20px]">edit_square</span>
-          </button>
+    <div className="flex h-full w-full overflow-hidden">
+      {/* Folders Sidebar */}
+      <aside className="hidden w-[200px] shrink-0 border-r border-black/[0.06] dark:border-white/[0.06] bg-white/60 dark:bg-[var(--color-apple-card)]/60 p-3 backdrop-blur-xl md:block">
+        <div className="flex items-center justify-between px-2 py-2">
+          <span className="text-[11px] font-medium uppercase tracking-wider text-[var(--color-apple-subtle)]">Folders</span>
+          <button className="rounded p-0.5 hover:bg-black/[0.05] dark:hover:bg-white/[0.05]"><Plus className="h-3.5 w-3.5 text-[var(--color-apple-subtle)]" /></button>
         </div>
-        
-        <div className="p-3">
-          <div className="relative">
-            <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[16px]">search</span>
-            <input 
-              type="text" 
-              placeholder="Search notes..." 
-              className="w-full bg-surface border border-outline-variant/50 rounded-md py-1.5 pl-8 pr-3 text-body-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-            />
-          </div>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-2 space-y-1">
-          {notesList.map((note) => (
-            <button
-              key={note.id}
-              onClick={() => setActiveNote(note.id)}
-              className={`w-full text-left p-3 rounded-lg transition-colors flex items-start gap-3 ${
-                activeNote === note.id 
-                  ? 'bg-primary/10 text-primary' 
-                  : 'hover:bg-surface-variant text-on-surface-variant'
-              }`}
-            >
-              <span className={`material-symbols-outlined mt-0.5 shrink-0 text-[18px] ${activeNote === note.id ? 'text-primary' : 'text-on-surface-variant'}`}>
-                description
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className={`text-body-sm font-medium truncate ${activeNote === note.id ? 'text-primary' : 'text-on-surface'}`}>
-                  {note.title}
-                </p>
-                <p className="text-[11px] truncate opacity-70 mt-0.5">
-                  {note.preview}
-                </p>
-                <p className="text-[10px] mt-2 opacity-50 font-medium">
-                  {note.date}
-                </p>
-              </div>
-            </button>
+        <ul className="space-y-0.5">
+          {folders.map((f) => (
+            <li key={f.name}>
+              <button 
+                onClick={() => setActiveFolder(f.name)}
+                className={[
+                  "flex w-full items-center gap-2 rounded-[7px] px-2 py-1.5 text-[13px] transition",
+                  activeFolder === f.name 
+                    ? "bg-[var(--color-apple-lilac)]/30 text-[var(--accent-purple)] font-medium dark:bg-[var(--color-apple-lilac)]/20" 
+                    : "hover:bg-black/[0.04] dark:hover:bg-white/[0.04] text-[var(--color-apple-text)]"
+                ].join(" ")}
+              >
+                <Folder className="h-3.5 w-3.5" />
+                <span className="flex-1 text-left">{f.name}</span>
+                <span className="text-[11px] text-[var(--color-apple-subtle)]">{f.count}</span>
+              </button>
+            </li>
           ))}
+        </ul>
+      </aside>
+
+      {/* Note list */}
+      <div className="hidden w-[320px] shrink-0 border-r border-black/[0.06] dark:border-white/[0.06] bg-[var(--color-apple-card)] md:block">
+        <div className="border-b border-black/[0.06] dark:border-white/[0.06] px-5 py-4">
+          <h2 className="text-[15px] font-semibold tracking-tight text-[var(--color-apple-text)]">{activeFolder}</h2>
+          <p className="text-[11.5px] text-[var(--color-apple-subtle)]">{notesList.length} notes</p>
         </div>
+        <ul className="no-scrollbar overflow-y-auto">
+          {notesList.map((n) => (
+            <li key={n.id}>
+              <button 
+                onClick={() => setActiveNote(n.id)} 
+                className={[
+                  "w-full border-b border-black/[0.04] dark:border-white/[0.04] px-5 py-3.5 text-left transition",
+                  activeNote === n.id ? "bg-[var(--color-apple-lilac)]/20 dark:bg-[var(--color-apple-lilac)]/10" : "hover:bg-black/[0.02] dark:hover:bg-white/[0.02]"
+                ].join(" ")}
+              >
+                <div className="flex items-baseline justify-between">
+                  <span className="truncate text-[13.5px] font-semibold text-[var(--color-apple-text)]">{n.title}</span>
+                </div>
+                <div className="mt-0.5 flex items-baseline gap-2 text-[11.5px]">
+                  <span className="text-[var(--color-apple-subtle)]">{n.date}</span>
+                  <span className="truncate text-[var(--color-apple-subtle)]">· {n.preview}</span>
+                </div>
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
 
-      {/* Editor Area */}
-      <div className="flex-1 flex flex-col h-full bg-background overflow-hidden relative">
-        {/* Editor Top Bar */}
-        <div className="h-14 border-b border-outline-variant/30 px-6 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2 text-body-sm text-on-surface-variant">
-            <span className="hover:text-on-surface cursor-pointer transition-colors">Workspace</span>
-            <span className="text-[12px]">/</span>
-            <span className="text-on-surface font-medium">{activeNoteData.title}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button className="flex items-center gap-1.5 text-body-sm font-medium px-3 py-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded-md transition-colors">
-              <span className="material-symbols-outlined text-[18px]">share</span>
-              Share
-            </button>
-            <button className="p-1.5 hover:bg-surface-variant rounded-md text-on-surface-variant transition-colors">
-              <span className="material-symbols-outlined text-[20px]">more_horiz</span>
-            </button>
+      {/* Editor */}
+      <main className="flex-1 overflow-y-auto bg-[var(--color-apple-card)]">
+        <div className="mx-auto max-w-2xl px-10 py-12">
+          <div className="mb-2 text-[11.5px] text-[var(--color-apple-subtle)]">{activeNoteData.date}</div>
+          <input 
+            className="text-[28px] font-semibold tracking-tight text-[var(--color-apple-text)] mb-6 bg-transparent outline-none w-full placeholder:text-[var(--color-apple-subtle)]/30"
+            value={activeNoteData.title}
+            readOnly
+          />
+          <div className="text-[var(--color-apple-text)]">
+            <Editor />
           </div>
         </div>
-
-        {/* Editor Content Area */}
-        <div className="flex-1 overflow-y-auto px-8 md:px-16 py-12">
-          <div className="max-w-4xl mx-auto w-full">
-            <input 
-              className="text-4xl font-bold text-on-surface mb-8 px-12 bg-transparent outline-none w-full placeholder:text-on-surface-variant/30"
-              value={activeNoteData.title}
-              readOnly
-            />
-            <div className="text-on-surface">
-              <Editor />
-            </div>
-          </div>
-        </div>
-      </div>
+      </main>
     </div>
   );
 }
