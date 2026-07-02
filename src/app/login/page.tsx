@@ -51,7 +51,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="bg-black text-white min-h-screen font-['Barlow_Condensed'] overflow-hidden">
+    <div className="w-full flex-1 bg-black text-white min-h-screen font-['Barlow_Condensed'] overflow-hidden">
       {/* Video Background */}
       <div className="fixed inset-0 z-0 overflow-hidden bg-black pointer-events-none">
         <video 
