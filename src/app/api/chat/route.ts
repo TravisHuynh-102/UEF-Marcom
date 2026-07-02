@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const { messages } = await req.json();
 
     const result = streamText({
-      model: google('gemini-1.5-flash'),
+      model: google('gemini-2.5-flash'),
       system: `Bạn là một 'AI Chief of Staff' (Giám đốc Vận hành AI) siêu việt, làm việc trong nền tảng quản lý dự án nội bộ.
 Bạn là cánh tay phải đắc lực của người dùng, hỗ trợ họ theo dõi dự án, tối ưu hóa công việc, báo cáo tiến độ và giảm thiểu rủi ro.
 Hãy xưng hô chuyên nghiệp, thân thiện. 
