@@ -1,13 +1,19 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Hls from 'hls.js';
+import { useRole } from '@/context/role-context';
 
 export default function LoginPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  
+  const { setCurrentRole } = useRole();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     // HLS Setup
@@ -47,7 +53,23 @@ export default function LoginPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push('/');
+    setError('');
+    
+    const emailLower = email.toLowerCase();
+    
+    // Demo Authentication Logic
+    if (emailLower.includes('manager') || emailLower === 'sarah@teamos.ai') {
+      setCurrentRole('Manager');
+      router.push('/');
+    } else if (emailLower.includes('leader') || emailLower === 'aisha@teamos.ai') {
+      setCurrentRole('Leader');
+      router.push('/');
+    } else if (emailLower.includes('staff') || emailLower === 'priya@teamos.ai') {
+      setCurrentRole('Staff');
+      router.push('/');
+    } else {
+      setError('Tài khoản không tồn tại. Vui lòng nhập manager@uef.marcom, leader@... hoặc staff@...');
+    }
   };
 
   return (
@@ -92,7 +114,9 @@ export default function LoginPage() {
               <input 
                 id="email" 
                 type="text" 
-                placeholder="yourname@uef.marcom" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="manager@uef.marcom" 
                 className="w-full h-14 px-5 rounded-[16px] text-white placeholder-white/30 input-glass text-[16px] tracking-[0.02em]" 
                 required
               />
@@ -110,11 +134,19 @@ export default function LoginPage() {
               <input 
                 id="password" 
                 type="password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••" 
                 className="w-full h-14 px-5 rounded-[16px] text-white placeholder-white/30 input-glass text-[16px] tracking-[0.02em]" 
                 required
               />
             </div>
+
+            {error && (
+              <div className="text-red-400 text-[14px] text-center px-2 py-1 bg-red-900/20 rounded-md border border-red-500/30">
+                {error}
+              </div>
+            )}
             
             <button 
               type="submit" 
