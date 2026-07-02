@@ -2,11 +2,19 @@
 /* eslint-disable */
 
 import React, { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import Sidebar from '@/components/layout/sidebar';
 import Header from '@/components/layout/header';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  
+  const isLoginPage = pathname === '/login';
+
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
 
   return (
     <>
