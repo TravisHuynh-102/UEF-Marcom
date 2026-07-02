@@ -10,6 +10,7 @@ import {
   mockProjects, mockTasks, mockContentItems, mockWorkTrips, mockCreativeTasks, mockUsers, mockDocuments, mockActivity,
 } from '@/lib/mock-data';
 import { supabase } from '@/lib/supabase';
+import { useToast } from '@/components/ui/toast';
 
 // ─── Notification Types ─────────────────────────────────────────────────────
 export interface AppNotification {
@@ -133,6 +134,25 @@ const initialNotifications: AppNotification[] = [
 
 // ─── Provider ───────────────────────────────────────────────────────────────
 export function AppStateProvider({ children }: { children: React.ReactNode }) {
+  const { addToast } = useToast();
+
+  const addNotification = useCallback((notification: Omit<AppNotification, 'id' | 'timestamp' | 'read'>) => {
+    const newNotification: AppNotification = {
+      ...notification,
+      id: generateId('n'),
+      timestamp: new Date().toISOString(),
+      read: false,
+    };
+    setNotifications(prev => [newNotification, ...prev]);
+    
+    addToast({
+      title: notification.title,
+      message: notification.message,
+      type: notification.type,
+      duration: 5000,
+    });
+  }, [addToast]);
+
   const [projects, setProjects] = useState<Project[]>(mockProjects);
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
   const [contentItems, setContentItems] = useState<ContentItem[]>([]);
@@ -143,7 +163,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [users, setUsers] = useState<User[]>(mockUsers);
   const [notifications, setNotifications] = useState<AppNotification[]>(initialNotifications);
 
-  // ─── Fetch Supabase Data ────────────────────────────────────────────────
+  // ─── Fetch Supabase Data & Realtime Subscriptions ────────────────────────────────────────────────
   useEffect(() => {
     const fetchContent = async () => {
       const { data, error } = await supabase.from('content_items').select('*').order('created_at', { ascending: false });
@@ -166,13 +186,86 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       }
     };
     fetchContent();
-  }, []);
+
+    // Supabase Realtime Subscription for content_items
+    const channel = supabase.channel('schema-db-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'content_items' },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            const newItem = payload.new as any;
+            addNotification({
+              title: 'Lịch Nội Dung Mới',
+              message: `Đã thêm "${newItem.title}" vào lịch xuất bản.`,
+              type: 'info',
+              link: '/content-calendar'
+            });
+            setContentItems(prev => {
+               if (prev.some(c => c.id === newItem.id)) return prev;
+               return [{
+                 id: newItem.id,
+                 title: newItem.title,
+                 type: newItem.type,
+                 platform: newItem.platform,
+                 status: newItem.status,
+                 scheduledDate: newItem.scheduled_date,
+                 scheduledTime: newItem.scheduled_time,
+                 series: newItem.series,
+                 assignee: newItem.assignee,
+                 approvedBy: newItem.approved_by,
+               }, ...prev];
+            });
+          } else if (payload.eventType === 'UPDATE') {
+            const updatedItem = payload.new as any;
+            addNotification({
+              title: 'Cập nhật Nội Dung',
+              message: `Nội dung "${updatedItem.title}" vừa được cập nhật trạng thái.`,
+              type: 'success',
+              link: '/content-calendar'
+            });
+            setContentItems(prev => prev.map(c => c.id === updatedItem.id ? {
+              ...c,
+              title: updatedItem.title,
+              type: updatedItem.type,
+              platform: updatedItem.platform,
+              status: updatedItem.status,
+              scheduledDate: updatedItem.scheduled_date,
+              scheduledTime: updatedItem.scheduled_time,
+              series: updatedItem.series,
+              assignee: updatedItem.assignee,
+              approvedBy: updatedItem.approved_by,
+            } : c));
+          } else if (payload.eventType === 'DELETE') {
+            const deletedItem = payload.old as any;
+            addNotification({
+              title: 'Đã xoá Nội Dung',
+              message: `Một nội dung đã bị gỡ khỏi lịch.`,
+              type: 'warning',
+              link: '/content-calendar'
+            });
+            setContentItems(prev => prev.filter(c => c.id !== deletedItem.id));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [addNotification]);
 
   // ─── Project CRUD ───────────────────────────────────────────────────────
   const addProject = useCallback((project: Omit<Project, 'id'>) => {
     const newProject: Project = { ...project, id: generateId('p') };
     setProjects(prev => [newProject, ...prev]);
-  }, []);
+    addNotification({
+      title: 'Dự án mới',
+      message: `Dự án "${project.name}" đã được khởi tạo thành công.`,
+      type: 'success',
+      link: '/projects'
+    });
+  }, [addNotification]);
 
   const updateProject = useCallback((id: string, updates: Partial<Project>) => {
     setProjects(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
@@ -186,11 +279,25 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const addTask = useCallback((task: Omit<Task, 'id'>) => {
     const newTask: Task = { ...task, id: generateId('t') };
     setTasks(prev => [newTask, ...prev]);
-  }, []);
+    addNotification({
+      title: 'Công việc mới được giao',
+      message: `Task "${task.title}" đã được tạo.`,
+      type: 'info',
+      link: '/tasks'
+    });
+  }, [addNotification]);
 
   const updateTask = useCallback((id: string, updates: Partial<Task>) => {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
-  }, []);
+    if (updates.status === 'Completed') {
+      addNotification({
+        title: 'Hoàn thành công việc',
+        message: `Tuyệt vời! Một công việc vừa được đánh dấu hoàn thành.`,
+        type: 'success',
+        link: '/tasks'
+      });
+    }
+  }, [addNotification]);
 
   const deleteTask = useCallback((id: string) => {
     setTasks(prev => prev.filter(t => t.id !== id));
@@ -294,16 +401,6 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // ─── Notification CRUD ──────────────────────────────────────────────────
-  const addNotification = useCallback((notification: Omit<AppNotification, 'id' | 'timestamp' | 'read'>) => {
-    const newNotification: AppNotification = {
-      ...notification,
-      id: generateId('n'),
-      timestamp: new Date().toISOString(),
-      read: false,
-    };
-    setNotifications(prev => [newNotification, ...prev]);
-  }, []);
-
   const markNotificationRead = useCallback((id: string) => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
   }, []);

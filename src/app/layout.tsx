@@ -50,11 +50,11 @@ export default function RootLayout({
         <ThemeProvider>
           <LanguageProvider>
             <RoleProvider>
-              <AppStateProvider>
                 <ToastProvider>
-                  <AppShell>{children}</AppShell>
+                  <AppStateProvider>
+                    <AppShell>{children}</AppShell>
+                  </AppStateProvider>
                 </ToastProvider>
-              </AppStateProvider>
             </RoleProvider>
           </LanguageProvider>
         </ThemeProvider>

@@ -232,7 +232,15 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
           {notifOpen && (
             <div className="absolute right-0 top-full z-50 mt-1 w-80 rounded border border-[var(--border-light)] bg-[var(--bg-main)] shadow-lg overflow-hidden">
               <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--border-light)]">
-                <h3 className="text-[14px] font-medium text-[var(--text-main)]">Updates</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-[14px] font-medium text-[var(--text-main)]">Thông báo</h3>
+                  <button 
+                    onClick={() => { setNotifOpen(false); router.push('/notifications'); }}
+                    className="text-[11px] px-2 py-0.5 rounded-full bg-white/5 text-[var(--text-muted)] hover:text-white hover:bg-white/10 transition-colors"
+                  >
+                    Xem tất cả
+                  </button>
+                </div>
                 {unreadNotificationCount > 0 && (
                   <button onClick={markAllNotificationsRead} className="text-[12px] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors">
                     Mark all read
