@@ -12,7 +12,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^4.0.5",
+    "@ai-sdk/google": "^4.0.6",
     "@ai-sdk/react": "^4.0.12",
     "@blocknote/core": "^0.51.4",
     "@blocknote/mantine": "^0.51.4",
