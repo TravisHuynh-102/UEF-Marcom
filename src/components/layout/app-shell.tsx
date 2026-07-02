@@ -22,12 +22,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <Sidebar isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
 
       {/* Main Content Area */}
-      <main className="flex-1 ml-0 md:ml-[260px] flex flex-col h-screen bg-[var(--color-apple-bg)]">
+      <main className="flex-1 ml-0 md:ml-[280px] flex flex-col h-screen bg-transparent">
         <Header onMenuClick={() => setMobileMenuOpen(true)} />
         
         {/* Scrollable Content Canvas */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar relative">
-          <div className="w-full flex flex-col pb-24">
+        <div className="flex-1 overflow-y-auto no-scrollbar relative p-6 pt-0">
+          <div className="w-full flex flex-col h-full">
             {children}
           </div>
         </div>

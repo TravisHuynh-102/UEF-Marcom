@@ -75,7 +75,7 @@ export default function TasksPage() {
               `}
             >
               {tab.label}
-              <span className={`ml-1.5 text-[11px] ${activeTab === tab.id ? 'text-[var(--color-apple-subtle)]' : 'text-[var(--color-apple-subtle)] opacity-70'}`}>
+              <span className={`ml-1.5 text-[12.5px] ${activeTab === tab.id ? 'text-[var(--color-apple-subtle)]' : 'text-[var(--color-apple-subtle)] opacity-70'}`}>
                 {tab.count}
               </span>
             </button>

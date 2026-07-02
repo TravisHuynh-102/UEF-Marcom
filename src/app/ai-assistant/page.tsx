@@ -225,7 +225,7 @@ export default function AIAssistantPage() {
               <h2 className="font-semibold tracking-tight" style={{ color: 'var(--text-primary)' }}>
                 AI Chief of Staff
               </h2>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-medium">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[11.5px] font-medium">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Online
               </span>
@@ -337,7 +337,7 @@ export default function AIAssistantPage() {
               className="flex-1 bg-transparent outline-none text-sm placeholder:text-[var(--text-muted)]"
               style={{ color: 'var(--text-primary)' }}
             />
-            <span className="hidden sm:block text-[10px] mr-1 px-1.5 py-0.5 rounded border opacity-40" style={{ borderColor: 'var(--card-border)', color: 'var(--text-muted)' }}>
+            <span className="hidden sm:block text-[11.5px] mr-1 px-1.5 py-0.5 rounded border opacity-40" style={{ borderColor: 'var(--card-border)', color: 'var(--text-muted)' }}>
               ⏎ Enter
             </span>
             <button className="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25 transition-transform hover:scale-105">
@@ -378,7 +378,7 @@ export default function AIAssistantPage() {
                     <Icon className="w-4 h-4 text-white" />
                   </div>
                   <span
-                    className="text-[11px] font-medium text-center leading-tight"
+                    className="text-[12.5px] font-medium text-center leading-tight"
                     style={{ color: 'var(--text-secondary)' }}
                   >
                     {action.label}
@@ -410,7 +410,7 @@ export default function AIAssistantPage() {
                 <div className="flex-1 min-w-0">
                   <p className="text-xs truncate group-hover/topic:underline">{topic.text}</p>
                 </div>
-                <span className="text-[10px] shrink-0 mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                <span className="text-[11.5px] shrink-0 mt-0.5" style={{ color: 'var(--text-muted)' }}>
                   {topic.time}
                 </span>
               </button>

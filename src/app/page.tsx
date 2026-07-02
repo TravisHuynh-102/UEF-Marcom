@@ -93,31 +93,31 @@ export default function DashboardPage() {
   return (
     <div className="relative px-10 py-8 pb-24">
       {/* Header */}
-      <div className="mb-7 flex items-end justify-between">
+      <div className="mb-8 flex items-end justify-between">
         <div>
-          <p className="text-[13px] font-medium uppercase tracking-wider text-[var(--color-apple-subtle)]">{dayName}, {dateStr}</p>
-          <h1 className="mt-1 text-[32px] font-semibold tracking-tight text-[var(--color-apple-text)]">Good morning</h1>
+          <p className="text-[13px] font-medium uppercase tracking-widest text-[var(--accent-purple)]">{dayName}, {dateStr}</p>
+          <h1 className="mt-2 text-[36px] font-outfit font-bold tracking-tight text-[var(--color-apple-text)]">Good morning</h1>
         </div>
-        <div className="flex items-center gap-2 text-[13px] text-[var(--color-apple-subtle)]">
-          <span className="h-2 w-2 rounded-full bg-[var(--color-apple-green)]" />
+        <div className="flex items-center gap-2 text-[13px] font-medium px-3 py-1.5 rounded-full bg-[var(--color-apple-green)]/10 text-[var(--color-apple-green)] border border-[var(--color-apple-green)]/20 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+          <span className="h-2 w-2 rounded-full bg-[var(--color-apple-green)] animate-pulse" />
           All systems calm
         </div>
       </div>
 
       {/* AI Daily Briefing */}
-      <div className="apple-card relative overflow-hidden p-7"
-        style={{ background: "linear-gradient(135deg, #f4ecff 0%, #ffe9f3 60%, #ffeede 100%)" }}>
-        <div className="flex items-start justify-between gap-6">
+      <div className="apple-card relative overflow-hidden p-8 animated-gradient-bg border-0">
+        <div className="absolute inset-0 bg-black/10 dark:bg-black/30 backdrop-blur-[2px]"></div>
+        <div className="relative z-10 flex items-start justify-between gap-6">
           <div className="max-w-2xl">
-            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-white/60 px-2.5 py-1 text-[11.5px] font-medium text-[#6b46c1] backdrop-blur">
-              <Sparkles className="h-3 w-3" /> AI Daily Briefing
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 dark:bg-black/20 px-3 py-1.5 text-[12px] font-semibold text-white backdrop-blur-md border border-white/20 shadow-sm">
+              <Sparkles className="h-3.5 w-3.5 text-yellow-300" /> AI Daily Briefing
             </div>
-            <h2 className="text-[22px] font-semibold leading-snug tracking-tight text-[#1d1d1f]">
-              Good morning. You have <span className="text-[#6b46c1]">3 projects</span> that need attention today, and team velocity is up 14% vs last week.
+            <h2 className="text-[26px] font-outfit font-semibold leading-snug tracking-tight text-white text-glow">
+              Good morning. You have <span className="text-yellow-300 font-bold">3 projects</span> that need attention today, and team velocity is up 14% vs last week.
             </h2>
           </div>
-          <button className="flex shrink-0 items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-[13px] font-medium text-[#1d1d1f] shadow-sm backdrop-blur transition hover:bg-white">
-            <Play className="h-3.5 w-3.5 fill-current" /> Listen to briefing
+          <button className="flex shrink-0 items-center gap-2 rounded-full bg-white text-[var(--accent-purple)] px-5 py-2.5 text-[14px] font-semibold shadow-lg shadow-white/20 transition-all hover:scale-105 hover:bg-opacity-90">
+            <Play className="h-4 w-4 fill-current" /> Listen to briefing
           </button>
         </div>
       </div>
@@ -135,23 +135,23 @@ export default function DashboardPage() {
           </div>
           <ul className="divide-y divide-black/[0.05] dark:divide-white/[0.05]">
             {tasks.map((t) => (
-              <li key={t.id} className="group flex items-center gap-3 py-3 transition-colors hover:bg-black/[0.015] dark:hover:bg-white/[0.015] -mx-2 px-2 rounded-[8px]">
+              <li key={t.id} className="group flex items-center gap-3 py-3.5 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03] -mx-2 px-2 rounded-xl">
                 <button
                   onClick={() => toggle(t.id)}
                   className={[
-                    "h-[18px] w-[18px] shrink-0 rounded-full border-[1.5px] transition-all flex items-center justify-center",
-                    t.done ? "border-[var(--color-apple-blue)] bg-[var(--color-apple-blue)]" : "border-[#c7c7cc] hover:border-[var(--color-apple-blue)]",
+                    "h-[20px] w-[20px] shrink-0 rounded-full border-[1.5px] transition-all flex items-center justify-center",
+                    t.done ? "border-[var(--accent-purple)] bg-gradient-to-br from-[var(--accent-purple)] to-[var(--accent-pink)] shadow-md shadow-[var(--accent-purple)]/20" : "border-[var(--border-main)] hover:border-[var(--accent-purple)]",
                   ].join(" ")}
                 >
-                  {t.done && <svg className="h-2.5 w-2.5 text-white" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5L5 9l4.5-5.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                  {t.done && <svg className="h-3 w-3 text-white" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5L5 9l4.5-5.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                 </button>
                 <div className="flex-1 min-w-0">
-                  <p className={["text-[13.5px] transition-all", t.done ? "text-[var(--color-apple-subtle)] line-through decoration-[1px]" : "text-[var(--color-apple-text)]"].join(" ")}>
+                  <p className={["text-[14px] transition-all", t.done ? "text-[var(--color-apple-subtle)] line-through decoration-[1px] opacity-70" : "text-[var(--color-apple-text)] font-medium"].join(" ")}>
                     {t.text}
                   </p>
                 </div>
-                <span className="rounded-full bg-black/[0.05] dark:bg-white/[0.05] px-2 py-0.5 text-[11px] text-[var(--color-apple-subtle)]">{t.project}</span>
-                <Flag className="h-3.5 w-3.5 text-[var(--color-apple-orange)] opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span className="rounded-md bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.02] dark:border-white/[0.05] px-2.5 py-1 text-[12.5px] font-medium text-[var(--color-apple-subtle)]">{t.project}</span>
+                <Flag className="h-4 w-4 text-[var(--accent-pink)] opacity-0 group-hover:opacity-100 transition-all transform group-hover:scale-110" />
               </li>
             ))}
           </ul>

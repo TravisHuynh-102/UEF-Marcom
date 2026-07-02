@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -44,7 +44,9 @@ export default function RootLayout({
           rel="stylesheet" 
         />
       </head>
-      <body className="bg-[#191919] text-[#FFFFFF] font-body-md text-body-md h-screen overflow-hidden flex selection:bg-[#9D5DFF]/30 selection:text-white antialiased">
+      <body 
+        className="text-[#191919] font-body-md text-body-md h-screen overflow-hidden flex selection:bg-[var(--accent-primary)]/30 selection:text-black antialiased bg-glass-scenic bg-cover bg-center transition-all duration-500"
+      >
         <ThemeProvider>
           <LanguageProvider>
             <RoleProvider>

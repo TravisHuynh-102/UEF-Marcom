@@ -77,6 +77,7 @@ export interface ContentItem {
   description: string;
   projectId?: string;
   projectName?: string;
+  series?: string;
 }
 
 // ─── Work Calendar Types ────────────────────────────────────────────────────

@@ -140,22 +140,22 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   }, [searchResults]);
 
   return (
-    <header className="flex justify-between items-center w-full px-8 h-14 shrink-0 bg-transparent z-40 relative flex-none">
+    <header className="flex justify-between items-center w-full px-8 h-16 shrink-0 bg-white/40 dark:bg-black/40 backdrop-blur-2xl z-40 relative flex-none border-b border-white/40 dark:border-white/10 text-black dark:text-white shadow-[0_4px_30px_rgb(0,0,0,0.05)] transition-colors duration-500">
       {/* Mobile Menu Toggle & Breadcrumb */}
       <div className="flex items-center gap-1 overflow-hidden">
         <button 
           onClick={onMenuClick}
-          className="md:hidden p-1 text-[var(--text-muted)] hover:bg-[var(--bg-hover)] rounded transition-colors"
+          className="md:hidden p-1 text-black/60 dark:text-white/60 hover:bg-white/30 dark:hover:bg-white/10 rounded transition-colors"
         >
           <span className="material-symbols-outlined text-[20px]">menu</span>
         </button>
         
         {/* Breadcrumb */}
-        <div className="flex items-center text-[14px] text-[var(--text-muted)] whitespace-nowrap overflow-hidden text-ellipsis">
-          <span className="hover:bg-[var(--bg-hover)] px-2 py-1 rounded cursor-pointer transition-colors truncate hidden sm:inline-block">TeamOS Workspace</span>
-          <span className="text-[var(--border-main)] mx-0.5 hidden sm:inline-block">/</span>
-          <span className="hover:bg-[var(--bg-hover)] px-2 py-1 rounded cursor-pointer transition-colors text-[var(--text-main)] truncate font-medium flex items-center gap-1.5">
-            {pageInfo.title === 'AI Chief of Staff' && <span className="text-[14px]">🤖</span>}
+        <div className="flex items-center text-[14px] text-black/70 dark:text-white/70 whitespace-nowrap overflow-hidden text-ellipsis">
+          <span className="hover:bg-white/30 dark:hover:bg-white/10 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors truncate hidden sm:inline-block font-semibold">TeamOS Workspace</span>
+          <span className="text-black/30 dark:text-white/30 mx-1 hidden sm:inline-block">/</span>
+          <span className="hover:bg-white/30 dark:hover:bg-white/10 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors text-black dark:text-white truncate font-bold flex items-center gap-2">
+            {pageInfo.title === 'AI Chief of Staff' && <Sparkles className="w-4 h-4 text-black dark:text-white" />}
             {pageInfo.title}
           </span>
         </div>
@@ -163,14 +163,14 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
 
       <div className="flex items-center gap-2">
         {/* Search Bar */}
-        <div ref={searchRef} className="relative hidden sm:block w-48">
-          <span className="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-[16px]">search</span>
+        <div ref={searchRef} className="relative hidden sm:block w-56">
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-black/50 dark:text-white/50 text-[18px]">search</span>
           <input 
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             onFocus={() => setSearchFocused(true)}
-            className="w-full bg-[var(--bg-sidebar)] border border-transparent text-[var(--text-main)] rounded py-1 pl-8 pr-2 focus:outline-none focus:border-[var(--border-main)] focus:bg-[var(--bg-main)] transition-all text-[14px] placeholder:text-[var(--text-muted)]" 
+            className="w-full bg-white/50 dark:bg-black/40 border border-white/50 dark:border-white/10 text-black dark:text-white rounded-full py-1.5 pl-10 pr-4 focus:outline-none focus:border-white/80 dark:focus:border-white/30 focus:bg-white/60 dark:focus:bg-black/60 transition-all text-[14px] placeholder:text-black/50 dark:placeholder:text-white/50 shadow-sm backdrop-blur-md font-medium" 
             placeholder="Search..." 
           />
           {/* Search Dropdown */}
@@ -207,15 +207,24 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
           )}
         </div>
 
+        {/* Theme Toggle */}
+        <button
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className="w-9 h-9 rounded-full flex items-center justify-center text-black/60 dark:text-white/60 hover:bg-white/30 dark:hover:bg-white/10 hover:text-black dark:hover:text-white transition-all relative border border-transparent hover:border-white/20 dark:hover:border-white/10"
+          title="Toggle Theme"
+        >
+          <span className="material-symbols-outlined text-[20px]">{theme === 'dark' ? 'light_mode' : 'dark_mode'}</span>
+        </button>
+
         {/* Notifications */}
         <div ref={notifRef} className="relative">
           <button 
             onClick={() => setNotifOpen(!notifOpen)}
-            className="w-8 h-8 rounded flex items-center justify-center text-[var(--text-muted)] hover:bg-[var(--bg-hover)] transition-colors relative"
+            className="w-9 h-9 rounded-full flex items-center justify-center text-black/60 dark:text-white/60 hover:bg-white/30 dark:hover:bg-white/10 hover:text-black dark:hover:text-white transition-all relative border border-transparent hover:border-white/20 dark:hover:border-white/10"
           >
             <span className="material-symbols-outlined text-[20px]">notifications</span>
             {unreadNotificationCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+              <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white/50"></span>
             )}
           </button>
 
@@ -269,8 +278,8 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
         </div>
 
         {/* User Profile */}
-        <div className="w-7 h-7 rounded bg-[var(--bg-hover)] flex items-center justify-center cursor-pointer ml-1" onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}>
-          <span className="text-[12px] font-medium text-[var(--text-main)]">{currentUser.name.split(' ').map(n => n[0]).join('')}</span>
+        <div className="w-9 h-9 rounded-full bg-black dark:bg-white/10 flex items-center justify-center cursor-pointer ml-2 shadow-sm border border-white/20 dark:border-white/10" onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}>
+          <span className="text-[13px] font-bold text-white dark:text-white">{currentUser.name.split(' ').map(n => n[0]).join('')}</span>
 
           {/* Role Switcher Dropdown (Demo) */}
           {roleDropdownOpen && (

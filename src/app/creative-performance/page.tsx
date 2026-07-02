@@ -781,7 +781,7 @@ export default function CreativePerformancePage() {
                       <div className="flex items-center gap-2">
                         <div
                           className={cn(
-                            'flex items-center justify-center w-7 h-7 rounded-full text-white text-[10px] font-semibold bg-gradient-to-br',
+                            'flex items-center justify-center w-7 h-7 rounded-full text-white text-[11.5px] font-semibold bg-gradient-to-br',
                             avatarGradients[
                               parseInt(task.assignee.id.replace('u', '')) %
                                 avatarGradients.length

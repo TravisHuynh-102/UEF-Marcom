@@ -9,6 +9,7 @@ import {
 import {
   mockProjects, mockTasks, mockContentItems, mockWorkTrips, mockCreativeTasks, mockUsers, mockDocuments, mockActivity,
 } from '@/lib/mock-data';
+import { supabase } from '@/lib/supabase';
 
 // ─── Notification Types ─────────────────────────────────────────────────────
 export interface AppNotification {
@@ -134,13 +135,38 @@ const initialNotifications: AppNotification[] = [
 export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [projects, setProjects] = useState<Project[]>(mockProjects);
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
-  const [contentItems, setContentItems] = useState<ContentItem[]>(mockContentItems);
+  const [contentItems, setContentItems] = useState<ContentItem[]>([]);
   const [workTrips, setWorkTrips] = useState<WorkTrip[]>(mockWorkTrips);
   const [creativeTasks, setCreativeTasks] = useState<CreativeTask[]>(mockCreativeTasks);
   const [documents, setDocuments] = useState<Document[]>(mockDocuments);
   const [activities, setActivities] = useState<ActivityItem[]>(mockActivity);
   const [users, setUsers] = useState<User[]>(mockUsers);
   const [notifications, setNotifications] = useState<AppNotification[]>(initialNotifications);
+
+  // ─── Fetch Supabase Data ────────────────────────────────────────────────
+  useEffect(() => {
+    const fetchContent = async () => {
+      const { data, error } = await supabase.from('content_items').select('*').order('created_at', { ascending: false });
+      if (error) {
+        console.error('Error fetching content:', error);
+      } else if (data) {
+        const mappedData: ContentItem[] = data.map(d => ({
+          id: d.id,
+          title: d.title,
+          type: d.type as ContentType,
+          platform: d.platform as Platform,
+          status: d.status as ApprovalStatus,
+          scheduledDate: d.scheduled_date,
+          scheduledTime: d.scheduled_time,
+          series: d.series || undefined,
+          assignee: d.assignee,
+          approvedBy: d.approved_by,
+        }));
+        setContentItems(mappedData);
+      }
+    };
+    fetchContent();
+  }, []);
 
   // ─── Project CRUD ───────────────────────────────────────────────────────
   const addProject = useCallback((project: Omit<Project, 'id'>) => {
@@ -170,18 +196,57 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setTasks(prev => prev.filter(t => t.id !== id));
   }, []);
 
-  // ─── Content CRUD ───────────────────────────────────────────────────────
-  const addContentItem = useCallback((item: Omit<ContentItem, 'id'>) => {
-    const newItem: ContentItem = { ...item, id: generateId('c') };
+  // ─── Content CRUD (Supabase) ────────────────────────────────────────────
+  const addContentItem = useCallback(async (item: Omit<ContentItem, 'id'>) => {
+    const tempId = generateId('temp');
+    const newItem: ContentItem = { ...item, id: tempId };
     setContentItems(prev => [newItem, ...prev]);
+
+    const insertData = {
+      title: item.title,
+      type: item.type,
+      platform: item.platform,
+      status: item.status,
+      scheduled_date: item.scheduledDate,
+      scheduled_time: item.scheduledTime,
+      series: item.series,
+      assignee: item.assignee,
+      approved_by: item.approvedBy,
+    };
+    
+    const { data, error } = await supabase.from('content_items').insert(insertData).select().single();
+    if (error) {
+      console.error('Error adding content to Supabase:', error);
+    } else if (data) {
+      setContentItems(prev => prev.map(c => c.id === tempId ? { ...c, id: data.id } : c));
+    }
   }, []);
 
-  const updateContentItem = useCallback((id: string, updates: Partial<ContentItem>) => {
+  const updateContentItem = useCallback(async (id: string, updates: Partial<ContentItem>) => {
     setContentItems(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c));
+    
+    if (id.startsWith('c') && !id.includes('-')) return; // Ignore updates on local mock data if any left
+    
+    const updateData: any = {};
+    if (updates.title !== undefined) updateData.title = updates.title;
+    if (updates.type !== undefined) updateData.type = updates.type;
+    if (updates.platform !== undefined) updateData.platform = updates.platform;
+    if (updates.status !== undefined) updateData.status = updates.status;
+    if (updates.scheduledDate !== undefined) updateData.scheduled_date = updates.scheduledDate;
+    if (updates.scheduledTime !== undefined) updateData.scheduled_time = updates.scheduledTime;
+    if (updates.series !== undefined) updateData.series = updates.series;
+    if (updates.assignee !== undefined) updateData.assignee = updates.assignee;
+    if (updates.approvedBy !== undefined) updateData.approved_by = updates.approvedBy;
+
+    const { error } = await supabase.from('content_items').update(updateData).eq('id', id);
+    if (error) console.error('Error updating content on Supabase:', error);
   }, []);
 
-  const deleteContentItem = useCallback((id: string) => {
+  const deleteContentItem = useCallback(async (id: string) => {
     setContentItems(prev => prev.filter(c => c.id !== id));
+    if (id.startsWith('c') && !id.includes('-')) return;
+    const { error } = await supabase.from('content_items').delete().eq('id', id);
+    if (error) console.error('Error deleting content on Supabase:', error);
   }, []);
 
   // ─── Work Trip CRUD ─────────────────────────────────────────────────────

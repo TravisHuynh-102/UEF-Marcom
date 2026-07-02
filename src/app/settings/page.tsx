@@ -876,7 +876,7 @@ function SecurityTab() {
             <div className="flex h-28 w-28 shrink-0 items-center justify-center rounded-lg border-2 border-dashed" style={{ borderColor: 'var(--card-border)' }}>
               <div className="text-center">
                 <Key size={24} style={{ color: 'var(--text-muted)' }} className="mx-auto" />
-                <p className="mt-1 text-[10px]" style={{ color: 'var(--text-muted)' }}>QR Code</p>
+                <p className="mt-1 text-[11.5px]" style={{ color: 'var(--text-muted)' }}>QR Code</p>
               </div>
             </div>
             <div>
@@ -914,7 +914,7 @@ function SecurityTab() {
                     <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
                       {s.browser} · {s.device}
                       {s.current && (
-                        <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+                        <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[11.5px] font-semibold text-emerald-400">
                           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                           Current
                         </span>

@@ -25,6 +25,7 @@ export default function CreateContentModal({ isOpen, onClose, defaultDate }: Cre
   const [scheduledTime, setScheduledTime] = useState('10:00');
   const [assigneeId, setAssigneeId] = useState('');
   const [projectId, setProjectId] = useState('');
+  const [series, setSeries] = useState('');
 
   const resetForm = () => {
     setTitle('');
@@ -35,6 +36,7 @@ export default function CreateContentModal({ isOpen, onClose, defaultDate }: Cre
     setScheduledTime('10:00');
     setAssigneeId('');
     setProjectId('');
+    setSeries('');
   };
 
   const handleSubmit = () => {
@@ -57,6 +59,7 @@ export default function CreateContentModal({ isOpen, onClose, defaultDate }: Cre
       assignee,
       projectId: projectId || undefined,
       projectName: project?.name || undefined,
+      series: series.trim() || undefined,
     });
 
     addToast({
@@ -137,6 +140,14 @@ export default function CreateContentModal({ isOpen, onClose, defaultDate }: Cre
               <option key={p.id} value={p.id}>{p.name}</option>
             ))}
           </FormSelect>
+        </FormField>
+
+        <FormField label="Series (Optional)">
+          <FormInput
+            placeholder="e.g., Summer Campaign, Tech Talk..."
+            value={series}
+            onChange={e => setSeries(e.target.value)}
+          />
         </FormField>
 
         <FormField label="Assignee" required>

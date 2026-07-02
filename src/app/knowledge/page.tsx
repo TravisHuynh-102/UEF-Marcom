@@ -216,7 +216,7 @@ export default function KnowledgePage() {
               <div className="flex items-center gap-2 mb-3">
                 <div
                   className={cn(
-                    'flex items-center justify-center w-6 h-6 rounded-full text-white text-[10px] font-semibold bg-gradient-to-br',
+                    'flex items-center justify-center w-6 h-6 rounded-full text-white text-[11.5px] font-semibold bg-gradient-to-br',
                     doc.authorGradient
                   )}
                 >
@@ -303,7 +303,7 @@ export default function KnowledgePage() {
               <div className="flex items-center gap-2 min-w-0">
                 <div
                   className={cn(
-                    'flex items-center justify-center w-5 h-5 rounded-full text-white text-[9px] font-semibold bg-gradient-to-br flex-shrink-0',
+                    'flex items-center justify-center w-5 h-5 rounded-full text-white text-[10.5px] font-semibold bg-gradient-to-br flex-shrink-0',
                     doc.authorGradient
                   )}
                 >
@@ -397,7 +397,7 @@ export default function KnowledgePage() {
                 <div className="relative z-10 flex-shrink-0">
                   <div
                     className={cn(
-                      'flex items-center justify-center w-8 h-8 rounded-full text-white text-[10px] font-semibold bg-gradient-to-br ring-4 ring-white dark:ring-[#12121a]',
+                      'flex items-center justify-center w-8 h-8 rounded-full text-white text-[11.5px] font-semibold bg-gradient-to-br ring-4 ring-white dark:ring-[#12121a]',
                       activity.userGradient
                     )}
                   >

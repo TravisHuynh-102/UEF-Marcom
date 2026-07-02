@@ -90,14 +90,14 @@ function AvatarStack({ members, max = 3 }: { members: Project['members']; max?: 
         <div
           key={m.id}
           title={m.name}
-          className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-semibold text-white border-[1.5px] border-white"
+          className="w-6 h-6 rounded-full flex items-center justify-center text-[10.5px] font-semibold text-white border-[1.5px] border-white"
           style={{ backgroundColor: avatarHsl(m.name) }}
         >
           {getInitials(m.name)}
         </div>
       ))}
       {overflow > 0 && (
-        <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-semibold bg-black/[0.06] text-[var(--color-apple-subtle)] border-[1.5px] border-white">
+        <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10.5px] font-semibold bg-black/[0.06] text-[var(--color-apple-subtle)] border-[1.5px] border-white">
           +{overflow}
         </div>
       )}
@@ -108,7 +108,7 @@ function AvatarStack({ members, max = 3 }: { members: Project['members']; max?: 
 function RiskBadge({ risk }: { risk: RiskLevel }) {
   const c = RISK_CONFIG[risk];
   return (
-    <span className={cn('inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium', c.color)}>
+    <span className={cn('inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[12.5px] font-medium', c.color)}>
       {c.icon}
       {risk}
     </span>
@@ -124,7 +124,7 @@ function ProgressBar({ value }: { value: number }) {
           style={{ width: `${value}%` }}
         />
       </div>
-      <span className="text-[11px] font-medium text-[var(--color-apple-subtle)] tabular-nums w-8 text-right">{value}%</span>
+      <span className="text-[12.5px] font-medium text-[var(--color-apple-subtle)] tabular-nums w-8 text-right">{value}%</span>
     </div>
   );
 }
@@ -137,7 +137,7 @@ function ProjectExpandedDetail({ project }: { project: Project }) {
       {/* Description */}
       {project.description && (
         <div>
-          <p className="text-[11px] font-semibold text-[var(--color-apple-subtle)] uppercase tracking-wider mb-1">Description</p>
+          <p className="text-[12.5px] font-semibold text-[var(--color-apple-subtle)] uppercase tracking-wider mb-1">Description</p>
           <p className="text-[13px] text-[var(--color-apple-text)] leading-relaxed">{project.description}</p>
         </div>
       )}
@@ -152,13 +152,13 @@ function ProjectExpandedDetail({ project }: { project: Project }) {
 
       {/* Progress Bar */}
       <div>
-        <p className="text-[11px] font-semibold text-[var(--color-apple-subtle)] uppercase tracking-wider mb-1.5">Progress</p>
+        <p className="text-[12.5px] font-semibold text-[var(--color-apple-subtle)] uppercase tracking-wider mb-1.5">Progress</p>
         <ProgressBar value={project.progress} />
       </div>
 
       {/* Members */}
       <div>
-        <p className="text-[11px] font-semibold text-[var(--color-apple-subtle)] uppercase tracking-wider mb-1.5 flex items-center gap-1">
+        <p className="text-[12.5px] font-semibold text-[var(--color-apple-subtle)] uppercase tracking-wider mb-1.5 flex items-center gap-1">
           <Users className="w-3 h-3" />
           Team ({project.members.length})
         </p>
@@ -250,7 +250,7 @@ function ProjectCard({
         {/* Risk + Due */}
         <div className="flex items-center justify-between mb-3">
           <RiskBadge risk={project.risk} />
-          <span className="inline-flex items-center gap-1 text-[11px] text-[var(--color-apple-subtle)]">
+          <span className="inline-flex items-center gap-1 text-[12.5px] text-[var(--color-apple-subtle)]">
             <Calendar className="w-3 h-3" />
             {new Date(project.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
           </span>
@@ -357,7 +357,7 @@ function ProjectListRow({
         {/* Lead */}
         <div className="flex items-center gap-2">
           <div
-            className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-semibold text-white"
+            className="w-5 h-5 rounded-full flex items-center justify-center text-[10.5px] font-semibold text-white"
             style={{ backgroundColor: avatarHsl(project.lead.name) }}
           >
             {getInitials(project.lead.name)}

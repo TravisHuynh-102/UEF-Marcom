@@ -79,44 +79,45 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
     <>
       <aside className={cn(
-        "glass-sidebar fixed inset-y-0 left-0 z-50 w-[260px] flex-col border-r border-black/[0.06] dark:border-white/[0.06] transition-transform duration-300 md:translate-x-0 md:flex flex",
+        "fixed inset-y-0 left-0 z-50 w-64 flex-col transition-transform duration-300 md:translate-x-0 md:flex flex",
+        "md:m-6 md:h-[calc(100vh-48px)] md:rounded-3xl bg-white/40 dark:bg-black/40 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] text-black dark:text-white transition-colors duration-500",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {/* Header / Logo */}
-        <div className="flex h-14 items-center gap-2 px-5 mt-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-[8px] bg-gradient-to-br from-[#8e7cff] to-[#ff8ab8] shadow-sm">
-            <Sparkles className="h-4 w-4 text-white" />
+        <div className="flex h-14 items-center gap-3 px-5 mt-3 mb-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-black dark:bg-white/20 text-white shadow-lg shadow-black/20 dark:shadow-white/5">
+            <Sparkles className="h-4 w-4" />
           </div>
-          <span className="text-[15px] font-semibold tracking-tight text-[var(--color-apple-text)]">
-            TeamOS <span className="text-[var(--color-apple-subtle)] font-medium">AI</span>
+          <span className="text-[17px] font-outfit font-semibold tracking-tight text-black dark:text-white">
+            TeamOS <span className="text-black/60 dark:text-white/60 font-medium">AI</span>
           </span>
-          <button onClick={onClose} className="ml-auto md:hidden text-[var(--color-apple-subtle)]">
+          <button onClick={onClose} className="ml-auto md:hidden text-black/60 dark:text-white/60">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"></path></svg>
           </button>
         </div>
 
         {/* Search */}
         <div className="px-4 pb-2">
-          <div className="flex items-center gap-2 rounded-[10px] bg-black/[0.05] dark:bg-white/[0.05] px-2.5 py-1.5 text-[13px] text-[var(--color-apple-subtle)]">
+          <div className="flex items-center gap-2 rounded-xl bg-white/50 dark:bg-black/40 border border-white/40 dark:border-white/10 px-3 py-2 text-[13px] text-black/60 dark:text-white/60 shadow-sm backdrop-blur-md">
             <Search className="h-3.5 w-3.5" />
             <input
               placeholder="Search"
-              className="w-full bg-transparent outline-none placeholder:text-[var(--color-apple-subtle)]"
+              className="w-full bg-transparent outline-none placeholder:text-black/50 dark:placeholder:text-white/50 text-black dark:text-white font-medium"
             />
-            <kbd className="hidden rounded bg-black/[0.06] dark:bg-white/[0.06] px-1 text-[10px] sm:inline">⌘K</kbd>
+            <kbd className="hidden rounded bg-black/5 dark:bg-white/10 px-1 text-[10px] sm:inline font-bold">⌘K</kbd>
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="no-scrollbar flex-1 overflow-y-auto px-3 pb-6">
+        <nav className="no-scrollbar flex-1 overflow-y-auto px-4 pb-6">
           {navGroups.map((group, idx) => (
-            <div key={idx} className="mt-4">
+            <div key={idx} className="mt-5">
               {group.title && (
-                <div className="px-3 pb-1 text-[11px] font-medium uppercase tracking-wider text-[var(--color-apple-subtle)]">
+                <div className="px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-black/60 dark:text-white/50">
                   {group.title}
                 </div>
               )}
-              <ul className="space-y-0.5">
+              <ul className="space-y-1">
                 {group.items.filter(item => canAccessRoute(currentRole, item.href)).map((item) => {
                   const isActive = pathname === item.href;
                   const Icon = item.icon;
@@ -130,16 +131,18 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                           }
                         }}
                         className={cn(
-                          "flex items-center gap-2.5 rounded-[8px] px-3 py-1.5 text-[13.5px] transition-colors",
+                          "group flex items-center gap-3 rounded-xl px-3 py-2 text-[13.5px] transition-all duration-200 font-medium",
                           isActive
-                            ? "bg-[var(--color-apple-lilac)]/35 text-[var(--accent-purple)] font-medium dark:bg-[var(--color-apple-lilac)]/20"
-                            : "text-[var(--color-apple-text)] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
+                            ? "bg-white/40 dark:bg-white/10 shadow-sm border border-white/30 dark:border-white/5 text-black dark:text-white translate-x-1"
+                            : "text-black/70 dark:text-white/70 hover:bg-white/20 dark:hover:bg-white/5 hover:text-black dark:hover:text-white hover:translate-x-1 border border-transparent"
                         )}
                       >
-                        <Icon className={cn(
-                          "h-[16px] w-[16px]",
-                          isActive ? "text-[var(--accent-primary)]" : "text-[var(--color-apple-subtle)]"
-                        )} />
+                        <div className={cn(
+                          "flex items-center justify-center rounded-lg p-1.5 transition-colors",
+                          isActive ? "bg-white/50 dark:bg-white/20 border border-white/40 dark:border-white/10 shadow-sm text-black dark:text-white" : "text-black/50 dark:text-white/50 group-hover:text-black dark:group-hover:text-white"
+                        )}>
+                          <Icon className="h-[16px] w-[16px]" />
+                        </div>
                         <span>{item.dictKey ? t(item.dictKey) : item.label}</span>
                       </Link>
                     </li>
@@ -151,14 +154,14 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </nav>
 
         {/* User Profile */}
-        <div className="border-t border-black/[0.05] dark:border-white/[0.05] p-3">
-          <div className="flex items-center gap-2.5 rounded-[10px] px-2 py-1.5 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] cursor-pointer">
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-purple-500 text-[11px] font-semibold text-white">
+        <div className="mt-auto px-4 pb-4">
+          <div className="flex items-center gap-3 rounded-xl p-3 bg-white/20 dark:bg-white/5 backdrop-blur-md border border-white/20 dark:border-white/5 hover:bg-white/30 dark:hover:bg-white/10 cursor-pointer transition-colors shadow-sm">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-black dark:bg-white/20 text-[12px] font-bold text-white shadow-md">
               {currentUser?.name.charAt(0) || 'U'}
             </div>
             <div className="flex-1 leading-tight min-w-0">
-              <div className="text-[12.5px] font-medium text-[var(--color-apple-text)] truncate">{currentUser?.name || 'User'}</div>
-              <div className="text-[11px] text-[var(--color-apple-subtle)] truncate">{currentRole || 'Member'}</div>
+              <div className="text-[13.5px] font-semibold text-black dark:text-white truncate">{currentUser?.name || 'User'}</div>
+              <div className="text-[11.5px] text-black/60 dark:text-white/60 truncate font-medium mt-0.5">{currentRole || 'Member'}</div>
             </div>
           </div>
         </div>

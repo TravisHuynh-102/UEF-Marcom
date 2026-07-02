@@ -18,6 +18,7 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ArrowUpDown,
   Video,
   FileText,
   Share2,
@@ -217,9 +218,9 @@ function StatCard({
       <div className={cn('absolute top-0 right-0 w-20 h-20 rounded-bl-[40px] opacity-[0.07]', color)} />
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-[11px] font-medium text-[var(--text-muted)] uppercase tracking-wider mb-1">{label}</p>
+          <p className="text-[12.5px] font-medium text-[var(--text-muted)] uppercase tracking-wider mb-1">{label}</p>
           <p className="text-2xl font-bold text-[var(--text-primary)] tabular-nums">{value}</p>
-          {sub && <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{sub}</p>}
+          {sub && <p className="text-[12.5px] text-[var(--text-muted)] mt-0.5">{sub}</p>}
         </div>
         <div className={cn('w-9 h-9 rounded-xl flex items-center justify-center', color, 'text-white')}>
           {icon}
@@ -233,7 +234,7 @@ function StatCard({
 function StatusBadge({ status }: { status: ApprovalStatus }) {
   const sc = STATUS_COLORS[status];
   return (
-    <span className={cn('inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold whitespace-nowrap', sc.bg, sc.text)}>
+    <span className={cn('inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold whitespace-nowrap', sc.bg, sc.text)}>
       {STATUS_LABELS[status]}
     </span>
   );
@@ -243,7 +244,7 @@ function StatusBadge({ status }: { status: ApprovalStatus }) {
 function TypeBadge({ type }: { type: ContentType }) {
   const tc = CONTENT_TYPE_COLORS[type];
   return (
-    <span className={cn('inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold', tc.bg, tc.text)}>
+    <span className={cn('inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold', tc.bg, tc.text)}>
       {CONTENT_TYPE_ICONS[type]}
       {type}
     </span>
@@ -282,7 +283,7 @@ function MonthView({
         {DAYS.map((day) => (
           <div
             key={day}
-            className="py-2.5 text-center text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]"
+            className="py-2.5 text-center text-[12.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]"
           >
             {day}
           </div>
@@ -301,7 +302,7 @@ function MonthView({
               key={i}
               onClick={() => onSelectDate(cell.date)}
               className={cn(
-                'relative min-h-[100px] p-1.5 border-b border-r border-[var(--card-border)] text-left transition-all duration-150',
+                'relative min-h-[120px] p-2 border-b border-r border-[var(--card-border)] text-left transition-all duration-150',
                 'hover:bg-[var(--bg-tertiary)]',
                 !cell.inMonth && 'opacity-40',
                 selected && 'bg-indigo-500/[0.06] dark:bg-indigo-500/[0.08]',
@@ -328,7 +329,7 @@ function MonthView({
                     <div
                       key={item.id}
                       className={cn(
-                        'px-1.5 py-0.5 rounded-md text-[9px] font-medium truncate',
+                        'px-2 py-1 rounded-md text-[12.5px] font-medium truncate',
                         tc.bg, tc.text
                       )}
                       title={item.title}
@@ -338,7 +339,7 @@ function MonthView({
                   );
                 })}
                 {dayItems.length > 3 && (
-                  <span className="text-[9px] text-[var(--text-muted)] pl-1">
+                  <span className="text-[10.5px] text-[var(--text-muted)] pl-1">
                     +{dayItems.length - 3} more
                   </span>
                 )}
@@ -385,7 +386,7 @@ function WeekView({
                 today && 'bg-indigo-500/[0.06]'
               )}
             >
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              <p className="text-[12.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                 {DAYS[i]}
               </p>
               <p
@@ -406,11 +407,11 @@ function WeekView({
         {HOURS.map((hour) => (
           <div
             key={hour}
-            className="grid grid-cols-[60px_repeat(7,1fr)] min-h-[52px] border-b border-[var(--card-border)] last:border-b-0"
+            className="grid grid-cols-[60px_repeat(7,1fr)] min-h-[80px] border-b border-[var(--card-border)] last:border-b-0"
           >
             {/* Hour label */}
-            <div className="flex items-start justify-end pr-2 pt-1 border-r border-[var(--card-border)]">
-              <span className="text-[10px] font-medium text-[var(--text-muted)] tabular-nums">
+            <div className="flex items-start justify-end pr-2 pt-1.5 border-r border-[var(--card-border)]">
+              <span className="text-[12.5px] font-medium text-[var(--text-muted)] tabular-nums">
                 {hour > 12 ? `${hour - 12}PM` : hour === 12 ? '12PM' : `${hour}AM`}
               </span>
             </div>
@@ -438,21 +439,21 @@ function WeekView({
                       <div
                         key={item.id}
                         className={cn(
-                          'rounded-lg p-1.5 mb-0.5 cursor-pointer hover:scale-[1.02] transition-all border',
+                          'rounded-lg p-2.5 mb-1 cursor-pointer hover:scale-[1.02] transition-all border',
                           tc.bg,
                           'border-transparent hover:border-indigo-500/30'
                         )}
                       >
-                        <p className={cn('text-[10px] font-semibold truncate', tc.text)}>
+                        <p className={cn('text-[12px] font-semibold truncate', tc.text)}>
                           {item.title}
                         </p>
-                        <div className="flex items-center gap-1 mt-0.5">
-                          <span className="text-[9px] text-[var(--text-muted)]">{item.scheduledTime}</span>
-                          <span className={cn('w-1 h-1 rounded-full', tc.dot)} />
-                          <span className="text-[9px] text-[var(--text-muted)]">{item.platform}</span>
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <span className="text-[12.5px] font-medium text-[var(--text-muted)]">{item.scheduledTime}</span>
+                          <span className={cn('w-1.5 h-1.5 rounded-full', tc.dot)} />
+                          <span className="text-[12.5px] font-medium text-[var(--text-muted)]">{item.platform}</span>
                         </div>
-                        <div className="flex items-center gap-1 mt-1">
-                          <div className="w-4 h-4 rounded-full flex items-center justify-center bg-[var(--card-bg)] text-[8px] font-bold shadow-sm">
+                        <div className="flex items-center gap-1.5 mt-1.5">
+                          <div className="w-5 h-5 rounded-full flex items-center justify-center bg-[var(--card-bg)] text-[10.5px] font-bold shadow-sm">
                             {getInitials(item.assignee.name)}
                           </div>
                         </div>
@@ -495,7 +496,8 @@ function ListView({
   return (
     <div className="flex flex-col h-full">
       {/* Table header */}
-      <div className="grid grid-cols-[2fr_100px_100px_140px_120px_110px_140px] gap-3 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+      <div className="grid grid-cols-[140px_2fr_120px_110px_150px_140px_130px_140px] gap-3 px-4 py-3 text-[13px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+        <span>Series</span>
         <span>Title</span>
         <span>Type</span>
         <span>Platform</span>
@@ -510,20 +512,33 @@ function ListView({
         {items.map((item) => (
           <div
             key={item.id}
-            className="group grid grid-cols-[2fr_100px_100px_140px_120px_110px_140px] gap-3 items-center px-4 py-3.5 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:shadow-md hover:border-indigo-500/30 hover:-translate-y-0.5 transition-all duration-300"
+            className="group grid grid-cols-[140px_2fr_120px_110px_150px_140px_130px_140px] gap-3 items-center px-4 py-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:shadow-md hover:border-indigo-500/30 hover:-translate-y-0.5 transition-all duration-300"
           >
+            {/* Series */}
+            <div className="flex items-center min-w-0 pr-2">
+              {item.series ? (
+                <span className="inline-flex items-center px-2 py-1 rounded-md text-[11px] font-medium bg-indigo-500/10 text-indigo-500 dark:bg-indigo-500/20 dark:text-indigo-300 truncate max-w-full" title={item.series}>
+                  #{item.series}
+                </span>
+              ) : (
+                <span className="text-[12px] text-[var(--text-muted)] italic opacity-60">-</span>
+              )}
+            </div>
+
             {/* Title */}
             <div className="flex items-center gap-3 min-w-0">
-              <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center shrink-0', CONTENT_TYPE_COLORS[item.type].bg, CONTENT_TYPE_COLORS[item.type].text)}>
+              <div className={cn('w-9 h-9 rounded-lg flex items-center justify-center shrink-0', CONTENT_TYPE_COLORS[item.type].bg, CONTENT_TYPE_COLORS[item.type].text)}>
                 {CONTENT_TYPE_ICONS[item.type]}
               </div>
               <div className="flex flex-col min-w-0">
-                <span className="text-sm font-semibold text-[var(--text-primary)] truncate group-hover:text-indigo-500 transition-colors">
+                <span className="text-[15px] font-semibold text-[var(--text-primary)] truncate group-hover:text-indigo-500 transition-colors">
                   {item.title}
                 </span>
-                <span className="text-[11px] text-[var(--text-muted)] truncate mt-0.5">
-                  ID: {item.id.split('-')[0]}
-                </span>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-xs text-[var(--text-muted)] truncate">
+                    ID: {item.id.split('-')[0]}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -533,26 +548,26 @@ function ListView({
             </div>
 
             {/* Platform */}
-            <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)]">
+            <div className="flex items-center gap-1.5 text-[13px] font-medium text-[var(--text-secondary)]">
               {PLATFORM_ICONS[item.platform]}
               {item.platform}
             </div>
 
             {/* Scheduled */}
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg border border-[var(--card-border)] bg-[var(--bg-tertiary)] flex flex-col items-center justify-center shrink-0">
-                <span className="text-[9px] font-semibold text-[var(--text-muted)] uppercase leading-none mb-0.5">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-lg border border-[var(--card-border)] bg-[var(--bg-tertiary)] flex flex-col items-center justify-center shrink-0">
+                <span className="text-[11.5px] font-semibold text-[var(--text-muted)] uppercase leading-none mb-0.5">
                   {new Date(item.scheduledDate).toLocaleDateString('en-US', { month: 'short' })}
                 </span>
-                <span className="text-xs font-bold text-[var(--text-primary)] leading-none">
+                <span className="text-sm font-bold text-[var(--text-primary)] leading-none">
                   {new Date(item.scheduledDate).getDate()}
                 </span>
               </div>
               <div className="flex flex-col">
-                <span className="text-xs font-medium text-[var(--text-secondary)]">
+                <span className="text-[13px] font-medium text-[var(--text-secondary)]">
                   {new Date(item.scheduledDate).toLocaleDateString('en-US', { weekday: 'short' })}
                 </span>
-                <span className="text-[11px] text-[var(--text-muted)]">
+                <span className="text-xs text-[var(--text-muted)] mt-0.5">
                   {item.scheduledTime}
                 </span>
               </div>
@@ -560,11 +575,11 @@ function ListView({
 
             {/* Assignee */}
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold bg-gradient-to-br from-indigo-500 to-violet-500 text-white shadow-sm ring-2 ring-[var(--card-bg)]">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold bg-gradient-to-br from-indigo-500 to-violet-500 text-white shadow-sm ring-2 ring-[var(--card-bg)]">
                 {getInitials(item.assignee.name)}
               </div>
               <div className="flex flex-col min-w-0">
-                <span className="text-xs font-medium text-[var(--text-secondary)] truncate">
+                <span className="text-[13px] font-medium text-[var(--text-secondary)] truncate">
                   {item.assignee.name}
                 </span>
               </div>
@@ -673,7 +688,7 @@ function Sidebar({
                 >
                   <p className={cn('text-xs font-semibold', tc.text)}>{item.title}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[10px] text-[var(--text-muted)]">{item.scheduledTime}</span>
+                    <span className="text-[11.5px] text-[var(--text-muted)]">{item.scheduledTime}</span>
                     <StatusBadge status={item.status} />
                   </div>
                 </div>
@@ -715,7 +730,7 @@ function Sidebar({
               <div className={cn('w-1.5 h-1.5 rounded-full mt-1.5 shrink-0', CONTENT_TYPE_COLORS[item.type].dot)} />
               <div className="min-w-0">
                 <p className="text-xs font-medium text-[var(--text-primary)] truncate">{item.title}</p>
-                <p className="text-[10px] text-[var(--text-muted)]">
+                <p className="text-[11.5px] text-[var(--text-muted)]">
                   {new Date(item.scheduledDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} at {item.scheduledTime}
                 </p>
               </div>
@@ -740,7 +755,7 @@ function Sidebar({
           TikTok videos posted between 6-8 PM get <span className="font-semibold text-emerald-400">32% more views</span> this month.
         </p>
         <div className="mt-3 pt-3 border-t border-violet-500/10">
-          <p className="text-[10px] text-[var(--text-muted)]">
+          <p className="text-[11.5px] text-[var(--text-muted)]">
             💡 Consider scheduling the Global Pass BTS video for 7 PM instead of 6 PM.
           </p>
         </div>
@@ -754,7 +769,7 @@ function Sidebar({
             <span className="text-xs font-semibold text-amber-500">Pending Approvals</span>
           </div>
           <p className="text-2xl font-bold text-[var(--text-primary)]">{pendingCount}</p>
-          <p className="text-[10px] text-[var(--text-muted)] mt-1">items waiting for your review</p>
+          <p className="text-[11.5px] text-[var(--text-muted)] mt-1">items waiting for your review</p>
         </div>
       )}
     </div>
@@ -770,10 +785,12 @@ export default function ContentCalendarPage() {
   const { addToast } = useToast();
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const [view, setView] = useState<'month' | 'week' | 'list'>('month');
+  const [view, setView] = useState<'month' | 'week' | 'list' | 'list-week'>('month');
   const [typeFilter, setTypeFilter] = useState('All');
   const [platformFilter, setPlatformFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [seriesFilter, setSeriesFilter] = useState('All');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   // Current month/week navigation
@@ -836,8 +853,31 @@ export default function ContentCalendarPage() {
     if (typeFilter !== 'All') list = list.filter((i) => i.type === typeFilter);
     if (platformFilter !== 'All') list = list.filter((i) => i.platform === platformFilter);
     if (statusFilter !== 'All') list = list.filter((i) => i.status === statusFilter);
-    return list.sort((a, b) => a.scheduledDate.localeCompare(b.scheduledDate) || a.scheduledTime.localeCompare(b.scheduledTime));
-  }, [roleFilteredItems, typeFilter, platformFilter, statusFilter]);
+    if (seriesFilter !== 'All') list = list.filter((i) => i.series === seriesFilter);
+    return list.sort((a, b) => {
+      const cmp = a.scheduledDate.localeCompare(b.scheduledDate) || a.scheduledTime.localeCompare(b.scheduledTime);
+      return sortOrder === 'asc' ? cmp : -cmp;
+    });
+  }, [roleFilteredItems, typeFilter, platformFilter, statusFilter, seriesFilter, sortOrder]);
+
+  // Unique series for dropdown
+  const uniqueSeries = useMemo(() => {
+    const set = new Set<string>();
+    contentItems.forEach(i => { if (i.series) set.add(i.series); });
+    return Array.from(set).sort();
+  }, [contentItems]);
+
+  // List week items (filtered by week dates)
+  const listWeekItems = useMemo(() => {
+    if (view !== 'list-week') return filteredItems;
+    const weekStrings = weekDates.map(d => {
+       const yyyy = d.getFullYear();
+       const mm = String(d.getMonth() + 1).padStart(2, '0');
+       const dd = String(d.getDate()).padStart(2, '0');
+       return `${yyyy}-${mm}-${dd}`;
+    });
+    return filteredItems.filter(i => weekStrings.includes(i.scheduledDate));
+  }, [view, filteredItems, weekDates]);
 
   // Stats
   const totalThisMonth = roleFilteredItems.filter((i) => {
@@ -915,7 +955,8 @@ export default function ContentCalendarPage() {
             {[
               { key: 'month' as const, icon: <CalendarDays className="w-3.5 h-3.5" />, label: 'Month' },
               { key: 'week' as const, icon: <CalendarRange className="w-3.5 h-3.5" />, label: 'Week' },
-              { key: 'list' as const, icon: <List className="w-3.5 h-3.5" />, label: 'List' },
+              { key: 'list-week' as const, icon: <List className="w-3.5 h-3.5" />, label: 'List (Week)' },
+              { key: 'list' as const, icon: <List className="w-3.5 h-3.5" />, label: 'List (All)' },
             ].map((v) => (
               <button
                 key={v.key}
@@ -972,6 +1013,27 @@ export default function ContentCalendarPage() {
           <div className="flex-1" />
 
           {/* Filters */}
+          <Dropdown
+            label="Sort"
+            value={sortOrder}
+            icon={<ArrowUpDown className="w-3.5 h-3.5" />}
+            options={[
+              { value: 'asc', label: 'Oldest' },
+              { value: 'desc', label: 'Newest' },
+            ]}
+            onChange={setSortOrder as any}
+          />
+          {uniqueSeries.length > 0 && (
+            <Dropdown
+              label="Series"
+              value={seriesFilter}
+              options={[
+                { value: 'All', label: 'All Series' },
+                ...uniqueSeries.map(s => ({ value: s, label: s }))
+              ]}
+              onChange={setSeriesFilter}
+            />
+          )}
           <Dropdown
             label="Type"
             value={typeFilter}
@@ -1048,10 +1110,10 @@ export default function ContentCalendarPage() {
 
       {/* ────────── Body ────────── */}
       <div className="flex-1 overflow-hidden px-6 pb-6">
-        {view === 'list' ? (
+        {view === 'list' || view === 'list-week' ? (
           <div className="h-full overflow-y-auto">
             <ListView
-              items={filteredItems}
+              items={view === 'list-week' ? listWeekItems : filteredItems}
               canApprove={canApprove}
               canEditAll={canEditAll}
               canEditOwn={canEditOwn}
