@@ -9,6 +9,7 @@ import { useLanguage } from '@/context/language-context';
 import { useRole } from '@/context/role-context';
 import { useAppState } from '@/context/app-state-context';
 import { UserRole } from '@/types';
+import { Sparkles } from 'lucide-react';
 
 const pageTitles: Record<string, { title: string; subtitle?: string }> = {
   '/': { title: 'Dashboard' },
