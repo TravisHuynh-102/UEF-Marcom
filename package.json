@@ -12,13 +12,13 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@ai-sdk/google": "^4.0.6",
-    "@ai-sdk/react": "^4.0.12",
+    "@ai-sdk/google": "^0.0.52",
+    "@ai-sdk/react": "^0.0.6",
     "@blocknote/core": "^0.51.4",
     "@blocknote/mantine": "^0.51.4",
     "@blocknote/react": "^0.51.4",
     "@supabase/supabase-js": "^2.110.0",
-    "ai": "^7.0.11",
+    "ai": "^3.4.33",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "hls.js": "^1.6.16",
