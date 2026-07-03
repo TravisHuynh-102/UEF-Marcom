@@ -1,4 +1,4 @@
-export type UserRole = 'Manager' | 'Leader' | 'Staff';
+export type UserRole = 'Admin' | 'Manager' | 'Leader' | 'Staff';
 export type ProjectStatus = 'Backlog' | 'Planned' | 'In Progress' | 'Review' | 'Blocked' | 'Completed';
 export type TaskPriority = 'Critical' | 'High' | 'Medium' | 'Low';
 export type InsightType = 'Risk' | 'Optimization' | 'Summary' | 'Kudos';

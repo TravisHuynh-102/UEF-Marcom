@@ -22,7 +22,9 @@ import {
   Settings,
   HelpCircle,
   Search,
-  Megaphone
+  Megaphone,
+  Users,
+  Shield
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -69,6 +71,12 @@ const navGroups: NavGroup[] = [
       { label: 'Settings', dictKey: 'sidebar.settings', icon: Settings, href: '/settings' },
       { label: 'Support', icon: HelpCircle, href: '/support' },
     ],
+  },
+  {
+    title: 'Admin Panel',
+    items: [
+      { label: 'User Management', icon: Users, href: '/admin/users' },
+    ],
   }
 ];
 
@@ -111,47 +119,51 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
         {/* Navigation */}
         <nav className="no-scrollbar flex-1 overflow-y-auto px-4 pb-6">
-          {navGroups.map((group, idx) => (
-            <div key={idx} className="mt-5">
-              {group.title && (
-                <div className="px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-black/60 dark:text-white/50">
-                  {group.title}
-                </div>
-              )}
-              <ul className="space-y-1">
-                {group.items.filter(item => canAccessRoute(currentRole, item.href)).map((item) => {
-                  const isActive = pathname === item.href;
-                  const Icon = item.icon;
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        onClick={() => {
-                          if (window.innerWidth < 768) {
-                            onClose();
-                          }
-                        }}
-                        className={cn(
-                          "group flex items-center gap-3 rounded-xl px-3 py-2 text-[13.5px] transition-all duration-200 font-medium",
-                          isActive
-                            ? "bg-white/40 dark:bg-white/10 shadow-sm border border-white/30 dark:border-white/5 text-black dark:text-white translate-x-1"
-                            : "text-black/70 dark:text-white/70 hover:bg-white/20 dark:hover:bg-white/5 hover:text-black dark:hover:text-white hover:translate-x-1 border border-transparent"
-                        )}
-                      >
-                        <div className={cn(
-                          "flex items-center justify-center rounded-lg p-1.5 transition-colors",
-                          isActive ? "bg-white/50 dark:bg-white/20 border border-white/40 dark:border-white/10 shadow-sm text-black dark:text-white" : "text-black/50 dark:text-white/50 group-hover:text-black dark:group-hover:text-white"
-                        )}>
-                          <Icon className="h-[16px] w-[16px]" />
-                        </div>
-                        <span>{item.dictKey ? t(item.dictKey) : item.label}</span>
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
+          {navGroups.map((group, idx) => {
+            const visibleItems = group.items.filter(item => canAccessRoute(currentRole, item.href));
+            if (visibleItems.length === 0) return null;
+            return (
+              <div key={idx} className="mt-5">
+                {group.title && (
+                  <div className="px-3 pb-2 text-[11px] font-bold uppercase tracking-wider text-black/60 dark:text-white/50">
+                    {group.title}
+                  </div>
+                )}
+                <ul className="space-y-1">
+                  {visibleItems.map((item) => {
+                    const isActive = pathname === item.href;
+                    const Icon = item.icon;
+                    return (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          onClick={() => {
+                            if (window.innerWidth < 768) {
+                              onClose();
+                            }
+                          }}
+                          className={cn(
+                            "group flex items-center gap-3 rounded-xl px-3 py-2 text-[13.5px] transition-all duration-200 font-medium",
+                            isActive
+                              ? "bg-white/40 dark:bg-white/10 shadow-sm border border-white/30 dark:border-white/5 text-black dark:text-white translate-x-1"
+                              : "text-black/70 dark:text-white/70 hover:bg-white/20 dark:hover:bg-white/5 hover:text-black dark:hover:text-white hover:translate-x-1 border border-transparent"
+                          )}
+                        >
+                          <div className={cn(
+                            "flex items-center justify-center rounded-lg p-1.5 transition-colors",
+                            isActive ? "bg-white/50 dark:bg-white/20 border border-white/40 dark:border-white/10 shadow-sm text-black dark:text-white" : "text-black/50 dark:text-white/50 group-hover:text-black dark:group-hover:text-white"
+                          )}>
+                            <Icon className="h-[16px] w-[16px]" />
+                          </div>
+                          <span>{item.dictKey ? t(item.dictKey) : item.label}</span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            );
+          })}
         </nav>
 
         {/* User Profile */}

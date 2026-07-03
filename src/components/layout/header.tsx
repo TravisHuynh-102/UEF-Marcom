@@ -25,10 +25,11 @@ const pageTitles: Record<string, { title: string; subtitle?: string }> = {
   '/creative-performance': { title: 'Creative Performance', subtitle: 'Design & Video metrics' },
 };
 
-const roleConfig: Record<UserRole, { label: string; icon: string; color: string; bg: string }> = {
-  Manager: { label: 'Manager', icon: 'shield', color: 'text-primary', bg: 'bg-primary/10' },
-  Leader: { label: 'Leader', icon: 'star', color: 'text-tertiary-container', bg: 'bg-tertiary-container/10' },
-  Staff: { label: 'Staff', icon: 'person', color: 'text-sky-400', bg: 'bg-sky-500/10' },
+const roleBadges: Record<UserRole, { label: string; icon: string; color: string; bg: string }> = {
+  Admin: { label: 'Admin', icon: 'shield', color: 'text-red-500', bg: 'bg-red-500/10' },
+  Manager: { label: 'Manager', icon: 'star', color: 'text-purple-500', bg: 'bg-purple-500/10' },
+  Leader: { label: 'Leader', icon: 'flag', color: 'text-blue-500', bg: 'bg-blue-500/10' },
+  Staff: { label: 'Staff', icon: 'person', color: 'text-green-500', bg: 'bg-green-500/10' },
 };
 
 interface SearchResult {
@@ -54,7 +55,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   
   const pathname = usePathname();
   const pageInfo = pageTitles[pathname] || { title: 'UEF Marcom' };
-  const currentRoleConfig = roleConfig[currentRole];
+  const currentRoleConfig = roleBadges[currentRole];
   
   const searchRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
@@ -298,7 +299,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
                 <p className="px-2 py-1 text-[11px] font-medium text-[var(--text-muted)] uppercase">
                   Switch Role
                 </p>
-                {(['Manager', 'Leader', 'Staff'] as UserRole[]).map((role) => {
+                {(['Admin', 'Manager', 'Leader', 'Staff'] as UserRole[]).map((role) => {
                   const isActive = currentRole === role;
                   return (
                     <button

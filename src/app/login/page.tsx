@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Hls from 'hls.js';
 import { useRole } from '@/context/role-context';
+import { useAppState } from '@/context/app-state-context';
 
 export default function LoginPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -11,6 +12,7 @@ export default function LoginPage() {
   const router = useRouter();
   
   const { setCurrentRole } = useRole();
+  const { users } = useAppState();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -57,18 +59,14 @@ export default function LoginPage() {
     
     const emailLower = email.toLowerCase();
     
-    // Demo Authentication Logic
-    if (emailLower.includes('manager') || emailLower === 'sarah@uef.edu.vn') {
-      setCurrentRole('Manager');
-      router.push('/');
-    } else if (emailLower.includes('leader') || emailLower === 'aisha@uef.edu.vn') {
-      setCurrentRole('Leader');
-      router.push('/');
-    } else if (emailLower.includes('staff') || emailLower === 'priya@uef.edu.vn') {
-      setCurrentRole('Staff');
+    // Validate against users in app state
+    const matchedUser = users.find(u => u.email.toLowerCase() === emailLower);
+    
+    if (matchedUser) {
+      setCurrentRole(matchedUser.role);
       router.push('/');
     } else {
-      setError('Tài khoản không tồn tại. Vui lòng nhập manager@uef.marcom, leader@... hoặc staff@...');
+      setError('Tài khoản không tồn tại. Vui lòng nhập đúng email (VD: admin@uef.edu.vn, manager@uef.edu.vn...)');
     }
   };
 

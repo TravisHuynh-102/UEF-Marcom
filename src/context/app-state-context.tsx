@@ -9,7 +9,7 @@ import {
 import {
   mockProjects, mockTasks, mockContentItems, mockWorkTrips, mockCreativeTasks, mockUsers, mockDocuments, mockActivity,
 } from '@/lib/mock-data';
-import { supabase } from '@/lib/supabase';
+import { supabase, IS_MOCK_SUPABASE } from '@/lib/supabase';
 import { useToast } from '@/components/ui/toast';
 
 // ─── Notification Types ─────────────────────────────────────────────────────
@@ -34,6 +34,8 @@ interface AppStateContextType {
   documents: Document[];
   activities: ActivityItem[];
   users: User[];
+  addUser: (user: Omit<User, 'id'>) => void;
+  updateUser: (id: string, updates: Partial<User>) => void;
   deleteUser: (id: string) => void;
   notifications: AppNotification[];
 
@@ -165,6 +167,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   // ─── Fetch Supabase Data & Realtime Subscriptions ────────────────────────────────────────────────
   useEffect(() => {
+    if (IS_MOCK_SUPABASE) {
+      console.log('Skipping Supabase fetch: No valid credentials provided.');
+      return;
+    }
+    
     const fetchContent = async () => {
       const { data, error } = await supabase.from('content_items').select('*').order('created_at', { ascending: false });
       if (error) {
@@ -181,6 +188,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           series: d.series || undefined,
           assignee: d.assignee,
           approvedBy: d.approved_by,
+          description: d.description || '',
         }));
         setContentItems(mappedData);
       }
@@ -214,6 +222,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
                  series: newItem.series,
                  assignee: newItem.assignee,
                  approvedBy: newItem.approved_by,
+                 description: newItem.description || '',
                }, ...prev];
             });
           } else if (payload.eventType === 'UPDATE') {
@@ -235,6 +244,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
               series: updatedItem.series,
               assignee: updatedItem.assignee,
               approvedBy: updatedItem.approved_by,
+              description: updatedItem.description || '',
             } : c));
           } else if (payload.eventType === 'DELETE') {
             const deletedItem = payload.old as any;
@@ -289,7 +299,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   const updateTask = useCallback((id: string, updates: Partial<Task>) => {
     setTasks(prev => prev.map(t => t.id === id ? { ...t, ...updates } : t));
-    if (updates.status === 'Completed') {
+    if (updates.completed === true) {
       addNotification({
         title: 'Hoàn thành công việc',
         message: `Tuyệt vời! Một công việc vừa được đánh dấu hoàn thành.`,
@@ -308,6 +318,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     const tempId = generateId('temp');
     const newItem: ContentItem = { ...item, id: tempId };
     setContentItems(prev => [newItem, ...prev]);
+
+    if (IS_MOCK_SUPABASE) return; // Skip Supabase insert if mock
 
     const insertData = {
       title: item.title,
@@ -332,6 +344,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const updateContentItem = useCallback(async (id: string, updates: Partial<ContentItem>) => {
     setContentItems(prev => prev.map(c => c.id === id ? { ...c, ...updates } : c));
     
+    if (IS_MOCK_SUPABASE) return; // Skip Supabase update if mock
     if (id.startsWith('c') && !id.includes('-')) return; // Ignore updates on local mock data if any left
     
     const updateData: any = {};
@@ -351,7 +364,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   const deleteContentItem = useCallback(async (id: string) => {
     setContentItems(prev => prev.filter(c => c.id !== id));
+    
+    if (IS_MOCK_SUPABASE) return; // Skip Supabase delete if mock
     if (id.startsWith('c') && !id.includes('-')) return;
+    
     const { error } = await supabase.from('content_items').delete().eq('id', id);
     if (error) console.error('Error deleting content on Supabase:', error);
   }, []);
@@ -396,6 +412,15 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // ─── User CRUD ──────────────────────────────────────────────────────────
+  const addUser = useCallback((user: Omit<User, 'id'>) => {
+    const newUser: User = { ...user, id: generateId('u') };
+    setUsers(prev => [newUser, ...prev]);
+  }, []);
+
+  const updateUser = useCallback((id: string, updates: Partial<User>) => {
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, ...updates } : u));
+  }, []);
+
   const deleteUser = useCallback((id: string) => {
     setUsers(prev => prev.filter(u => u.id !== id));
   }, []);
@@ -422,7 +447,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         addWorkTrip, updateWorkTrip, deleteWorkTrip,
         updateCreativeTask,
         addDocument, updateDocument, deleteDocument,
-        addActivity, deleteUser,
+        addActivity, addUser, updateUser, deleteUser,
         addNotification, markNotificationRead, markAllNotificationsRead, unreadNotificationCount,
       }}
     >

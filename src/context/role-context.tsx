@@ -6,6 +6,16 @@ import { hasPermission as checkPermission, Permission } from '@/lib/permissions'
 
 // ─── Mock users per role (for demo switching) ───────────────────────────────
 const ROLE_USERS: Record<UserRole, User> = {
+  Admin: {
+    id: 'u0',
+    name: 'Admin User',
+    email: 'admin@uef.edu.vn',
+    role: 'Admin',
+    avatar: '',
+    department: 'IT',
+    capacity: 100,
+    teamId: 'all',
+  },
   Manager: {
     id: 'u1',
     name: 'Sarah Chen',

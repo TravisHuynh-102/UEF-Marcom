@@ -2,10 +2,11 @@ import { User, Project, Task, AIInsight, TeamMetrics, ContentItem, WorkTrip, Cre
 
 // ─── Team Members ───────────────────────────────────────────────────────────
 export const mockUsers: User[] = [
-  { id: 'u1', name: 'Sarah Chen', email: 'sarah@uef.edu.vn', role: 'Manager', avatar: '', department: 'Executive', capacity: 72, teamId: 'all' },
-  { id: 'u2', name: 'Marcus Rodriguez', email: 'marcus@uef.edu.vn', role: 'Leader', avatar: '', department: 'Engineering', capacity: 88, teamId: 'engineering' },
+  { id: 'u0', name: 'Admin User', email: 'admin@uef.edu.vn', role: 'Admin', avatar: '', department: 'Executive', capacity: 100, teamId: 'all' },
+  { id: 'u1', name: 'Sarah Chen', email: 'manager@uef.edu.vn', role: 'Manager', avatar: '', department: 'Executive', capacity: 72, teamId: 'all' },
+  { id: 'u2', name: 'Marcus Rodriguez', email: 'leader@uef.edu.vn', role: 'Leader', avatar: '', department: 'Engineering', capacity: 88, teamId: 'engineering' },
   { id: 'u3', name: 'Aisha Patel', email: 'aisha@uef.edu.vn', role: 'Leader', avatar: '', department: 'Design', capacity: 95, teamId: 'design' },
-  { id: 'u4', name: 'James Okonkwo', email: 'james@uef.edu.vn', role: 'Staff', avatar: '', department: 'Engineering', capacity: 65, teamId: 'engineering' },
+  { id: 'u4', name: 'James Okonkwo', email: 'staff@uef.edu.vn', role: 'Staff', avatar: '', department: 'Engineering', capacity: 65, teamId: 'engineering' },
   { id: 'u5', name: 'Elena Vasquez', email: 'elena@uef.edu.vn', role: 'Leader', avatar: '', department: 'Marketing', capacity: 91, teamId: 'marketing' },
   { id: 'u6', name: 'David Kim', email: 'david@uef.edu.vn', role: 'Staff', avatar: '', department: 'Engineering', capacity: 78, teamId: 'engineering' },
   { id: 'u7', name: 'Priya Sharma', email: 'priya@uef.edu.vn', role: 'Staff', avatar: '', department: 'Design', capacity: 42, teamId: 'design' },

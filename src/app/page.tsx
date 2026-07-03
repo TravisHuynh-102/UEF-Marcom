@@ -8,13 +8,6 @@ const velocity = [
   { d: "Thu", v: 22 }, { d: "Fri", v: 28 }, { d: "Sat", v: 24 }, { d: "Sun", v: 31 },
 ];
 
-const initialTasks = [
-  { id: 1, text: "Review Q4 brand strategy deck", project: "Brand", done: false },
-  { id: 2, text: "Approve creative for Tet campaign", project: "Marketing", done: false },
-  { id: 3, text: "Sync with engineering on AI pipeline", project: "Product", done: true },
-  { id: 4, text: "Sign off on partnership MOU", project: "BD", done: false },
-  { id: 5, text: "Send weekly investor update", project: "Ops", done: false },
-];
 
 function Rings() {
   const rings = [
@@ -82,9 +75,22 @@ function VelocityChart() {
   );
 }
 
+import { useAppState } from '@/context/app-state-context';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
 export default function DashboardPage() {
-  const [tasks, setTasks] = useState(initialTasks);
-  const toggle = (id: number) => setTasks((t) => t.map((x) => x.id === id ? { ...x, done: !x.done } : x));
+  const { tasks, updateTask } = useAppState();
+  const toggle = (id: string) => {
+    const task = tasks.find(t => t.id === id);
+    if (task) updateTask(id, { completed: !task.completed });
+  };
+  const router = useRouter();
+
+  // Pick top 5 priority tasks for the dashboard
+  const priorityTasks = tasks.filter(t => !t.completed).slice(0, 5);
+  // Fallback to recent tasks if no pending priority tasks
+  const displayTasks = priorityTasks.length > 0 ? priorityTasks : tasks.slice(0, 5);
 
   const today = new Date();
   const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
@@ -113,10 +119,19 @@ export default function DashboardPage() {
               <Sparkles className="h-3.5 w-3.5 text-yellow-300" /> AI Daily Briefing
             </div>
             <h2 className="text-[26px] font-outfit font-semibold leading-snug tracking-tight text-white text-glow">
-              Good morning. You have <span className="text-yellow-300 font-bold">3 projects</span> that need attention today, and team velocity is up 14% vs last week.
+              Good morning. You have <span className="text-yellow-300 font-bold">{priorityTasks.length} projects</span> that need attention today, and team velocity is up 14% vs last week.
             </h2>
           </div>
-          <button className="flex shrink-0 items-center gap-2 rounded-full bg-white text-[var(--accent-purple)] px-5 py-2.5 text-[14px] font-semibold shadow-lg shadow-white/20 transition-all hover:scale-105 hover:bg-opacity-90">
+          <button 
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.speechSynthesis) {
+                const utterance = new SpeechSynthesisUtterance(`Good morning. You have ${priorityTasks.length} projects that need attention today, and team velocity is up 14% versus last week.`);
+                utterance.lang = 'en-US';
+                window.speechSynthesis.speak(utterance);
+              }
+            }}
+            className="flex shrink-0 items-center gap-2 rounded-full bg-white text-[var(--accent-purple)] px-5 py-2.5 text-[14px] font-semibold shadow-lg shadow-white/20 transition-all hover:scale-105 hover:bg-opacity-90"
+          >
             <Play className="h-4 w-4 fill-current" /> Listen to briefing
           </button>
         </div>
@@ -131,26 +146,26 @@ export default function DashboardPage() {
               <h3 className="text-[16px] font-semibold tracking-tight text-[var(--color-apple-text)]">Priority actions</h3>
               <p className="text-[12.5px] text-[var(--color-apple-subtle)]">Curated by your Chief of Staff</p>
             </div>
-            <button className="text-[12.5px] font-medium text-[var(--color-apple-blue)]">View all</button>
+            <Link href="/tasks" className="text-[12.5px] font-medium text-[var(--color-apple-blue)] hover:underline">View all</Link>
           </div>
           <ul className="divide-y divide-black/[0.05] dark:divide-white/[0.05]">
-            {tasks.map((t) => (
+            {displayTasks.map((t) => (
               <li key={t.id} className="group flex items-center gap-3 py-3.5 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03] -mx-2 px-2 rounded-xl">
                 <button
                   onClick={() => toggle(t.id)}
                   className={[
                     "h-[20px] w-[20px] shrink-0 rounded-full border-[1.5px] transition-all flex items-center justify-center",
-                    t.done ? "border-[var(--accent-purple)] bg-gradient-to-br from-[var(--accent-purple)] to-[var(--accent-pink)] shadow-md shadow-[var(--accent-purple)]/20" : "border-[var(--border-main)] hover:border-[var(--accent-purple)]",
+                    t.completed ? "border-[var(--accent-purple)] bg-gradient-to-br from-[var(--accent-purple)] to-[var(--accent-pink)] shadow-md shadow-[var(--accent-purple)]/20" : "border-[var(--border-main)] hover:border-[var(--accent-purple)]",
                   ].join(" ")}
                 >
-                  {t.done && <svg className="h-3 w-3 text-white" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5L5 9l4.5-5.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                  {t.completed && <svg className="h-3 w-3 text-white" viewBox="0 0 12 12" fill="none"><path d="M2.5 6.5L5 9l4.5-5.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                 </button>
                 <div className="flex-1 min-w-0">
-                  <p className={["text-[14px] transition-all", t.done ? "text-[var(--color-apple-subtle)] line-through decoration-[1px] opacity-70" : "text-[var(--color-apple-text)] font-medium"].join(" ")}>
-                    {t.text}
+                  <p className={["text-[14px] transition-all", t.completed ? "text-[var(--color-apple-subtle)] line-through decoration-[1px] opacity-70" : "text-[var(--color-apple-text)] font-medium"].join(" ")}>
+                    {t.title}
                   </p>
                 </div>
-                <span className="rounded-md bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.02] dark:border-white/[0.05] px-2.5 py-1 text-[12.5px] font-medium text-[var(--color-apple-subtle)]">{t.project}</span>
+                <span className="rounded-md bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.02] dark:border-white/[0.05] px-2.5 py-1 text-[12.5px] font-medium text-[var(--color-apple-subtle)]">{t.projectName}</span>
                 <Flag className="h-4 w-4 text-[var(--accent-pink)] opacity-0 group-hover:opacity-100 transition-all transform group-hover:scale-110" />
               </li>
             ))}
@@ -192,10 +207,10 @@ export default function DashboardPage() {
       </div>
 
       {/* Strategic assistant floating button */}
-      <button className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#8e7cff] to-[#ff8ab8] shadow-lg shadow-purple-500/30 transition hover:scale-105">
+      <Link href="/ai-assistant" className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#8e7cff] to-[#ff8ab8] shadow-lg shadow-purple-500/30 transition hover:scale-105">
         <Sparkles className="h-5 w-5 text-white" />
         <span className="absolute inset-0 rounded-full bg-gradient-to-br from-[#8e7cff] to-[#ff8ab8] opacity-50 blur-xl -z-10" />
-      </button>
+      </Link>
     </div>
   );
 }

@@ -57,6 +57,7 @@ const STAFF_PERMISSIONS: Permission[] = [
 ];
 
 const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
+  Admin: MANAGER_PERMISSIONS, // Admin has all manager permissions
   Manager: MANAGER_PERMISSIONS,
   Leader: LEADER_PERMISSIONS,
   Staff: STAFF_PERMISSIONS,
@@ -75,6 +76,7 @@ export function getPermissions(role: UserRole): Permission[] {
 export type SettingsTab = 'profile' | 'team' | 'notifications' | 'integrations' | 'appearance' | 'security';
 
 const SETTINGS_TABS_BY_ROLE: Record<UserRole, SettingsTab[]> = {
+  Admin: ['profile', 'team', 'notifications', 'integrations', 'appearance', 'security'],
   Manager: ['profile', 'team', 'notifications', 'integrations', 'appearance', 'security'],
   Leader: ['profile', 'notifications', 'appearance'],
   Staff: ['profile', 'notifications'],
@@ -86,7 +88,9 @@ export function getSettingsTabs(role: UserRole): SettingsTab[] {
 
 // ─── Sidebar Visibility ────────────────────────────────────────────────────
 export function canAccessRoute(role: UserRole, route: string): boolean {
-  // Team Performance is only for Manager & Leader
+  // Admin only routes
+  if (route.startsWith('/admin') && role !== 'Admin') return false;
+  // Team Performance is only for Manager, Leader, Admin
   if (route === '/performance' && role === 'Staff') return false;
   // All other routes are accessible to all roles (with different scopes)
   return true;

@@ -1,7 +1,7 @@
 'use client';
 /* eslint-disable */
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useChat } from '@ai-sdk/react';
 import {
   Sparkles,
@@ -111,6 +111,8 @@ export default function AIAssistantPage() {
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [attachment, setAttachment] = useState<{name: string, url: string, type: string} | null>(null);
 
   // Auto-scroll to bottom
   const scrollToBottom = () => {
@@ -125,11 +127,43 @@ export default function AIAssistantPage() {
     append({ role: 'user', content: label });
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setAttachment({
+        name: file.name,
+        url: event.target?.result as string,
+        type: file.type
+      });
+    };
+    reader.readAsDataURL(file);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!input.trim() && !attachment) return;
+    
+    const options: any = {};
+    if (attachment) {
+      options.data = { attachment };
+    }
+
+    append(
+      { role: 'user', content: input },
+      options
+    );
+    setInput('');
+    setAttachment(null);
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      const event = e as unknown as React.FormEvent<HTMLFormElement>;
-      handleSubmit(event);
+      onFormSubmit(e as unknown as React.FormEvent<HTMLFormElement>);
     }
   };
 
@@ -260,16 +294,41 @@ export default function AIAssistantPage() {
           className="shrink-0 px-4 py-3 border-t"
           style={{ borderColor: 'var(--card-border)' }}
         >
+          {attachment && (
+            <div className="mb-2 flex items-center gap-2 rounded-lg bg-black/5 dark:bg-white/5 p-2 w-fit border border-black/10 dark:border-white/10">
+              {attachment.type.startsWith('image/') ? (
+                <div className="h-8 w-8 rounded overflow-hidden bg-black/10 flex-shrink-0">
+                  <img src={attachment.url} alt="Attachment preview" className="h-full w-full object-cover" />
+                </div>
+              ) : (
+                <div className="h-8 w-8 rounded bg-indigo-500/20 text-indigo-500 flex items-center justify-center flex-shrink-0">
+                  <FileText className="h-4 w-4" />
+                </div>
+              )}
+              <div className="text-xs font-medium truncate max-w-[150px]" style={{ color: 'var(--text-primary)' }}>{attachment.name}</div>
+              <button onClick={() => setAttachment(null)} className="p-1 hover:bg-black/10 dark:hover:bg-white/10 rounded-full text-[var(--text-muted)]">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+              </button>
+            </div>
+          )}
           <form
-            onSubmit={handleSubmit}
+            onSubmit={onFormSubmit}
             className="flex items-center gap-2 rounded-xl px-4 py-2.5 border transition-colors focus-within:border-indigo-500/50 focus-within:ring-1 focus-within:ring-indigo-500/50"
             style={{
               background: 'var(--bg-tertiary)',
               borderColor: 'var(--card-border)',
             }}
           >
+            <input 
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+              accept="image/*,audio/*"
+            />
             <button
               type="button"
+              onClick={() => fileInputRef.current?.click()}
               className="shrink-0 p-1.5 rounded-lg transition-colors hover:bg-white/[0.06]"
               style={{ color: 'var(--text-muted)' }}
             >
@@ -290,7 +349,7 @@ export default function AIAssistantPage() {
             </span>
             <button 
               type="submit"
-              disabled={isLoading || !(input || '').trim()}
+              disabled={isLoading || (!input.trim() && !attachment)}
               className="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-lg shadow-indigo-500/25 transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed"
             >
               <Send className="w-4 h-4" />
