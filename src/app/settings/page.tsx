@@ -124,7 +124,7 @@ function Section({
 function ProfileTab() {
   const fields = [
     { label: 'Full Name', value: 'Sarah Chen', icon: User },
-    { label: 'Email', value: 'sarah@teamos.ai', icon: Mail },
+    { label: 'Email', value: 'sarah@uef.edu.vn', icon: Mail },
     { label: 'Role', value: 'Owner / CEO', icon: Shield },
     { label: 'Department', value: 'Executive', icon: Users },
     { label: 'Phone', value: '+1 (555) 123-4567', icon: Phone },
@@ -205,7 +205,7 @@ function ProfileTab() {
             color: 'var(--text-secondary)',
           }}
         >
-          Leading product strategy and team operations at TeamOS.
+          Leading product strategy and team operations at UEF Marcom.
         </div>
       </Section>
 

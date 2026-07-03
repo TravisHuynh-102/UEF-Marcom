@@ -53,7 +53,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const [notifOpen, setNotifOpen] = useState(false);
   
   const pathname = usePathname();
-  const pageInfo = pageTitles[pathname] || { title: 'TeamOS AI' };
+  const pageInfo = pageTitles[pathname] || { title: 'UEF Marcom' };
   const currentRoleConfig = roleConfig[currentRole];
   
   const searchRef = useRef<HTMLDivElement>(null);
@@ -153,7 +153,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
         
         {/* Breadcrumb */}
         <div className="flex items-center text-[14px] text-black/70 dark:text-white/70 whitespace-nowrap overflow-hidden text-ellipsis">
-          <span className="hover:bg-white/30 dark:hover:bg-white/10 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors truncate hidden sm:inline-block font-semibold">TeamOS Workspace</span>
+          <span className="hover:bg-white/30 dark:hover:bg-white/10 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors truncate hidden sm:inline-block font-semibold">UEF Marcom Workspace</span>
           <span className="text-black/30 dark:text-white/30 mx-1 hidden sm:inline-block">/</span>
           <span className="hover:bg-white/30 dark:hover:bg-white/10 px-2.5 py-1.5 rounded-lg cursor-pointer transition-colors text-black dark:text-white truncate font-bold flex items-center gap-2">
             {pageInfo.title === 'AI Chief of Staff' && <Sparkles className="w-4 h-4 text-black dark:text-white" />}

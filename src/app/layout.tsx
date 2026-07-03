@@ -9,9 +9,9 @@ import { ToastProvider } from "@/components/ui/toast";
 import AppShell from "@/components/layout/app-shell";
 
 export const metadata: Metadata = {
-  title: "TeamOS AI — AI-Powered Team Operating System",
+  title: "UEF Marcom — AI-Powered Team Operating System",
   description:
-    "TeamOS AI is an intelligent team operating system where AI acts as your Chief Operating Officer. Manage projects, tasks, team performance, and get AI-driven insights for startups, agencies, and SMEs.",
+    "UEF Marcom is an intelligent team operating system where AI acts as your Chief Operating Officer. Manage projects, tasks, team performance, and get AI-driven insights for startups, agencies, and SMEs.",
   keywords: [
     "team management",
     "AI COO",

@@ -58,13 +58,13 @@ export default function LoginPage() {
     const emailLower = email.toLowerCase();
     
     // Demo Authentication Logic
-    if (emailLower.includes('manager') || emailLower === 'sarah@teamos.ai') {
+    if (emailLower.includes('manager') || emailLower === 'sarah@uef.edu.vn') {
       setCurrentRole('Manager');
       router.push('/');
-    } else if (emailLower.includes('leader') || emailLower === 'aisha@teamos.ai') {
+    } else if (emailLower.includes('leader') || emailLower === 'aisha@uef.edu.vn') {
       setCurrentRole('Leader');
       router.push('/');
-    } else if (emailLower.includes('staff') || emailLower === 'priya@teamos.ai') {
+    } else if (emailLower.includes('staff') || emailLower === 'priya@uef.edu.vn') {
       setCurrentRole('Staff');
       router.push('/');
     } else {

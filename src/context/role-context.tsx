@@ -9,7 +9,7 @@ const ROLE_USERS: Record<UserRole, User> = {
   Manager: {
     id: 'u1',
     name: 'Sarah Chen',
-    email: 'sarah@teamos.ai',
+    email: 'sarah@uef.edu.vn',
     role: 'Manager',
     avatar: '',
     department: 'Executive',
@@ -19,7 +19,7 @@ const ROLE_USERS: Record<UserRole, User> = {
   Leader: {
     id: 'u3',
     name: 'Aisha Patel',
-    email: 'aisha@teamos.ai',
+    email: 'aisha@uef.edu.vn',
     role: 'Leader',
     avatar: '',
     department: 'Design',
@@ -29,7 +29,7 @@ const ROLE_USERS: Record<UserRole, User> = {
   Staff: {
     id: 'u7',
     name: 'Priya Sharma',
-    email: 'priya@teamos.ai',
+    email: 'priya@uef.edu.vn',
     role: 'Staff',
     avatar: '',
     department: 'Design',
@@ -54,7 +54,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
 
   // Load from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem('teamos-role');
+    const saved = localStorage.getItem('uef-marcom-role');
     if (saved && (saved === 'Manager' || saved === 'Leader' || saved === 'Staff')) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setCurrentRoleState(saved as UserRole);
@@ -63,7 +63,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
 
   const setCurrentRole = useCallback((role: UserRole) => {
     setCurrentRoleState(role);
-    localStorage.setItem('teamos-role', role);
+    localStorage.setItem('uef-marcom-role', role);
   }, []);
 
   const hasPermission = useCallback(

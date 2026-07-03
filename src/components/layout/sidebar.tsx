@@ -21,7 +21,8 @@ import {
   StickyNote,
   Settings,
   HelpCircle,
-  Search
+  Search,
+  Megaphone
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -85,11 +86,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       )}>
         {/* Header / Logo */}
         <div className="flex h-14 items-center gap-3 px-5 mt-3 mb-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-black dark:bg-white/20 text-white shadow-lg shadow-black/20 dark:shadow-white/5">
-            <Sparkles className="h-4 w-4" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-gradient-to-br from-red-600 to-blue-700 text-white shadow-lg shadow-red-500/20 dark:shadow-blue-500/10">
+            <Megaphone className="h-4 w-4" />
           </div>
           <span className="text-[17px] font-outfit font-semibold tracking-tight text-black dark:text-white">
-            TeamOS <span className="text-black/60 dark:text-white/60 font-medium">AI</span>
+            UEF Marcom
           </span>
           <button onClick={onClose} className="ml-auto md:hidden text-black/60 dark:text-white/60">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"></path></svg>

@@ -2,16 +2,16 @@ import { User, Project, Task, AIInsight, TeamMetrics, ContentItem, WorkTrip, Cre
 
 // ─── Team Members ───────────────────────────────────────────────────────────
 export const mockUsers: User[] = [
-  { id: 'u1', name: 'Sarah Chen', email: 'sarah@teamos.ai', role: 'Manager', avatar: '', department: 'Executive', capacity: 72, teamId: 'all' },
-  { id: 'u2', name: 'Marcus Rodriguez', email: 'marcus@teamos.ai', role: 'Leader', avatar: '', department: 'Engineering', capacity: 88, teamId: 'engineering' },
-  { id: 'u3', name: 'Aisha Patel', email: 'aisha@teamos.ai', role: 'Leader', avatar: '', department: 'Design', capacity: 95, teamId: 'design' },
-  { id: 'u4', name: 'James Okonkwo', email: 'james@teamos.ai', role: 'Staff', avatar: '', department: 'Engineering', capacity: 65, teamId: 'engineering' },
-  { id: 'u5', name: 'Elena Vasquez', email: 'elena@teamos.ai', role: 'Leader', avatar: '', department: 'Marketing', capacity: 91, teamId: 'marketing' },
-  { id: 'u6', name: 'David Kim', email: 'david@teamos.ai', role: 'Staff', avatar: '', department: 'Engineering', capacity: 78, teamId: 'engineering' },
-  { id: 'u7', name: 'Priya Sharma', email: 'priya@teamos.ai', role: 'Staff', avatar: '', department: 'Design', capacity: 42, teamId: 'design' },
-  { id: 'u8', name: 'Alex Thompson', email: 'alex@teamos.ai', role: 'Staff', avatar: '', department: 'Marketing', capacity: 85, teamId: 'marketing' },
-  { id: 'u9', name: 'Minh Tran', email: 'minh@teamos.ai', role: 'Staff', avatar: '', department: 'Design', capacity: 90, teamId: 'design' },
-  { id: 'u10', name: 'Linh Nguyen', email: 'linh@teamos.ai', role: 'Staff', avatar: '', department: 'Marketing', capacity: 68, teamId: 'marketing' },
+  { id: 'u1', name: 'Sarah Chen', email: 'sarah@uef.edu.vn', role: 'Manager', avatar: '', department: 'Executive', capacity: 72, teamId: 'all' },
+  { id: 'u2', name: 'Marcus Rodriguez', email: 'marcus@uef.edu.vn', role: 'Leader', avatar: '', department: 'Engineering', capacity: 88, teamId: 'engineering' },
+  { id: 'u3', name: 'Aisha Patel', email: 'aisha@uef.edu.vn', role: 'Leader', avatar: '', department: 'Design', capacity: 95, teamId: 'design' },
+  { id: 'u4', name: 'James Okonkwo', email: 'james@uef.edu.vn', role: 'Staff', avatar: '', department: 'Engineering', capacity: 65, teamId: 'engineering' },
+  { id: 'u5', name: 'Elena Vasquez', email: 'elena@uef.edu.vn', role: 'Leader', avatar: '', department: 'Marketing', capacity: 91, teamId: 'marketing' },
+  { id: 'u6', name: 'David Kim', email: 'david@uef.edu.vn', role: 'Staff', avatar: '', department: 'Engineering', capacity: 78, teamId: 'engineering' },
+  { id: 'u7', name: 'Priya Sharma', email: 'priya@uef.edu.vn', role: 'Staff', avatar: '', department: 'Design', capacity: 42, teamId: 'design' },
+  { id: 'u8', name: 'Alex Thompson', email: 'alex@uef.edu.vn', role: 'Staff', avatar: '', department: 'Marketing', capacity: 85, teamId: 'marketing' },
+  { id: 'u9', name: 'Minh Tran', email: 'minh@uef.edu.vn', role: 'Staff', avatar: '', department: 'Design', capacity: 90, teamId: 'design' },
+  { id: 'u10', name: 'Linh Nguyen', email: 'linh@uef.edu.vn', role: 'Staff', avatar: '', department: 'Marketing', capacity: 68, teamId: 'marketing' },
 ];
 
 // ─── Projects ───────────────────────────────────────────────────────────────
