@@ -7,6 +7,7 @@ export const maxDuration = 30;
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
+    console.log('--- STARTING CHAT REQUEST ---');
 
     const result = streamText({
       model: google('gemini-2.5-flash'),
