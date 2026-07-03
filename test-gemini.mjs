@@ -5,7 +5,7 @@ async function main() {
   try {
     console.log('Bắt đầu gửi yêu cầu lên Gemini...');
     const { text } = await generateText({
-      model: google('gemini-2.5-flash'),
+      model: google('gemini-flash-latest'),
       prompt: 'Xin chào, bạn có hoạt động bình thường không? Hãy trả lời ngắn gọn trong 1 câu.',
     });
     console.log('\n✅ [Kết quả từ Gemini]:', text);

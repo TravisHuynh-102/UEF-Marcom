@@ -380,7 +380,9 @@ export default function AIAssistantPage() {
             {recentTopics.map((topic) => (
               <button
                 key={topic.text}
-                className="flex items-start gap-2.5 w-full group/topic text-left rounded-lg p-2 -mx-2 transition-colors"
+                onClick={() => handleQuickAction(topic.text)}
+                disabled={isLoading}
+                className="flex items-start gap-2.5 w-full group/topic text-left rounded-lg p-2 -mx-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ color: 'var(--text-secondary)' }}
               >
                 <MessageSquare
